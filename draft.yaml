@@ -1,4 +1,4 @@
-  # Provisional database setup with seeders
+# Provisional database setup with seeders
 models:
 
   Profile:
@@ -8,7 +8,7 @@ models:
     phone_number: bigInteger:10
     level: tinyInteger:1
     document_id: foreign
-    user_id: foreign
+    # user_id: foreign
     relationships:
       belongsToMany: Transaction
       belongsTo: Document
@@ -53,6 +53,7 @@ models:
     transaction_id: foreign
     stage_id: foreign
     relationships:
+      hasMany: Comment
       belongsTo: Transaction, Stage
 
   Stage:
@@ -65,6 +66,6 @@ models:
     comment: longText
     process_id: foreign
     relationships:
-      hasMany: Process
+      belongsTo: Process
 
 seeders: Document, Course, Option, Stage
