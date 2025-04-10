@@ -1,5 +1,70 @@
+  # Provisional database setup with seeders
 models:
-  # ...
 
-controllers:
-  # ...
+  Profile:
+    name: string
+    last_name: string
+    document_number: bigInteger:10
+    phone_number: bigInteger:10
+    level: tinyInteger:1
+    document_id: foreign
+    user_id: foreign
+    relationships:
+      belongsToMany: Transaction
+      belongsTo: Document
+
+  Document:
+    type: string
+    relationships:
+      hasMany: Profile
+
+  Course:
+    course: string
+    level: tinyInteger:1
+
+  Transaction:
+    component: tinyInteger:1
+    option_id: foreign
+    relationships:
+      belongsToMany: Profile
+      belongsTo: Option
+      hasMany: Certificate, Process
+
+  Option:
+    option: string
+    level: tinyInteger:1
+    component: tinyInteger:1
+    requeriment: string
+    relationships:
+      hasMany: Transaction
+
+  Certificate:
+    acta: string
+    comment: longText
+    resolution: tinyInteger:1
+    transaction_id: foreign
+    relationships:
+      belongsTo: Transaction
+
+  Process:
+    requeriment: string
+    state: tinyInteger:1
+    comment: longText
+    transaction_id: foreign
+    stage_id: foreign
+    relationships:
+      belongsTo: Transaction, Stage
+
+  Stage:
+    stage: string
+    relationships:
+      hasMany: Process
+
+  Comment:
+    concept: string
+    comment: longText
+    process_id: foreign
+    relationships:
+      hasMany: Process
+
+seeders: Document, Course, Option, Stage
