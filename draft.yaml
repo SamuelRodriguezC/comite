@@ -1,18 +1,6 @@
 # Provisional database setup with seeders
 models:
 
-  Profile:
-    name: string
-    last_name: string
-    document_number: bigInteger:10
-    phone_number: bigInteger:10
-    level: tinyInteger:1
-    document_id: foreign
-    # user_id: foreign
-    relationships:
-      belongsToMany: Transaction
-      belongsTo: Document
-
   Document:
     type: string
     relationships:
@@ -22,13 +10,16 @@ models:
     course: string
     level: tinyInteger:1
 
-  Transaction:
-    component: tinyInteger:1
-    option_id: foreign
+  Profile:
+    name: string
+    last_name: string
+    document_number: bigInteger:10
+    phone_number: bigInteger:10
+    level: tinyInteger:1
+    document_id: foreign
     relationships:
-      belongsToMany: Profile
-      belongsTo: Option
-      hasMany: Certificate, Process
+      belongsToMany: Transaction
+      belongsTo: Document
 
   Option:
     option: string
@@ -38,6 +29,14 @@ models:
     relationships:
       hasMany: Transaction
 
+  Transaction:
+    component: tinyInteger:1
+    option_id: foreign
+    relationships:
+      belongsToMany: Profile
+      belongsTo: Option
+      hasMany: Certificate, Process
+
   Certificate:
     acta: string
     comment: longText
@@ -45,16 +44,6 @@ models:
     transaction_id: foreign
     relationships:
       belongsTo: Transaction
-
-  Process:
-    requeriment: string
-    state: tinyInteger:1
-    comment: longText
-    transaction_id: foreign
-    stage_id: foreign
-    relationships:
-      hasMany: Comment
-      belongsTo: Transaction, Stage
 
   Stage:
     stage: string
@@ -67,5 +56,15 @@ models:
     process_id: foreign
     relationships:
       belongsTo: Process
+
+  Process:
+    requeriment: string
+    state: tinyInteger:1
+    comment: longText
+    transaction_id: foreign
+    stage_id: foreign
+    relationships:
+      hasMany: Comment
+      belongsTo: Transaction, Stage
 
 seeders: Document, Course, Option, Stage
