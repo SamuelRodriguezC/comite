@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('option');
             $table->tinyInteger('level');
             $table->tinyInteger('component');
+            $table->string('description');
             $table->string('requirement');
             $table->timestamps();
         });

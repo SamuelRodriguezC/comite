@@ -4,14 +4,22 @@ namespace Database\Seeders;
 
 use App\Models\Stage;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class StageSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Incorporates the stages of the transaction
      */
     public function run(): void
     {
-        Stage::factory()->count(5)->create();
+        DB::table('stages')->insert([
+            ['stage' => 'Solicitud'],
+            ['stage' => 'Proceso'],
+            ['stage' => 'Primera corrección'],
+            ['stage' => 'Segunda correción'],
+            ['stage' => 'Finalizado'],
+            ['stage' => 'Cancelado'],
+        ]);
     }
 }

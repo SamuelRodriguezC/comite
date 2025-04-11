@@ -25,6 +25,7 @@ models:
     option: string
     level: tinyInteger:1
     component: tinyInteger:1
+    description: string
     requeriment: string
     relationships:
       hasMany: Transaction
