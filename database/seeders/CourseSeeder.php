@@ -14,11 +14,13 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         DB::table('courses')->insert([
+            ['course' => 'No aplica', 'level' => '1'],
             ['course' => 'Ingeniería Ambiental', 'level' => '1'],
             ['course' => 'Ingeniería en Ciencia de Datos', 'level' => '1'],
             ['course' => 'Ingeniería Industrial', 'level' => '1'],
             ['course' => 'Ingeniería Mecánica', 'level' => '1'],
             ['course' => 'Ingeniería de Sistemas', 'level' => '1'],
+            ['course' => 'No aplica', 'level' => '2'],
             ['course' => 'Especialización en Gerencia Ambiental', 'level' => '2'],
             ['course' => 'Especialización en Gerencia de Calidad de Productos y Servicios', 'level' => '2'],
             ['course' => 'Especialización en Gerencia de Mercadeo y Estrategia de Ventas', 'level' => '2'],

@@ -1,4 +1,4 @@
-# Provisional database setup with seeders
+# Database corrected and with seeders
 models:
 
   Document:
@@ -51,12 +51,10 @@ models:
     relationships:
       hasMany: Process
 
-  Comment:
+  Concept:
     concept: string
-    comment: longText
-    process_id: foreign
     relationships:
-      belongsTo: Process
+      hasMany: Comment
 
   Process:
     requeriment: string
@@ -68,4 +66,11 @@ models:
       hasMany: Comment
       belongsTo: Transaction, Stage
 
-seeders: Document, Course, Option, Stage
+  Comment:
+    comment: longText
+    process_id: foreign
+    concept_id: foreign
+    relationships:
+      belongsTo: Process, Concept
+
+seeders: Document, Course, Option, Stage, Concept

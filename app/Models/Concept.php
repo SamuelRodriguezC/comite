@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Transaction;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Option extends Model
+class Concept extends Model
 {
     use HasFactory;
 
@@ -16,11 +16,7 @@ class Option extends Model
      * @var array
      */
     protected $fillable = [
-        'option',
-        'level',
-        'component',
-        'description',
-        'requeriment',
+        'concept',
     ];
 
     /**
@@ -29,12 +25,10 @@ class Option extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'level' => 'integer',
-        'component' => 'integer',
     ];
 
-    public function transactions(): HasMany
+    public function comments(): HasMany
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Comment::class);
     }
 }

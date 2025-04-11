@@ -16,13 +16,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('component');
-            /**
-             * Ensures referential integrity during record updates and deletions
-             */
-            $table->foreignId('option_id')
-                ->constrained()
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->foreignId('option_id')->constrained();
             $table->timestamps();
         });
 
@@ -34,12 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        /**
-         * Unlinks the foreign key before deleting the table
-         */
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->dropForeign(['option_id']);
-        });
         Schema::dropIfExists('transactions');
     }
 };

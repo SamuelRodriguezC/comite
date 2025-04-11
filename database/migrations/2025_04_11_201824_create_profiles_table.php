@@ -20,13 +20,8 @@ return new class extends Migration
             $table->bigInteger('document_number');
             $table->bigInteger('phone_number');
             $table->tinyInteger('level');
-            /**
-             * Ensures referential integrity during record updates and deletions
-             */
-            $table->foreignId('document_id')
-                ->constrained()
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->foreignId('document_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
 
@@ -38,12 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        /**
-         * Unlinks the foreign key before deleting the table
-         */
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->dropForeign(['document_id']);
-        });
         Schema::dropIfExists('profiles');
     }
 };

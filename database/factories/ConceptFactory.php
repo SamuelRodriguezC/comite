@@ -4,15 +4,15 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use App\Models\Option;
+use App\Models\Concept;
 
-class OptionFactory extends Factory
+class ConceptFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      * @var string
      */
-    protected $model = Option::class;
+    protected $model = Concept::class;
 
     /**
      * Define the model's default state.
@@ -20,11 +20,7 @@ class OptionFactory extends Factory
     public function definition(): array
     {
         return [
-            'option' => fake()->word(),
-            'level' => fake()->numberBetween(-8, 8),
-            'component' => fake()->numberBetween(-8, 8),
-            'description' => fake()->text(),
-            'requeriment' => fake()->word(),
+            'concept' => fake()->word(),
         ];
     }
 }

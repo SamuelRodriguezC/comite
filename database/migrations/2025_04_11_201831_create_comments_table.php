@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('profile_transaction', function (Blueprint $table) {
-            $table->foreignId('profile_id');
-            $table->foreignId('transaction_id');
+        Schema::create('comments', function (Blueprint $table) {
+            $table->id();
+            $table->longText('comment');
+            $table->foreignId('process_id')->constrained();
+            $table->foreignId('concept_id')->constrained();
+            $table->timestamps();
         });
 
         Schema::enableForeignKeyConstraints();
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profile_transaction');
+        Schema::dropIfExists('comments');
     }
 };

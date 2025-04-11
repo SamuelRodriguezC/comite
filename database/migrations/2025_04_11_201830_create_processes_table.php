@@ -18,17 +18,8 @@ return new class extends Migration
             $table->string('requeriment');
             $table->tinyInteger('state');
             $table->longText('comment');
-            /**
-             * Ensures referential integrity during record updates and deletions
-             */
-            $table->foreignId('transaction_id')
-                ->constrained()
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->foreignId('stage_id')
-                ->constrained()
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->foreignId('transaction_id')->constrained();
+            $table->foreignId('stage_id')->constrained();
             $table->timestamps();
         });
 
@@ -40,13 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        /**
-         * Unlinks the foreign key before deleting the table
-         */
-        Schema::table('processes', function (Blueprint $table) {
-            $table->dropForeign(['transaction_id']);
-            $table->dropForeign(['stage_id']);
-        });
         Schema::dropIfExists('processes');
     }
 };

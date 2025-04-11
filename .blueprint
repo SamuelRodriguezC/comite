@@ -6,18 +6,20 @@ created:
     - database/factories/TransactionFactory.php
     - database/factories/CertificateFactory.php
     - database/factories/StageFactory.php
-    - database/factories/CommentFactory.php
+    - database/factories/ConceptFactory.php
     - database/factories/ProcessFactory.php
-    - database/migrations/2025_04_10_214525_create_documents_table.php
-    - database/migrations/2025_04_10_214526_create_courses_table.php
-    - database/migrations/2025_04_10_214527_create_profiles_table.php
-    - database/migrations/2025_04_10_214528_create_options_table.php
-    - database/migrations/2025_04_10_214529_create_transactions_table.php
-    - database/migrations/2025_04_10_214530_create_certificates_table.php
-    - database/migrations/2025_04_10_214531_create_stages_table.php
-    - database/migrations/2025_04_10_214532_create_comments_table.php
-    - database/migrations/2025_04_10_214533_create_processes_table.php
-    - database/migrations/2025_04_10_214534_create_profile_transaction_table.php
+    - database/factories/CommentFactory.php
+    - database/migrations/2025_04_11_201822_create_documents_table.php
+    - database/migrations/2025_04_11_201823_create_courses_table.php
+    - database/migrations/2025_04_11_201824_create_profiles_table.php
+    - database/migrations/2025_04_11_201825_create_options_table.php
+    - database/migrations/2025_04_11_201826_create_transactions_table.php
+    - database/migrations/2025_04_11_201827_create_certificates_table.php
+    - database/migrations/2025_04_11_201828_create_stages_table.php
+    - database/migrations/2025_04_11_201829_create_concepts_table.php
+    - database/migrations/2025_04_11_201830_create_processes_table.php
+    - database/migrations/2025_04_11_201831_create_comments_table.php
+    - database/migrations/2025_04_11_201832_create_profile_transaction_table.php
     - app/Models/Document.php
     - app/Models/Course.php
     - app/Models/Profile.php
@@ -25,20 +27,23 @@ created:
     - app/Models/Transaction.php
     - app/Models/Certificate.php
     - app/Models/Stage.php
-    - app/Models/Comment.php
+    - app/Models/Concept.php
     - app/Models/Process.php
+    - app/Models/Comment.php
     - database/seeders/DocumentSeeder.php
     - database/seeders/CourseSeeder.php
     - database/seeders/OptionSeeder.php
     - database/seeders/StageSeeder.php
+    - database/seeders/ConceptSeeder.php
 models:
     User: { name: string, email: string, email_verified_at: 'timestamp nullable default:NULL', password: string, remember_token: 'string:100 nullable default:NULL' }
     Document: { type: string, relationships: { hasMany: Profile } }
     Course: { course: string, level: 'tinyInteger:1' }
     Profile: { name: string, last_name: string, document_number: 'bigInteger:10', phone_number: 'bigInteger:10', level: 'tinyInteger:1', document_id: foreign, relationships: { belongsToMany: Transaction, belongsTo: Document } }
-    Option: { option: string, level: 'tinyInteger:1', component: 'tinyInteger:1', requeriment: string, relationships: { hasMany: Transaction } }
+    Option: { option: string, level: 'tinyInteger:1', component: 'tinyInteger:1', description: string, requeriment: string, relationships: { hasMany: Transaction } }
     Transaction: { component: 'tinyInteger:1', option_id: foreign, relationships: { belongsToMany: Profile, belongsTo: Option, hasMany: 'Certificate, Process' } }
     Certificate: { acta: string, comment: longText, resolution: 'tinyInteger:1', transaction_id: foreign, relationships: { belongsTo: Transaction } }
     Stage: { stage: string, relationships: { hasMany: Process } }
-    Comment: { concept: string, comment: longText, process_id: foreign, relationships: { belongsTo: Process } }
+    Concept: { concept: string, relationships: { hasMany: Comment } }
     Process: { requeriment: string, state: 'tinyInteger:1', comment: longText, transaction_id: foreign, stage_id: foreign, relationships: { hasMany: Comment, belongsTo: 'Transaction, Stage' } }
+    Comment: { comment: longText, process_id: foreign, concept_id: foreign, relationships: { belongsTo: 'Process, Concept' } }
