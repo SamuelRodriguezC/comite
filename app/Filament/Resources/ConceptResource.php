@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ConceptResource\Pages;
-use App\Filament\Resources\ConceptResource\RelationManagers;
-use App\Models\Concept;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Concept;
+use Filament\Forms\Form;
+use Pages\CreateConcept;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ConceptResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ConceptResource\RelationManagers;
+use App\Filament\Resources\ConceptResource\Pages\ListConcepts;
 
 class ConceptResource extends Resource
 {
