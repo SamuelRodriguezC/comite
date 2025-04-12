@@ -27,6 +27,9 @@ class Concept extends Model
         'id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);

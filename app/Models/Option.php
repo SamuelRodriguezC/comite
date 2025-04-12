@@ -33,6 +33,9 @@ class Option extends Model
         'component' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);

@@ -48,6 +48,9 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function profiles(): HasOne
     {
         return $this->hasOne(Profile::class);

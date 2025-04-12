@@ -35,21 +35,21 @@ class Transaction extends Model
         'option_id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function profiles(): BelongsToMany
     {
         return $this->belongsToMany(Profile::class);
     }
-
     public function option(): BelongsTo
     {
         return $this->belongsTo(Option::class);
     }
-
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
     }
-
     public function processes(): HasMany
     {
         return $this->hasMany(Process::class);

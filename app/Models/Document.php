@@ -27,6 +27,9 @@ class Document extends Model
         'id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function profiles(): HasMany
     {
         return $this->hasMany(Profile::class);

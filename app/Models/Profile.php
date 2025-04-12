@@ -25,6 +25,7 @@ class Profile extends Model
         'phone_number',
         'level',
         'document_id',
+        'user_id',
     ];
 
     /**
@@ -37,18 +38,20 @@ class Profile extends Model
         'phone_number' => 'integer',
         'level' => 'integer',
         'document_id' => 'integer',
+        'user_id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function transactions(): BelongsToMany
     {
         return $this->belongsToMany(Transaction::class);
     }
-
     public function document(): BelongsTo
     {
         return $this->belongsTo(Document::class);
     }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

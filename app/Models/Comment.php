@@ -32,11 +32,13 @@ class Comment extends Model
         'concept_id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class);
     }
-
     public function concept(): BelongsTo
     {
         return $this->belongsTo(Concept::class);

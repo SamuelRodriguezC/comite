@@ -37,16 +37,17 @@ class Process extends Model
         'stage_id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
-
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
     }
-
     public function stage(): BelongsTo
     {
         return $this->belongsTo(Stage::class);

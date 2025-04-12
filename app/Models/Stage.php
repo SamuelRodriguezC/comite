@@ -27,6 +27,9 @@ class Stage extends Model
         'id' => 'integer',
     ];
 
+    /**
+     * Establishes the type of relationship it has with other models
+     */
     public function processes(): HasMany
     {
         return $this->hasMany(Process::class);
