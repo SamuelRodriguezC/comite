@@ -16,7 +16,10 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('component');
-            $table->foreignId('option_id')->constrained();
+            $table->foreignId('option_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
 

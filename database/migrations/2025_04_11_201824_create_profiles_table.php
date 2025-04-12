@@ -20,8 +20,14 @@ return new class extends Migration
             $table->bigInteger('document_number');
             $table->bigInteger('phone_number');
             $table->tinyInteger('level');
-            $table->foreignId('document_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('document_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
 

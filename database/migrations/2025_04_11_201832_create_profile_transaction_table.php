@@ -14,9 +14,18 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::create('profile_transaction', function (Blueprint $table) {
-            $table->foreignId('profile_id')->constrained();
-            $table->foreignId('transaction_id')->constrained();
-            $table->foreignId('courses_id')->constrained();
+            $table->foreignId('profile_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->foreignId('transaction_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->foreignId('courses_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
 
         Schema::enableForeignKeyConstraints();

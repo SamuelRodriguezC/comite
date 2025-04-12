@@ -18,7 +18,10 @@ return new class extends Migration
             $table->string('acta');
             $table->longText('comment');
             $table->tinyInteger('resolution');
-            $table->foreignId('transaction_id')->constrained();
+            $table->foreignId('transaction_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
 

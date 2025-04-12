@@ -18,8 +18,14 @@ return new class extends Migration
             $table->string('requeriment');
             $table->tinyInteger('state');
             $table->longText('comment');
-            $table->foreignId('transaction_id')->constrained();
-            $table->foreignId('stage_id')->constrained();
+            $table->foreignId('transaction_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->foreignId('stage_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
 
