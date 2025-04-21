@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-
+    protected static ?string $modelLabel = "Transacción";
+    protected static ?string $pluralModelLabel = "Transacciones";
+    protected static ?string $navigationGroup = "Procesos";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -24,9 +26,11 @@ class TransactionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('component')
+                    ->label("Componente")
                     ->required()
                     ->numeric(),
                 Forms\Components\Select::make('option_id')
+                    ->label("Opción")
                     ->relationship('option', 'id')
                     ->required(),
             ]);
@@ -37,16 +41,20 @@ class TransactionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('component')
+                    ->label("Componente")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('option.id')
+                    ->label("Opción de grado")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

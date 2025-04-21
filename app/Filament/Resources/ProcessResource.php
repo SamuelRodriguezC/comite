@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProcessResource extends Resource
 {
     protected static ?string $model = Process::class;
+    protected static ?string $modelLabel = "Proceso";
+    protected static ?string $pluralModelLabel = "Procesos";
+    protected static ?string $navigationGroup = "Procesos";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -23,18 +26,23 @@ class ProcessResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('requeriment')
+                    ->label("Requisitos")
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('state')
+                    ->label("Estado")
                     ->required()
                     ->numeric(),
                 Forms\Components\Textarea::make('comment')
+                    ->label("Comentario")
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
+                    ->label("Transacción")
                     ->relationship('transaction', 'id')
                     ->required(),
                 Forms\Components\Select::make('stage_id')
+                    ->label("Etapa")
                     ->relationship('stage', 'id')
                     ->required(),
             ]);
@@ -45,21 +53,27 @@ class ProcessResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('requeriment')
+                    ->label("requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')
+                    ->label("Etapa")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.id')
+                    ->label("Transacción")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.id')
+                    ->label("Etapa")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

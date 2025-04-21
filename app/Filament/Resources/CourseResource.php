@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CourseResource extends Resource
 {
     protected static ?string $model = Course::class;
-
+    protected static ?string $modelLabel = "Carrera";
+    protected static ?string $pluralModelLabel = "Carreras";
+    protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -24,9 +26,11 @@ class CourseResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('course')
+                    ->label("Carrera")
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('level')
+                    ->label("Nivel universitario")
                     ->required()
                     ->numeric(),
             ]);
@@ -37,15 +41,19 @@ class CourseResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('course')
+                    ->label("Carrera")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
+                    ->label("Nivel Universitario")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

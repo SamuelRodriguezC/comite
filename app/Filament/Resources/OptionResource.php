@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class OptionResource extends Resource
 {
     protected static ?string $model = Option::class;
-
+    protected static ?string $modelLabel = "Opción de grado";
+    protected static ?string $pluralModelLabel = "Opciones de grado";
+    protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -24,18 +26,23 @@ class OptionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('option')
+                    ->label("Opción de grado")
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('level')
+                    ->label("Nivel Universitario")
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('component')
+                    ->label("Componente")
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('description')
+                    ->label("Descripción")
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('requirement')
+                    ->label("Requisitos")
                     ->required()
                     ->maxLength(255),
             ]);
@@ -46,22 +53,29 @@ class OptionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('option')
+                    ->label("Opción de grado")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
+                    ->label("Nivel Universitario")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('component')
+                    ->label("Componente")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
+                    ->label("Descripción")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('requirement')
+                    ->label("Requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

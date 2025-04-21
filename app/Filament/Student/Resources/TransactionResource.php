@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Student\Resources;
 
-use App\Filament\Resources\StageResource\Pages;
-use App\Filament\Resources\StageResource\RelationManagers;
-use App\Models\Stage;
+use App\Filament\Student\Resources\TransactionResource\Pages;
+use App\Filament\Student\Resources\TransactionResource\RelationManagers;
+use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,22 +13,22 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class StageResource extends Resource
+class TransactionResource extends Resource
 {
-    protected static ?string $model = Stage::class;
-    protected static ?string $modelLabel = "Etapa";
-    protected static ?string $pluralModelLabel = "Etapas";
-    protected static ?string $navigationGroup = "Administrativo";
+    protected static ?string $model = Transaction::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('stage')
-                    ->label("Etapa")
+                Forms\Components\TextInput::make('component')
                     ->required()
-                    ->maxLength(255),
+                    ->numeric(),
+                Forms\Components\Select::make('option_id')
+                    ->relationship('option', 'id')
+                    ->required(),
             ]);
     }
 
@@ -36,16 +36,17 @@ class StageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('stage')
-                    ->label("Etapa")
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('component')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('option.id')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -74,10 +75,10 @@ class StageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStages::route('/'),
-            'create' => Pages\CreateStage::route('/create'),
-            'view' => Pages\ViewStage::route('/{record}'),
-            'edit' => Pages\EditStage::route('/{record}/edit'),
+            'index' => Pages\ListTransactions::route('/'),
+            'create' => Pages\CreateTransaction::route('/create'),
+            'view' => Pages\ViewTransaction::route('/{record}'),
+            'edit' => Pages\EditTransaction::route('/{record}/edit'),
         ];
     }
 }

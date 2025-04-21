@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class DocumentResource extends Resource
 {
     protected static ?string $model = Document::class;
-
+    protected static ?string $modelLabel = "Tipo de Documento";
+    protected static ?string $pluralModelLabel = "Tipo de documentos";
+    protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -24,6 +26,7 @@ class DocumentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('type')
+                    ->label("Tipo")
                     ->required()
                     ->maxLength(255),
             ]);
@@ -34,12 +37,15 @@ class DocumentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('type')
+                    ->label("Tipo")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

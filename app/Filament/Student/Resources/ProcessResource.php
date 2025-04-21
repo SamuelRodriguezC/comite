@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Student\Resources;
 
-use App\Filament\Resources\StageResource\Pages;
-use App\Filament\Resources\StageResource\RelationManagers;
-use App\Models\Stage;
+use App\Filament\Student\Resources\ProcessResource\Pages;
+use App\Filament\Student\Resources\ProcessResource\RelationManagers;
+use App\Models\Process;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,22 +13,31 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class StageResource extends Resource
+class ProcessResource extends Resource
 {
-    protected static ?string $model = Stage::class;
-    protected static ?string $modelLabel = "Etapa";
-    protected static ?string $pluralModelLabel = "Etapas";
-    protected static ?string $navigationGroup = "Administrativo";
+    protected static ?string $model = Process::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('stage')
-                    ->label("Etapa")
+                Forms\Components\TextInput::make('requeriment')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('state')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\Textarea::make('comment')
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\Select::make('transaction_id')
+                    ->relationship('transaction', 'id')
+                    ->required(),
+                Forms\Components\Select::make('stage_id')
+                    ->relationship('stage', 'id')
+                    ->required(),
             ]);
     }
 
@@ -36,16 +45,22 @@ class StageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('stage')
-                    ->label("Etapa")
+                Tables\Columns\TextColumn::make('requeriment')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('state')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('transaction.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stage.id')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -74,10 +89,10 @@ class StageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStages::route('/'),
-            'create' => Pages\CreateStage::route('/create'),
-            'view' => Pages\ViewStage::route('/{record}'),
-            'edit' => Pages\EditStage::route('/{record}/edit'),
+            'index' => Pages\ListProcesses::route('/'),
+            'create' => Pages\CreateProcess::route('/create'),
+            'view' => Pages\ViewProcess::route('/{record}'),
+            'edit' => Pages\EditProcess::route('/{record}/edit'),
         ];
     }
 }
