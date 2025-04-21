@@ -15,7 +15,7 @@ return new class extends Migration
 
         Schema::create('processes', function (Blueprint $table) {
             $table->id();
-            $table->string('requeriment');
+            $table->string('requirement');
             $table->tinyInteger('state');
             $table->longText('comment');
             $table->foreignId('transaction_id')

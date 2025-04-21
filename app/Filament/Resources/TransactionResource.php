@@ -2,16 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Enums\Enabled;
+use App\Enums\Component;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\Transaction;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
-use App\Models\Transaction;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransactionResource extends Resource
 {
@@ -25,10 +30,18 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('component')
+                Forms\Components\Select::make('component')
                     ->label("Componente")
-                    ->required()
-                    ->numeric(),
+                    ->live()
+                    ->preload()
+                    ->enum(Component::class)
+                    ->options(Component::class),
+                Forms\Components\Select::make('enabled')
+                    ->label("Habilitado")
+                    ->live()
+                    ->preload()
+                    ->enum(Enabled::class)
+                    ->options(Enabled::class),
                 Forms\Components\Select::make('option_id')
                     ->label("Opción")
                     ->relationship('option', 'id')
@@ -42,7 +55,11 @@ class TransactionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('enabled')
+                    ->label("Habilitado")
+                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('option.id')
                     ->label("Opción de grado")
@@ -71,6 +88,30 @@ class TransactionResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+        ->schema([
+            Section::make('')
+                ->columnSpan(2)
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('component')
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                    TextEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
+                    TextEntry::make('Option.option')
+                        ->label('Opción de grado'),
+                    TextEntry::make('created_at')
+                        ->label('Creado en'),
+                    TextEntry::make('update_at')
+                        ->label('Actualizado en'),
+                ]),
+        ]);
     }
 
     public static function getRelations(): array

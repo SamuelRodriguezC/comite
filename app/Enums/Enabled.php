@@ -17,8 +17,8 @@ enum Enabled: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::HABILITADO => 'Habilitado',
-            self::DESHABILITADO => 'Deshabilitado',
+            self::HABILITADO => 'Si',
+            self::DESHABILITADO => 'No',
         };
     }
 }

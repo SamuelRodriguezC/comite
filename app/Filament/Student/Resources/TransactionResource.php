@@ -4,6 +4,7 @@ namespace App\Filament\Student\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Enums\Enabled;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -35,6 +36,12 @@ class TransactionResource extends Resource
                     ->preload()
                     ->enum(Component::class)
                     ->options(Component::class),
+                Forms\Components\Select::make('enabled')
+                    ->label("Habilitado")
+                    ->live()
+                    ->preload()
+                    ->enum(Enabled::class)
+                    ->options(Enabled::class),
                 Forms\Components\Select::make('option_id')
                     ->label("Opción de grado")
                     ->relationship('Option', 'option')
@@ -49,6 +56,10 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('enabled')
+                    ->label("Habilitado")
+                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('Option.option')
                     ->label("Opción de grado")
@@ -89,6 +100,9 @@ class TransactionResource extends Resource
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                    TextEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
                     TextEntry::make('Option.option')
                         ->label('Opción de grado'),
                     TextEntry::make('created_at')

@@ -30,7 +30,7 @@ class ProcessResource extends Resource
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requerimientos en PDF')
                     ->disk('public') // Indica que se usará el disco 'public'
-                    ->directory('processes/requirement') // Define la ruta donde se almacenará el archivo
+                    ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
                     ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
                     ->rules([
                         'required',
@@ -60,7 +60,7 @@ class ProcessResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('requeriment')
+                Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')

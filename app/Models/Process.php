@@ -19,7 +19,7 @@ class Process extends Model
      * @var array
      */
     protected $fillable = [
-        'requeriment',
+        'requirement',
         'state',
         'comment',
         'transaction_id',
