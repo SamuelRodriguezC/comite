@@ -9,8 +9,8 @@ use Filament\Support\Contracts\HasLabel;
  */
 enum Level: int implements HasLabel
 {
-    case PREGRADO = '1';
-    case POSGRADO = '2';
+    case PREGRADO = 1;
+    case POSGRADO = 2;
     /**
      * Generates function to display a label
      */

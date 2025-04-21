@@ -2,41 +2,56 @@
 
 namespace App\Filament\Student\Resources;
 
-use App\Filament\Student\Resources\ProcessResource\Pages;
-use App\Filament\Student\Resources\ProcessResource\RelationManagers;
-use App\Models\Process;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Enums\State;
 use Filament\Tables;
+use App\Models\Process;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Student\Resources\ProcessResource\Pages;
+use App\Filament\Student\Resources\ProcessResource\RelationManagers;
 
 class ProcessResource extends Resource
 {
     protected static ?string $model = Process::class;
-
+    protected static ?string $modelLabel = "Proceso";
+    protected static ?string $pluralModelLabel = "Procesos";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('requeriment')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('state')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\FileUpload::make('requirement')
+                    ->label('Requerimientos en PDF')
+                    ->disk('public') // Indica que se usará el disco 'public'
+                    ->directory('processes/requirement') // Define la ruta donde se almacenará el archivo
+                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                    ->rules([
+                        'required',
+                        'mimes:pdf',
+                        'max:10240',
+                    ]) // Agrega validación: campo requerido y solo PDF
+                    ->maxSize(10240) // 10MB
+                    ->maxFiles(1) ,
+                Forms\Components\Select::make('stage_id')
+                    ->label("Etapa")
+                    ->relationship('Stage', 'stage')
+                    ->required(),
+                // Funcionalidad para evaluadores
+                //Forms\Components\Select::make('state')->label("Estado")->live()->preload()->enum(State::class)->options(State::class),
                 Forms\Components\Textarea::make('comment')
+                    ->label("Comentario")
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
+                    ->label("Transacción")
                     ->relationship('transaction', 'id')
-                    ->required(),
-                Forms\Components\Select::make('stage_id')
-                    ->relationship('stage', 'id')
                     ->required(),
             ]);
     }
@@ -46,21 +61,27 @@ class ProcessResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('requeriment')
+                    ->label("Requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')
+                    ->label("Estado")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.id')
+                    ->label("Transacción")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.id')
+                    ->label("Etapa")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

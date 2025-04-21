@@ -10,8 +10,8 @@ use Filament\Support\Contracts\HasLabel;
  */
 enum State: int implements HasLabel, HasColor
 {
-    case APROBADO = '1';
-    case IMPROBADO = '2';
+    case APROBADO = 1;
+    case IMPROBADO = 2;
     /**
      * Generates function to display a label
      */

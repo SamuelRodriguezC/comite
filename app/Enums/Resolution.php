@@ -10,10 +10,10 @@ use Filament\Support\Contracts\HasLabel;
  */
 enum Resolution: int implements HasLabel, HasColor
 {
-    case ACEPTADO = '1';
-    case RECHAZADO = '2';
-    case PENDIENTE = '3';
-    case APLAZADO = '4';
+    case ACEPTADO = 1;
+    case RECHAZADO = 2;
+    case PENDIENTE = 3;
+    case APLAZADO = 4;
     /**
      * Generates function to display a label
      */

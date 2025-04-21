@@ -7,18 +7,18 @@ use Filament\Support\Contracts\HasLabel;
 /**
  * Establish cases
  */
-enum Component: int implements HasLabel
+enum Enabled: int implements HasLabel
 {
-    case INVESTIGATIVO = 1;
-    case NO_INVESTIGATIVO = 2;
+    case HABILITADO = 1;
+    case DESHABILITADO = 2;
     /**
      * Generates function to display a label
      */
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::INVESTIGATIVO => 'Investigativo',
-            self::NO_INVESTIGATIVO => 'No investigativo',
+            self::HABILITADO => 'Habilitado',
+            self::DESHABILITADO => 'Deshabilitado',
         };
     }
 }
