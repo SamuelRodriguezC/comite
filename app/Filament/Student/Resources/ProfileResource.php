@@ -16,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Student\Resources\ProfileResource\Pages;
 use App\Filament\Student\Resources\ProfileResource\RelationManagers;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileResource extends Resource
 {
@@ -24,6 +25,11 @@ class ProfileResource extends Resource
     protected static ?string $pluralModelLabel = "Perfiles";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 1;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('id', Auth::user()->profiles->id);
+    }
 
     public static function form(Form $form): Form
     {

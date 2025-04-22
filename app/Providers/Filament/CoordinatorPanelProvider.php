@@ -27,6 +27,7 @@ class CoordinatorPanelProvider extends PanelProvider
             ->id('coordinator')
             ->path('coordinator')
             ->login()
+            ->profile()
             ->colors([
                 'primary' => Color::Orange,
             ])
