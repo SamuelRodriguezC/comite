@@ -65,15 +65,14 @@ class ProcessResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.id')
                     ->label("Transacción")
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('stage.id')
+                Tables\Columns\TextColumn::make('stage.stage')
                     ->label("Etapa")
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")

@@ -17,6 +17,7 @@ use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Student\Resources\TransactionResource\Pages;
 use App\Filament\Student\Resources\TransactionResource\RelationManagers;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionResource extends Resource
 {
@@ -25,6 +26,17 @@ class TransactionResource extends Resource
     protected static ?string $pluralModelLabel = "Transacciones";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 2;
+
+    public static function getEloquentQuery(): Builder
+    {
+        // Obtén el perfil del usuario autenticado
+        $profileId = Auth::user()->profiles->id;
+
+        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
+        return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
+            $query->where('profile_id', $profileId);
+        });
+    }
 
     public static function form(Form $form): Form
     {
@@ -36,12 +48,6 @@ class TransactionResource extends Resource
                     ->preload()
                     ->enum(Component::class)
                     ->options(Component::class),
-                Forms\Components\Select::make('enabled')
-                    ->label("Habilitado")
-                    ->live()
-                    ->preload()
-                    ->enum(Enabled::class)
-                    ->options(Enabled::class),
                 Forms\Components\Select::make('option_id')
                     ->label("Opción de grado")
                     ->relationship('Option', 'option')
@@ -52,6 +58,7 @@ class TransactionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
