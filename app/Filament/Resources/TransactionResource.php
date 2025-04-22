@@ -61,7 +61,7 @@ class TransactionResource extends Resource
                     ->label("Habilitado")
                     ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('option.id')
+                Tables\Columns\TextColumn::make('option.option')
                     ->label("Opción de grado")
                     ->numeric()
                     ->sortable(),

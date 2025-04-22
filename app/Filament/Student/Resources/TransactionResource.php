@@ -3,137 +3,116 @@
 namespace App\Filament\Student\Resources;
 
 use Filament\Forms;
+use App\Enums\State;
 use Filament\Tables;
-use App\Enums\Enabled;
-use App\Enums\Component;
+use App\Models\Process;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\Transaction;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Student\Resources\TransactionResource\Pages;
-use App\Filament\Student\Resources\TransactionResource\RelationManagers;
-use Illuminate\Support\Facades\Auth;
+use App\Filament\Student\Resources\ProcessResource\Pages;
+use App\Filament\Student\Resources\ProcessResource\RelationManagers;
 
-class TransactionResource extends Resource
+class ProcessResource extends Resource
 {
-    protected static ?string $model = Transaction::class;
-    protected static ?string $modelLabel = "Transacción";
-    protected static ?string $pluralModelLabel = "Transacciones";
+    protected static ?string $model = Process::class;
+    protected static ?string $modelLabel = "Proceso";
+    protected static ?string $pluralModelLabel = "Procesos";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 2;
-
-    public static function getEloquentQuery(): Builder
-    {
-        // Obtén el perfil del usuario autenticado
-        $profileId = Auth::user()->profiles->id;
-
-        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
-        return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
-            $query->where('profile_id', $profileId);
-        });
-    }
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('component')
-                    ->label("Componente")
-                    ->live()
-                    ->preload()
-                    ->enum(Component::class)
-                    ->options(Component::class),
-                Forms\Components\Select::make('option_id')
-                    ->label("Opción de grado")
-                    ->relationship('Option', 'option')
+                Forms\Components\FileUpload::make('requirement')
+                    ->label('Requerimientos en PDF')
+                    ->disk('public') // Indica que se usará el disco 'public'
+                    ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                    ->rules([
+                        'required',
+                        'mimes:pdf',
+                        'max:10240',
+                    ]) // Agrega validación: campo requerido y solo PDF
+                    ->maxSize(10240) // 10MB
+                    ->maxFiles(1) ,
+                Forms\Components\Select::make('stage_id')
+                    ->label("Etapa")
+                    ->relationship('Stage', 'stage')
+                    ->required(),
+                // Funcionalidad para evaluadores
+                //Forms\Components\Select::make('state')->label("Estado")->live()->preload()->enum(State::class)->options(State::class),
+                Forms\Components\Textarea::make('comment')
+                    ->label("Comentario")
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\Select::make('transaction_id')
+                    ->label("Transacción")
+                    ->relationship('transaction', 'id')
                     ->required(),
             ]);
-    }
+        }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->defaultSort('created_at', 'desc')
-            ->columns([
-                Tables\Columns\TextColumn::make('component')
-                    ->label("Componente")
-                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('enabled')
-                    ->label("Habilitado")
-                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('Option.option')
-                    ->label("Opción de grado")
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label("Creado en")
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label("Actualizado en")
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+        public static function table(Table $table): Table
+        {
+            return $table
+                ->columns([
+                    Tables\Columns\TextColumn::make('requirement')
+                        ->label("Requisitos")
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('state')
+                        ->label("Estado")
+                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('transaction.id')
+                        ->label("Transacción")
+                        ->numeric()
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('stage.stage')
+                        ->label("Etapa")
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('created_at')
+                        ->label("Creado en")
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('updated_at')
+                        ->label("Actualizado en")
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ])
+                ->filters([
+                    //
+                ])
+                ->actions([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                ])
+                ->bulkActions([
+                    Tables\Actions\BulkActionGroup::make([
+                        Tables\Actions\DeleteBulkAction::make(),
+                    ]),
+                ]);
+        }
+
+        public static function getRelations(): array
+        {
+            return [
                 //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+            ];
+        }
 
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-        ->schema([
-            Section::make('')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('component')
-                        ->label('Componente')
-                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('enabled')
-                        ->label('Habilitado')
-                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
-                    TextEntry::make('Option.option')
-                        ->label('Opción de grado'),
-                    TextEntry::make('created_at')
-                        ->label('Creado en'),
-                    TextEntry::make('update_at')
-                        ->label('Actualizado en'),
-                ]),
-        ]);
+        public static function getPages(): array
+        {
+            return [
+                'index' => Pages\ListProcesses::route('/'),
+                'create' => Pages\CreateProcess::route('/create'),
+                'view' => Pages\ViewProcess::route('/{record}'),
+                'edit' => Pages\EditProcess::route('/{record}/edit'),
+            ];
+        }
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListTransactions::route('/'),
-            'create' => Pages\CreateTransaction::route('/create'),
-            'view' => Pages\ViewTransaction::route('/{record}'),
-            'edit' => Pages\EditTransaction::route('/{record}/edit'),
-        ];
-    }
-}
