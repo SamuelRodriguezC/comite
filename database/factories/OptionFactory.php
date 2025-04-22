@@ -24,7 +24,7 @@ class OptionFactory extends Factory
             'level' => fake()->numberBetween(-8, 8),
             'component' => fake()->numberBetween(-8, 8),
             'description' => fake()->text(),
-            'requeriment' => fake()->word(),
+            'requirement' => fake()->word(),
         ];
     }
 }

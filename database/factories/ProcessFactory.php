@@ -22,11 +22,11 @@ class ProcessFactory extends Factory
     public function definition(): array
     {
         return [
-            'requeriment' => fake()->word(),
-            'state' => fake()->numberBetween(-8, 8),
+            'requirement' => fake()->word(),
+            'state' => fake()->numberBetween(1, 2),
             'comment' => fake()->text(),
             'transaction_id' => Transaction::factory(),
-            'stage_id' => Stage::factory(),
+            'stage_id' => fake()->numberBetween(1, 6),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Process;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -19,7 +20,10 @@ class DatabaseSeeder extends Seeder
             DocumentSeeder::class,
             OptionSeeder::class,
             StageSeeder::class,
+            UserSeeder::class,
         ]);
+
+        Process::factory(10)->create();
     }
 }
 /**

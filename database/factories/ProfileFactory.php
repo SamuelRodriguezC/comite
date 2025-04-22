@@ -26,7 +26,7 @@ class ProfileFactory extends Factory
             'document_number' => fake()->numberBetween(-100000, 100000),
             'phone_number' => fake()->phoneNumber(),
             'level' => fake()->numberBetween(-8, 8),
-            'document_id' => Document::factory(),
+            'document_id' => fake()->numberBetween(1, 5),
         ];
     }
 }

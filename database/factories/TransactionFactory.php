@@ -21,8 +21,9 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            'component' => fake()->numberBetween(-8, 8),
-            'option_id' => Option::factory(),
+            'component' => fake()->numberBetween(1, 2),
+            'enabled' => fake()->numberBetween(1, 2),
+            'option_id' => fake()->numberBetween(1, 17),
         ];
     }
 }

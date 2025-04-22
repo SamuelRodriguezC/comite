@@ -25,7 +25,7 @@ class ProcessResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('requeriment')
+                Forms\Components\TextInput::make('requirement')
                     ->label("Requisitos")
                     ->required()
                     ->maxLength(255),
