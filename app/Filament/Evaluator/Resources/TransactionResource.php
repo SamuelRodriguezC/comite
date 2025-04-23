@@ -2,22 +2,28 @@
 
 namespace App\Filament\Evaluator\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Enums\Enabled;
+use App\Enums\Component;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\Transaction;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Evaluator\Resources\TransactionResource\Pages;
 use App\Filament\Evaluator\Resources\TransactionResource\RelationManagers;
-use App\Models\Transaction;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = "Transacción";
+    protected static ?string $pluralModelLabel = "Transacciones";
 
     public static function form(Form $form): Form
     {
@@ -40,19 +46,23 @@ class TransactionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('component')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('option.id')
-                    ->numeric()
+                    ->label("Componente")
+                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('enabled')
-                    ->numeric()
+                    ->label("Habilitado")
+                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('option.option')
+                    ->label("Opción de grado")
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -69,6 +79,32 @@ class TransactionResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+        ->schema([
+            Section::make('')
+                ->columnSpan(2)
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('component')
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                    TextEntry::make('option.option')
+                        ->label('Opción de grado'),
+                    TextEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
+                    TextEntry::make('created_at')
+                        ->dateTime()
+                        ->label('Creado en'),
+                    TextEntry::make('update_at')
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                ]),
+        ]);
     }
 
     public static function getRelations(): array

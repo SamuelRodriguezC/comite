@@ -80,8 +80,10 @@ class ConceptResource extends Resource
                     TextEntry::make('concept')
                         ->label('Concepto'),
                     TextEntry::make('created_at')
+                        ->dateTime()
                         ->label('Creado en'),
                     TextEntry::make('update_at')
+                        ->dateTime()
                         ->label('Actualizado en'),
                 ]),
         ]);
