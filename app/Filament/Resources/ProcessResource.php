@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProcessResource\Pages;
-use App\Filament\Resources\ProcessResource\RelationManagers;
-use App\Models\Process;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Enums\State;
 use Filament\Tables;
+use App\Models\Process;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ProcessResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ProcessResource\RelationManagers;
 
 class ProcessResource extends Resource
 {
@@ -52,21 +53,20 @@ class ProcessResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('transaction.id')
+                    ->label("Número de Transacción")
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stage.stage')
+                    ->label("Etapa")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('state')
+                    ->label("Estado")
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('requeriment')
                     ->label("requisitos")
                     ->searchable(),
-                Tables\Columns\TextColumn::make('state')
-                    ->label("Etapa")
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Transacción")
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stage.id')
-                    ->label("Etapa")
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()

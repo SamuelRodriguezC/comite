@@ -89,7 +89,11 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('option.option')
                     ->label("Opción de grado")
                     ->sortable(),
+<<<<<<< HEAD
                  Tables\Columns\TextColumn::make('courses')
+=======
+                Tables\Columns\TextColumn::make('courses')
+>>>>>>> 29e6f945844aa541766ba86ae11a0cbf2a33a6cf
                     ->label('Cursos')
                     ->sortable()
                     ->searchable(),

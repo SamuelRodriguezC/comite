@@ -87,11 +87,10 @@ class ProfileResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label("Nivel Universitario")
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => Level::from($state)->getLabel())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('document.id')
+                Tables\Columns\TextColumn::make('document.type')
                     ->label("Tipo de documento")
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label("Nombres")

@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OptionResource\Pages;
-use App\Filament\Resources\OptionResource\RelationManagers;
-use App\Models\Option;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Enums\Level;
 use Filament\Tables;
+use App\Models\Option;
+use App\Enums\Component;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\OptionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\OptionResource\RelationManagers;
 
 class OptionResource extends Resource
 {
@@ -57,11 +59,11 @@ class OptionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label("Nivel Universitario")
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => Level::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label("Descripción")
