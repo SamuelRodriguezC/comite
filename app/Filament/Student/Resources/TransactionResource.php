@@ -11,6 +11,8 @@ use Filament\Tables\Table;
 use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Section as FormSection;
 use Filament\Infolists\Components\Section as InfoSection;
@@ -18,6 +20,11 @@ use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Student\Resources\TransactionResource\Pages;
 use App\Filament\Student\Resources\TransactionResource\RelationManagers;
+use App\Models\Course;
+use App\Models\Profile;
+use Filament\Infolists\Components\Group;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionResource extends Resource
@@ -47,6 +54,7 @@ class TransactionResource extends Resource
                     ->label("Componente")
                     ->live()
                     ->preload()
+                    ->required()
                     ->enum(Component::class)
                     ->options(Component::class),
                 Forms\Components\Select::make('option_id')
@@ -56,20 +64,10 @@ class TransactionResource extends Resource
                 // Campo para seleccionar curso
                 Forms\Components\Select::make('courses_id')
                     ->label('Curso')
-                    ->hidden('edit')
-                    ->options(\App\Models\Course::all()->pluck('course', 'id')) // si no hay relación directa
+                    ->visibleOn('create')
+                    ->options(\App\Models\Course::all()->pluck('course', 'id')) // Mostrar los cursos de la tabla
                     ->searchable()
                     ->required(),
-
-                FormSection::make('Profiles')->schema([
-                    Forms\Components\Select::make('profiles')->relationship('profiles', 'name')
-                        ->multiple()
-                        ->preload()
-                        ->searchable()
-                        ->required()
-                        ->label('Perfiles'),
-                        // ->options(\App\Models\Profile::all()->pluck('name', 'id'))
-                    ]),
             ]);
     }
 
@@ -81,18 +79,22 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('enabled')
-                    ->label("Habilitado")
-                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('option.option')
-                    ->label("Opción de grado")
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('courses')
-                    ->label('Cursos')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('option.option')
+                    ->label("Opción de grado")
+                    ->words(3)
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('courses')
+                    ->label('Carreras')
+                    ->sortable()
+                    ->words(4),
+                    // ->searchable(),
+                Tables\Columns\IconColumn::make('enabled')
+                    ->label('Habilitado')
+                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                    ->color(fn ($state) => Enabled::from($state)->getColor()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -105,7 +107,12 @@ class TransactionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('component')
+                ->options([
+                    '1' => 'Investigativo',
+                    '2' => 'No Investigativo',
+                ])
+                ->attribute('component')
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -122,26 +129,47 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make('')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('component')
-                        ->label('Componente')
-                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('enabled')
-                        ->label('Habilitado')
-                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
-                    TextEntry::make('Option.option')
-                        ->label('Opción de grado'),
-                    TextEntry::make('courses')
-                        ->label('Cursos'),
+            InfoSection::make([
+                TextEntry::make('component')
+                    ->label('Componente')
+                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+
+                TextEntry::make('Option.option')
+                    ->label('Opción de grado'),
+
+                TextEntry::make('profiles.name') // Campo para "Personas"
+                    ->label('Personas')
+                    ->formatStateUsing(fn($state) => format_list_html($state))
+                    ->html(), // Permite HTML en la salida
+
+
+                TextEntry::make('courses') // Campo para "Carreras"
+                    ->label('Carreras')
+                    ->formatStateUsing(fn($state) =>
+                        '<ul class="list-disc list-inside pl-8">' .
+                            collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
+                                ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
+                                ->implode('') .
+                        '</ul>'
+                    )->html(), // Permite HTML en la salida
+            ])->columns(2)->columnSpan(2),
+
+            InfoSection::make([
+                Group::make([
                     TextEntry::make('created_at')
                         ->label('Creado en'),
-                    TextEntry::make('update_at')
-                        ->label('Actualizado en'),
-                ]),
-        ]);
+                    TextEntry::make('updated_at')
+                    ->label('Actualizado en'),
+                    IconEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+
+                ])->columns(2),
+            ])->columnSpan(1),
+
+
+        ])->columns(3);
     }
 
     public static function getRelations(): array
