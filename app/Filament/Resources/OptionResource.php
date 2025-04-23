@@ -9,8 +9,11 @@ use App\Models\Option;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\OptionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\OptionResource\RelationManagers;
@@ -31,19 +34,25 @@ class OptionResource extends Resource
                     ->label("Opción de grado")
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('level')
-                    ->label("Nivel Universitario")
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('component')
-                    ->label("Componente")
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('level')
+                    ->label('Nivel universitario')
+                    ->live()
+                    ->preload()
+                    ->enum(Level::class)
+                    ->options(Level::class)
+                    ->required(),
+                Forms\Components\Select::make('component')
+                    ->label('Nivel universitario')
+                    ->live()
+                    ->preload()
+                    ->enum(Component::class)
+                    ->options(Component::class)
+                    ->required(),
                 Forms\Components\TextInput::make('description')
                     ->label("Descripción")
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('requirement')
+                Forms\Components\Textarea::make('requirement')
                     ->label("Requisitos")
                     ->required()
                     ->maxLength(255),
@@ -94,6 +103,36 @@ class OptionResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+        ->schema([
+            Section::make('')
+                ->columnSpan(2)
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('option')
+                        ->label('Opción de grado'),
+                    TextEntry::make('level')
+                        ->label('Nivel universitario')
+                        ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
+                    TextEntry::make('component')
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                    TextEntry::make('description')
+                        ->label('Descripción'),
+                    TextEntry::make('requirement')
+                        ->label('Requerimientos'),
+                    TextEntry::make('created_at')
+                        ->dateTime()
+                        ->label('Creado en'),
+                    TextEntry::make('update_at')
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                ]),
+        ]);
     }
 
     public static function getRelations(): array

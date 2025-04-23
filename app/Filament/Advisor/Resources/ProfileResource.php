@@ -45,7 +45,7 @@ class ProfileResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('document_id')
                     ->label('Tipo de documento')
-                    ->relationship('document', 'id')
+                    ->relationship('document', 'type')
                     ->required(),
                 Forms\Components\TextInput::make('document_number')
                     ->label('Número de documento')
@@ -56,10 +56,14 @@ class ProfileResource extends Resource
                     ->tel()
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('level')
+                Forms\Components\Select::make('level')
+                    ->label("Nivel Universitario")
                     ->label('Nivel universitario')
-                    ->required()
-                    ->numeric(),
+                    ->live()
+                    ->preload()
+                    ->enum(Level::class)
+                    ->options(Level::class)
+                    ->required(),
                 Forms\Components\Select::make('user_id')
                     ->label('User_id')
                     ->relationship('user', 'name')

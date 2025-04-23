@@ -29,15 +29,23 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('component')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\Select::make('option_id')
-                    ->relationship('option', 'id')
+                Forms\Components\Select::make('component')
+                    ->label('Componente')
+                    ->live()
+                    ->preload()
+                    ->enum(Component::class)
+                    ->options(component::class)
                     ->required(),
-                Forms\Components\TextInput::make('enabled')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('option_id')
+                    ->relationship('option', 'option')
+                    ->required(),
+                Forms\Components\Select::make('enabled')
+                    ->label('Habilitado')
+                    ->live()
+                    ->preload()
+                    ->enum(Enabled::class)
+                    ->options(Enabled::class)
+                    ->required(),
             ]);
     }
 

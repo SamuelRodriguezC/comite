@@ -44,7 +44,7 @@ class TransactionResource extends Resource
                     ->options(Enabled::class),
                 Forms\Components\Select::make('option_id')
                     ->label("Opción")
-                    ->relationship('option', 'id')
+                    ->relationship('option', 'option')
                     ->required(),
             ]);
     }
