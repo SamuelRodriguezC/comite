@@ -54,65 +54,65 @@ class ProcessResource extends Resource
                     ->relationship('transaction', 'id')
                     ->required(),
             ]);
-    }
+        }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('requirement')
-                    ->label("Requisitos")
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('state')
-                    ->label("Estado")
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Transacción")
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stage.stage')
-                    ->label("Etapa")
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label("Creado en")
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label("Actualizado en")
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+        public static function table(Table $table): Table
+        {
+            return $table
+                ->columns([
+                    Tables\Columns\TextColumn::make('requirement')
+                        ->label("Requisitos")
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('state')
+                        ->label("Estado")
+                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('transaction.id')
+                        ->label("Transacción")
+                        ->numeric()
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('stage.stage')
+                        ->label("Etapa")
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('created_at')
+                        ->label("Creado en")
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('updated_at')
+                        ->label("Actualizado en")
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ])
+                ->filters([
+                    //
+                ])
+                ->actions([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                ])
+                ->bulkActions([
+                    Tables\Actions\BulkActionGroup::make([
+                        Tables\Actions\DeleteBulkAction::make(),
+                    ]),
+                ]);
+        }
+
+        public static function getRelations(): array
+        {
+            return [
                 //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+            ];
+        }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+        public static function getPages(): array
+        {
+            return [
+                'index' => Pages\ListProcesses::route('/'),
+                'create' => Pages\CreateProcess::route('/create'),
+                'view' => Pages\ViewProcess::route('/{record}'),
+                'edit' => Pages\EditProcess::route('/{record}/edit'),
+            ];
+        }
     }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListProcesses::route('/'),
-            'create' => Pages\CreateProcess::route('/create'),
-            'view' => Pages\ViewProcess::route('/{record}'),
-            'edit' => Pages\EditProcess::route('/{record}/edit'),
-        ];
-    }
-}
