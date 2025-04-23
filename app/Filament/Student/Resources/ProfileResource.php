@@ -57,7 +57,6 @@ class ProfileResource extends Resource
                     ->required()
                     ->numeric(),
                 Forms\Components\Select::make('level')
-                    ->label("Nivel Universitario")
                     ->label('Nivel universitario')
                     ->live()
                     ->preload()

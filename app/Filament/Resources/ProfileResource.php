@@ -55,11 +55,12 @@ class ProfileResource extends Resource
                     ->required()
                     ->numeric(),
                 Forms\Components\Select::make('level')
+                    ->label("Nivel Universitario")
                     ->label('Nivel universitario')
                     ->live()
                     ->preload()
-                    //->enum(Level::class)
-                    //->options(Level::class)
+                    ->enum(Level::class)
+                    ->options(Level::class)
                     ->required(),
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
@@ -78,15 +79,15 @@ class ProfileResource extends Resource
                     ->label("Apellidos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('document_number')
-                    ->label("Número de documento")
+                    ->label("Número documento")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone_number')
-                    ->label("Número de telefono")
+                    ->label("Número telefono")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('level')
-                    ->label("Nivel Universitario")
+                    ->label("Nivel universitario")
                     ->formatStateUsing(fn ($state) => Level::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document.type')
@@ -146,8 +147,8 @@ class ProfileResource extends Resource
                 ->columns(2)
                 ->schema([
                     TextEntry::make('level')
-                        ->label('Nivel académico'),
-                        //->formatStateUsing(fn ($state) => $state->getLabel()),
+                        ->label('Nivel universitario')
+                        ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
                     TextEntry::make('UniversityCourse.course')
                         ->label('Carrera universitaria'),
                     TextEntry::make('institutional_code')
@@ -159,10 +160,10 @@ class ProfileResource extends Resource
                 ->schema([
                     TextEntry::make('User.email')
                         ->label('Email'),
-                    TextEntry::make('User.id')
-                        ->label('Id de usuario'),
                     TextEntry::make('User.created_at')
                         ->label('Registrado en'),
+                    TextEntry::make('User.id')
+                        ->label('Id de usuario'),
                     //TextEntry::make('User.roles')
                     //    ->label('Rol')
                     //    ->formatStateUsing(fn ($record) => $record->user

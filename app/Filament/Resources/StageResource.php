@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\StageResource\Pages;
-use App\Filament\Resources\StageResource\RelationManagers;
-use App\Models\Stage;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Stage;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use App\Filament\Resources\StageResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\StageResource\RelationManagers;
 
 class StageResource extends Resource
 {
@@ -62,6 +65,26 @@ class StageResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+        ->schema([
+            Section::make('')
+                ->columnSpan(2)
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('stage')
+                        ->label('Etapa'),
+                    TextEntry::make('created_at')
+                        ->dateTime()
+                        ->label('Creado en'),
+                    TextEntry::make('update_at')
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                ]),
+        ]);
     }
 
     public static function getRelations(): array

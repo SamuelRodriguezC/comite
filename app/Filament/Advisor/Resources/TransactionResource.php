@@ -1,61 +1,51 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Advisor\Resources;
 
 use Filament\Forms;
-use App\Enums\Level;
 use Filament\Tables;
-use App\Models\Option;
+use App\Enums\Enabled;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\OptionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\OptionResource\RelationManagers;
+use App\Filament\Advisor\Resources\TransactionResource\Pages;
+use App\Filament\Advisor\Resources\TransactionResource\RelationManagers;
 
-class OptionResource extends Resource
+class TransactionResource extends Resource
 {
-    protected static ?string $model = Option::class;
-    protected static ?string $modelLabel = "Opción de grado";
-    protected static ?string $pluralModelLabel = "Opciones de grado";
-    protected static ?string $navigationGroup = "Administrativo";
+    protected static ?string $model = Transaction::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = "Transacción";
+    protected static ?string $pluralModelLabel = "Transacciones";
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('option')
-                    ->label("Opción de grado")
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('level')
-                    ->label('Nivel universitario')
-                    ->live()
-                    ->preload()
-                    ->enum(Level::class)
-                    ->options(Level::class)
-                    ->required(),
                 Forms\Components\Select::make('component')
-                    ->label('Nivel universitario')
+                    ->label('Componente')
                     ->live()
                     ->preload()
                     ->enum(Component::class)
-                    ->options(Component::class)
+                    ->options(component::class)
                     ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->label("Descripción")
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('requirement')
-                    ->label("Requisitos")
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('option_id')
+                    ->relationship('option', 'option')
+                    ->required(),
+                Forms\Components\Select::make('enabled')
+                    ->label('Habilitado')
+                    ->live()
+                    ->preload()
+                    ->enum(Enabled::class)
+                    ->options(Enabled::class)
+                    ->required(),
             ]);
     }
 
@@ -63,23 +53,17 @@ class OptionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('option')
-                    ->label("Opción de grado")
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('level')
-                    ->label("Nivel Universitario")
-                    ->formatStateUsing(fn ($state) => Level::from($state)->getLabel())
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->label("Descripción")
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('requirement')
-                    ->label("Requisitos")
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('enabled')
+                    ->label("Habilitado")
+                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('option.option')
+                    ->label("Opción de grado")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -113,18 +97,14 @@ class OptionResource extends Resource
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
-                    TextEntry::make('option')
-                        ->label('Opción de grado'),
-                    TextEntry::make('level')
-                        ->label('Nivel universitario')
-                        ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('description')
-                        ->label('Descripción'),
-                    TextEntry::make('requirement')
-                        ->label('Requerimientos'),
+                    TextEntry::make('option.option')
+                        ->label('Opción de grado'),
+                    TextEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
                     TextEntry::make('created_at')
                         ->dateTime()
                         ->label('Creado en'),
@@ -145,10 +125,10 @@ class OptionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOptions::route('/'),
-            'create' => Pages\CreateOption::route('/create'),
-            'view' => Pages\ViewOption::route('/{record}'),
-            'edit' => Pages\EditOption::route('/{record}/edit'),
+            'index' => Pages\ListTransactions::route('/'),
+            'create' => Pages\CreateTransaction::route('/create'),
+            'view' => Pages\ViewTransaction::route('/{record}'),
+            'edit' => Pages\EditTransaction::route('/{record}/edit'),
         ];
     }
 }
