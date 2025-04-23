@@ -41,7 +41,7 @@ class Transaction extends Model
      */
     public function profiles(): BelongsToMany
     {
-        return $this->belongsToMany(Profile::class);
+        return $this->belongsToMany(Profile::class)->withPivot('courses_id');
     }
     public function option(): BelongsTo
     {
@@ -55,4 +55,18 @@ class Transaction extends Model
     {
         return $this->hasMany(Process::class);
     }
+
+    public function getCoursesAttribute()
+    {
+        return $this->profiles
+            ->map(function ($profile) {
+                // Prueba si llega el curso
+                $course = \App\Models\Course::find($profile->pivot->courses_id);
+                return $course?->course ?? 'Curso no encontrado';
+            })
+            ->filter()
+            ->unique()
+            ->implode(', ');
+    }
+
 }

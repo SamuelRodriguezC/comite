@@ -12,7 +12,8 @@ use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Components\Section;
+use Filament\Forms\Components\Section as FormSection;
+use Filament\Infolists\Components\Section as InfoSection;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Student\Resources\TransactionResource\Pages;
@@ -52,6 +53,23 @@ class TransactionResource extends Resource
                     ->label("Opción de grado")
                     ->relationship('Option', 'option')
                     ->required(),
+                // Campo para seleccionar curso
+                Forms\Components\Select::make('courses_id')
+                    ->label('Curso')
+                    ->hidden('edit')
+                    ->options(\App\Models\Course::all()->pluck('course', 'id')) // si no hay relación directa
+                    ->searchable()
+                    ->required(),
+
+                FormSection::make('Profiles')->schema([
+                    Forms\Components\Select::make('profiles')->relationship('profiles', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->required()
+                        ->label('Perfiles'),
+                        // ->options(\App\Models\Profile::all()->pluck('name', 'id'))
+                    ]),
             ]);
     }
 
@@ -68,9 +86,13 @@ class TransactionResource extends Resource
                     ->label("Habilitado")
                     ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('Option.option')
+                Tables\Columns\TextColumn::make('option.option')
                     ->label("Opción de grado")
                     ->sortable(),
+                 Tables\Columns\TextColumn::make('courses')
+                    ->label('Cursos')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -100,7 +122,7 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            Section::make('')
+            InfoSection::make('')
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
@@ -112,6 +134,8 @@ class TransactionResource extends Resource
                         ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
                     TextEntry::make('Option.option')
                         ->label('Opción de grado'),
+                    TextEntry::make('courses')
+                        ->label('Cursos'),
                     TextEntry::make('created_at')
                         ->label('Creado en'),
                     TextEntry::make('update_at')
@@ -123,7 +147,7 @@ class TransactionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ProfilesRelationManager::class,
         ];
     }
 

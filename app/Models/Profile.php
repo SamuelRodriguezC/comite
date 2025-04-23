@@ -46,7 +46,7 @@ class Profile extends Model
      */
     public function transactions(): BelongsToMany
     {
-        return $this->belongsToMany(Transaction::class);
+        return $this->belongsToMany(Transaction::class)->withPivot('courses_id');
     }
     public function document(): BelongsTo
     {
@@ -56,4 +56,17 @@ class Profile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getCursoAttribute()
+    {
+        // Asumiendo que una transacción tiene un solo perfil en esta relación
+        $profile = $this->profiles()->first();
+
+        if (!$profile || !$profile->pivot || !$profile->pivot->courses_id) {
+            return null;
+        }
+
+        return \App\Models\Course::find($profile->pivot->courses_id)?->course;
+    }
+
 }
