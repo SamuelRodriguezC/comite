@@ -8,9 +8,12 @@ use Filament\Tables;
 use App\Models\Process;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Student\Resources\ProcessResource\Pages;
 use App\Filament\Student\Resources\ProcessResource\RelationManagers;
@@ -97,6 +100,33 @@ class ProcessResource extends Resource
                         Tables\Actions\DeleteBulkAction::make(),
                     ]),
                 ]);
+        }
+
+        public static function infolist(Infolist $infolist): Infolist
+        {
+            return $infolist
+            ->schema([
+                Section::make('')
+                    ->columnSpan(2)
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('stage.stage')
+                            ->label("Etapa"),
+                        TextEntry::make('state')
+                            ->label("Estado")
+                            ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                        TextEntry::make('requirement')
+                            ->label("requisitos"),
+                        TextEntry::make('transaction.id')
+                            ->label("Número de Transacción"),
+                        TextEntry::make('created_at')
+                            ->dateTime()
+                            ->label('Creado en'),
+                        TextEntry::make('update_at')
+                            ->dateTime()
+                            ->label('Actualizado en'),
+                    ]),
+            ]);
         }
 
         public static function getRelations(): array
