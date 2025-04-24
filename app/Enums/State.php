@@ -32,6 +32,7 @@ enum State: int implements HasLabel, HasColor
         return match ($this){
             self::APROBADO => 'success',
             self::IMPROBADO => 'danger',
+            self::PENDIENTE => 'warning',
         };
     }
 }

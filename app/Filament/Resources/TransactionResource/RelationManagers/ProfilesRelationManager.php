@@ -1,42 +1,26 @@
 <?php
 
-namespace App\Filament\Student\Resources\TransactionResource\RelationManagers;
+namespace App\Filament\Resources\TransactionResource\RelationManagers;
 
-use App\Enums\Component;
-use App\Enums\Enabled;
 use App\Enums\Level;
-use Filament\Forms;
-use Filament\Tables;
 use App\Models\Course;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Models\Transaction;
-use Filament\Forms\Components\Group;
+use Filament\Forms;
 use Filament\Infolists\Components\Section;
-use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Form;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
 use Filament\Tables\Actions\AttachAction;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Resources\RelationManagers\RelationManager;
 
 class ProfilesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'profiles';
+    protected static string $relationship = 'Profiles';
     protected static ?string $title = 'Integrante(s) de La Transacción';
-
-    public static function getEloquentQuery(): Builder
-    {
-        // Obtén el perfil del usuario autenticado
-        $profileId = Auth::user()->profiles->id;
-
-        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
-        return Transaction::whereNHas('profiles', function (Builder $query) use ($profileId) {
-            $query->where('profile_id', $profileId);
-        });
-    }
 
     public function form(Form $form): Form
     {
@@ -80,7 +64,7 @@ class ProfilesRelationManager extends RelationManager
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
                         Select::make('courses_id')
-                            ->label('Carrera')
+                            ->label('Curso')
                             ->options(Course::all()->pluck('course', 'id'))
                             ->searchable()
                             ->required(),
@@ -110,13 +94,9 @@ class ProfilesRelationManager extends RelationManager
                     ->record($record)),// El $record aquí viene del modelo actual en la tabla
 
 
-                // Solo la persona en sesión puede cambiar su carrera
-                Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => $record->id === auth_profile_id()),
+                Tables\Actions\EditAction::make(),
 
-                // la persona en sesión no puede desvincularse
-                Tables\Actions\DetachAction::make()
-                    ->visible(fn ($record) => $record->id !== auth_profile_id()),
+                Tables\Actions\DetachAction::make(),
 
             ])
             ->emptyStateActions([

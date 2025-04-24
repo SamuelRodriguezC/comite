@@ -18,6 +18,7 @@ use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransactionResource\Pages;
 use Filament\Infolists\Components\Section as InfoSection;
+use Filament\Forms\Components\Section as FormSection;
 use App\Filament\Resources\TransactionResource\RelationManagers;
 use Filament\Infolists\Components\Group;
 use Filament\Infolists\Components\IconEntry;
@@ -35,29 +36,75 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('component')
-                    ->label("Componente")
-                    ->live()
-                    ->preload()
-                    ->enum(Component::class)
-                    ->options(Component::class),
-                Forms\Components\Select::make('enabled')
-                    ->label("Habilitado")
-                    ->live()
-                    ->preload()
-                    ->enum(Enabled::class)
-                    ->options(Enabled::class),
-                Forms\Components\Select::make('option_id')
-                    ->label("Opción")
-                    ->relationship('option', 'option')
-                    ->required(),
-            ]);
+                FormSection::make('Detalle de Transacción')
+
+                    ->schema([
+                        Forms\Components\Select::make('component')
+                        ->label("Componente")
+                        ->live()
+                        ->preload()
+                        ->enum(Component::class)
+                        ->options(Component::class),
+                    Forms\Components\Select::make('option_id')
+                        ->label("Opción")
+                        ->relationship('option', 'option')
+                        ->required(),
+                    Forms\Components\Toggle::make('enabled')
+                        ->label('Habilitado')
+                        ->inline(false)
+                        ->onColor('success')
+                        ->offColor('danger')
+                        ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
+                        ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                            $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                        }),
+                    ])
+                    ->columnSpan(1)
+                    ->icon('heroicon-m-ticket'),
+
+
+                FormSection::make('Agregar Integrante')
+                    ->schema([
+                        Forms\Components\Select::make('profile_id')
+                            ->label('Documento del Integrante')
+                            ->visibleOn('create')
+                            ->searchable()
+                            ->getSearchResultsUsing(fn (string $search) =>
+                                \App\Models\Profile::where('document_number', 'like', "%{$search}%")
+                                    ->limit(10)
+                                    ->pluck('document_number', 'id')
+                            )
+                            ->getOptionLabelUsing(fn ($value) =>
+                                \App\Models\Profile::find($value)?->document_number
+                            )
+                            ->required(),
+                        Forms\Components\Select::make('courses_id')
+                            ->label('Carrera')
+                            ->visibleOn('create')
+                            ->options(\App\Models\Course::all()->pluck('course', 'id')) // Mostrar los cursos de la tabla
+                            ->searchable()
+                            ->required(),
+                    ])
+                    ->columnSpan(1)
+                    ->description('Para Crear una Transacción debes seleccionar un Primer Integrante y su Carrera. Luego puedes agregar más integrantes.')
+                    ->icon('heroicon-m-user-circle')
+                    ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear
+
+            ])->Columns(2);
     }
+
     public static function table(Table $table): Table
     {
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
+
+                Tables\Columns\TextColumn::make('id')
+                    ->label('#')
+                    ->searchable()
+                    ->numeric()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
@@ -120,12 +167,12 @@ class TransactionResource extends Resource
                     ->label('Opción de grado'),
 
                 TextEntry::make('profiles.name') // Campo para "Personas"
-                    ->label('Personas')
+                    ->label('Integrante(s)')
                     ->formatStateUsing(fn($state) => format_list_html($state))
                     ->html(), // Permite HTML en la salida
 
                 TextEntry::make('courses') // Campo para "Carreras"
-                    ->label('Carreras')
+                    ->label('Carrera(s)')
                     ->formatStateUsing(fn($state) => format_list_html($state))
                     ->html(), // Permite HTML en la salida
             ])->columns(2)->columnSpan(2),
@@ -151,7 +198,7 @@ class TransactionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ProfileRelationManager::class,
+            RelationManagers\ProfilesRelationManager::class,
         ];
     }
 
