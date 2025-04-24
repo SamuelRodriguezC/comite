@@ -113,6 +113,17 @@ class OptionResource extends Resource
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
+                    TextEntry::make('description')
+                        ->label('Descripción'),
+                    TextEntry::make('requirement')
+                        ->label('Requerimientos')
+                        ->formatStateUsing(fn($state) =>
+                            '<ul class="list-disc list-inside pl-8">' .
+                                collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
+                                ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
+                                ->implode('') .
+                            '</ul>'
+                    )->html(), // Permite HTML en la salida
                     TextEntry::make('option')
                         ->label('Opción de grado'),
                     TextEntry::make('level')
@@ -121,10 +132,6 @@ class OptionResource extends Resource
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('description')
-                        ->label('Descripción'),
-                    TextEntry::make('requirement')
-                        ->label('Requerimientos'),
                     TextEntry::make('created_at')
                         ->dateTime()
                         ->label('Creado en'),
