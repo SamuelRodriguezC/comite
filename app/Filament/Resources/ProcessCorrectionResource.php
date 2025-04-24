@@ -2,29 +2,35 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Enums\State;
-use Filament\Tables;
+use App\Filament\Resources\ProcessCorrectionResource\Pages;
+use App\Filament\Resources\ProcessCorrectionResource\RelationManagers;
 use App\Models\Process;
+use App\Enums\State;
+use App\Models\ProcessCorrection;
+use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
-use Filament\Resources\Resource;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\ProcessResource\Pages;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProcessResource\RelationManagers;
 
-class ProcessResource extends Resource
+class ProcessCorrectionResource extends Resource
 {
     protected static ?string $model = Process::class;
-    protected static ?string $modelLabel = "Proceso";
-    protected static ?string $pluralModelLabel = "Todos Los Procesos";
+    protected static ?string $modelLabel = "Correción";
+    protected static ?string $pluralModelLabel = "Correcciones";
     protected static ?string $navigationGroup = "Etapas";
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
+    protected static ?int $navigationSort = 5;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('stage_id', [3, 4]);
+    }
 
     public static function form(Form $form): Form
     {
@@ -132,14 +138,13 @@ class ProcessResource extends Resource
             //
         ];
     }
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProcesses::route('/'),
-            'create' => Pages\CreateProcess::route('/create'),
-            'view' => Pages\ViewProcess::route('/{record}'),
-            'edit' => Pages\EditProcess::route('/{record}/edit'),
+            'index' => Pages\ListProcessCorrections::route('/'),
+            'create' => Pages\CreateProcessCorrection::route('/create'),
+            'view' => Pages\ViewProcessCorrection::route('/{record}'),
+            'edit' => Pages\EditProcessCorrection::route('/{record}/edit'),
         ];
     }
 }

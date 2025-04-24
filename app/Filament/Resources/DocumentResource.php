@@ -19,10 +19,11 @@ use App\Filament\Resources\DocumentResource\RelationManagers;
 class DocumentResource extends Resource
 {
     protected static ?string $model = Document::class;
-    protected static ?string $modelLabel = "Tipo de Documento";
-    protected static ?string $pluralModelLabel = "Tipo de documentos";
+    protected static ?string $modelLabel = "Tipos de Documento";
+    protected static ?string $pluralModelLabel = "Tipos de documento";
     protected static ?string $navigationGroup = "Administrativo";
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-identification';
+    protected static ?int $navigationSort = 12;
 
     public static function form(Form $form): Form
     {
