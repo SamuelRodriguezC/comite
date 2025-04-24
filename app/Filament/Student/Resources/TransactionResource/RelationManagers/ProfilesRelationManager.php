@@ -25,6 +25,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ProfilesRelationManager extends RelationManager
 {
     protected static string $relationship = 'profiles';
+    protected static ?string $title = 'Integrantes de La Transacción';
 
     public static function getEloquentQuery(): Builder
     {
@@ -41,6 +42,10 @@ class ProfilesRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                    Forms\Components\TextInput::make('document_number')
+                    ->required()
+                    ->maxLength(255),
+
                     Select::make('courses_id')
                     ->label('Curso')
                     ->options(Course::all()->pluck('course', 'id'))
@@ -53,12 +58,12 @@ class ProfilesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
+            ->recordTitleAttribute('document_number') //Atributo de busqueda
             ->columns([
                 Tables\Columns\TextColumn::make('document_number')->label('Documento'),
                 Tables\Columns\TextColumn::make('name')->label('Nombres'),
                 Tables\Columns\TextColumn::make('last_name')->label('Apellidos'),
-                Tables\Columns\TextColumn::make('pivot.courses_id')->label('Curso')
+                Tables\Columns\TextColumn::make('pivot.courses_id')->label('Carrera')
                     ->words(4)
                     // Transformar el ID del curso a su nombre
                     ->formatStateUsing(function ($state) {
@@ -78,13 +83,12 @@ class ProfilesRelationManager extends RelationManager
                             ->options(Course::all()->pluck('course', 'id'))
                             ->searchable()
                             ->required(),
-                    ])
-                    ,
+                    ]),
             ])
             ->actions([
                 // Botón para ver detalles de integrante
                 Tables\Actions\ViewAction::make()
-                ->label('Integrante')
+                ->label('Ver')
                 ->modalHeading('Información Personal')
                 // Crear el modal con una infolista
                 ->modalContent(fn ($record) => Infolist::make()
@@ -102,21 +106,26 @@ class ProfilesRelationManager extends RelationManager
 
 
                     ])->columns(3)
-                    ->record($record)),  // El $record aquí viene del modelo actual en la tabla
+                    ->record($record)),// El $record aquí viene del modelo actual en la tabla
 
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DetachAction::make(),
+                // Solo la persona en sesión puede cambiar su carrera
+                Tables\Actions\EditAction::make()
+                    ->visible(fn ($record) => $record->id === auth_profile_id()),
+
+                // la persona en sesión no puede desvincularse
+                Tables\Actions\DetachAction::make()
+                    ->visible(fn ($record) => $record->id !== auth_profile_id()),
 
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
             ])
-        ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([
+                    Tables\Actions\BulkActionGroup::make([
+                        Tables\Actions\DeleteBulkAction::make(),
+                    ]),
+                ]);
     }
 
 

@@ -1,6 +1,6 @@
 <?php
 
-// Verificar si la función 'format_list_html' ya está definida
+// ------------------ HACER VARIOS REGISTROS EN UNA LISTA ------------------
 if (!function_exists('format_list_html')) {
     // Definir la función 'format_list_html' que recibe un parámetro $state
     function format_list_html($state): string
@@ -21,3 +21,18 @@ if (!function_exists('format_list_html')) {
         '</ul>';
     }
 }
+
+
+
+
+
+// ------------------ OBTENER PERFIL DE USUARIO EN SESIÓN ------------------
+use Illuminate\Support\Facades\Auth;
+
+if (!function_exists('auth_profile_id')) {
+    function auth_profile_id()
+    {
+        return Auth::user()?->profiles->id;
+    }
+}
+

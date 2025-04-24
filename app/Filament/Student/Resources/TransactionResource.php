@@ -145,13 +145,8 @@ class TransactionResource extends Resource
 
                 TextEntry::make('courses') // Campo para "Carreras"
                     ->label('Carreras')
-                    ->formatStateUsing(fn($state) =>
-                        '<ul class="list-disc list-inside pl-8">' .
-                            collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
-                                ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
-                                ->implode('') .
-                        '</ul>'
-                    )->html(), // Permite HTML en la salida
+                    ->formatStateUsing(fn($state) => format_list_html($state))
+                    ->html(), // Permite HTML en la salida
             ])->columns(2)->columnSpan(2),
 
             InfoSection::make([
