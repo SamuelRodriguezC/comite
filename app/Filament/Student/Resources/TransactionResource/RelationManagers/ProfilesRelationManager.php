@@ -44,7 +44,8 @@ class ProfilesRelationManager extends RelationManager
             ->schema([
                     Forms\Components\TextInput::make('document_number')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->visibleOn('create'),
 
                     Select::make('courses_id')
                     ->label('Curso')
