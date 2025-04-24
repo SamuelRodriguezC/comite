@@ -27,11 +27,11 @@ class ListProcesses extends ListRecords
                 ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '2')),
 
             'primera_correccion' => Tab::make('Primera corrección')
-                ->label('1a corrección')
+                ->label('1a Corrección')
                 ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '3')),
 
             'segunda_correccion' => Tab::make('Segunda corrección')
-                ->label('2a corrección')
+                ->label('2a Corrección')
                 ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '4')),
 
             'finalizado' => Tab::make('Finalizado')
