@@ -142,7 +142,6 @@ class TransactionResource extends Resource
                     ->formatStateUsing(fn($state) => format_list_html($state))
                     ->html(), // Permite HTML en la salida
 
-
                 TextEntry::make('courses') // Campo para "Carreras"
                     ->label('Carreras')
                     ->formatStateUsing(fn($state) => format_list_html($state))

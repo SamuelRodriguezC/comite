@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Advisor\Resources;
 
 use Filament\Forms;
 use App\Enums\Level;
@@ -14,16 +14,15 @@ use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\OptionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\OptionResource\RelationManagers;
+use App\Filament\Advisor\Resources\OptionResource\Pages;
+use App\Filament\Advisor\Resources\OptionResource\RelationManagers;
 
 class OptionResource extends Resource
 {
     protected static ?string $model = Option::class;
     protected static ?string $modelLabel = "Opción de grado";
     protected static ?string $pluralModelLabel = "Opciones de grado";
-    protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
