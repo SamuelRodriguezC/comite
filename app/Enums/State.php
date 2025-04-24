@@ -12,6 +12,7 @@ enum State: int implements HasLabel, HasColor
 {
     case APROBADO = 1;
     case IMPROBADO = 2;
+    case PENDIENTE = 3;
     /**
      * Generates function to display a label
      */
@@ -20,9 +21,10 @@ enum State: int implements HasLabel, HasColor
         return match ($this) {
             self::APROBADO => 'Aprobado',
             self::IMPROBADO => 'Improbado',
+            self::PENDIENTE => 'Pendiente',
         };
     }
-        /**
+    /**
      * Generates function to obtain color according to the case
      */
     public function getColor(): string|array|null

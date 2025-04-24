@@ -8,6 +8,7 @@ use Filament\Tables;
 use App\Models\Process;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\FileUpload;
@@ -63,20 +64,23 @@ class ProcessResource extends Resource
         {
             return $table
                 ->columns([
-                    Tables\Columns\TextColumn::make('requirement')
-                        ->label("Requisitos")
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('state')
-                        ->label("Estado")
-                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                        ->sortable(),
                     Tables\Columns\TextColumn::make('transaction.id')
-                        ->label("Transacción")
+                        ->label("Número transacción")
                         ->numeric()
                         ->sortable(),
                     Tables\Columns\TextColumn::make('stage.stage')
                         ->label("Etapa")
                         ->sortable(),
+                    Tables\Columns\TextColumn::make('state')
+                        ->label("Estado")
+                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('requirement')
+                        ->label("Requisitos")
+                        ->formatStateUsing(function ($state) {
+                            return Str::limit(basename($state), 20);
+                        })
+                        ->searchable(),
                     Tables\Columns\TextColumn::make('created_at')
                         ->label("Creado en")
                         ->dateTime()
