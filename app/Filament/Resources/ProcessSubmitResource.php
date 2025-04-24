@@ -2,29 +2,36 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Enums\State;
-use Filament\Tables;
+use App\Filament\Resources\ProcessSubmitResource\Pages;
+use App\Filament\Resources\ProcessSubmitResource\RelationManagers;
 use App\Models\Process;
+use App\Models\ProcessSubmit;
+use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\ProcessResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProcessResource\RelationManagers;
 
-class ProcessResource extends Resource
+class ProcessSubmitResource extends Resource
 {
     protected static ?string $model = Process::class;
-    protected static ?string $modelLabel = "Proceso";
-    protected static ?string $pluralModelLabel = "Todos Los Procesos";
+    protected static ?string $modelLabel = "Entrega";
+    protected static ?string $pluralModelLabel = "Entregas";
     protected static ?string $navigationGroup = "Etapas";
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-document-arrow-up';
+    protected static ?int $navigationSort = 4;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('stage_id', 2);
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -38,7 +45,7 @@ class ProcessResource extends Resource
                     ->label('Estado')
                     ->live()
                     ->preload()
-                    ->enum(state::class)
+                    ->enum(State::class)
                     ->options(State::class)
                     ->required(),
                 Forms\Components\Textarea::make('comment')
@@ -136,10 +143,10 @@ class ProcessResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProcesses::route('/'),
-            'create' => Pages\CreateProcess::route('/create'),
-            'view' => Pages\ViewProcess::route('/{record}'),
-            'edit' => Pages\EditProcess::route('/{record}/edit'),
+            'index' => Pages\ListProcessSubmits::route('/'),
+            'create' => Pages\CreateProcessSubmit::route('/create'),
+            'view' => Pages\ViewProcessSubmit::route('/{record}'),
+            'edit' => Pages\EditProcessSubmit::route('/{record}/edit'),
         ];
     }
 }

@@ -8,23 +8,29 @@ use Filament\Tables;
 use App\Models\Process;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ProcessOthers;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\ProcessResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProcessResource\RelationManagers;
+use App\Filament\Resources\ProcessOthersResource\Pages;
+use App\Filament\Resources\ProcessOthersResource\RelationManagers;
 
-class ProcessResource extends Resource
+class ProcessOthersResource extends Resource
 {
     protected static ?string $model = Process::class;
-    protected static ?string $modelLabel = "Proceso";
-    protected static ?string $pluralModelLabel = "Todos Los Procesos";
+    protected static ?string $modelLabel = "Otros";
+    protected static ?string $pluralModelLabel = "Otros";
     protected static ?string $navigationGroup = "Etapas";
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 6;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('stage_id', [5, 6, 7]);
+    }
 
     public static function form(Form $form): Form
     {
@@ -38,7 +44,7 @@ class ProcessResource extends Resource
                     ->label('Estado')
                     ->live()
                     ->preload()
-                    ->enum(state::class)
+                    ->enum(State::class)
                     ->options(State::class)
                     ->required(),
                 Forms\Components\Textarea::make('comment')
@@ -136,10 +142,10 @@ class ProcessResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProcesses::route('/'),
-            'create' => Pages\CreateProcess::route('/create'),
-            'view' => Pages\ViewProcess::route('/{record}'),
-            'edit' => Pages\EditProcess::route('/{record}/edit'),
+            'index' => Pages\ListProcessOthers::route('/'),
+            'create' => Pages\CreateProcessOthers::route('/create'),
+            'view' => Pages\ViewProcessOthers::route('/{record}'),
+            'edit' => Pages\EditProcessOthers::route('/{record}/edit'),
         ];
     }
 }
