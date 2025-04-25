@@ -18,9 +18,9 @@ class ListProfiles extends ListRecords
         ];
     }
 
+    // Función que redirige directamente al perfil del usuario
     public function mount(): void
     {
-        // Redirige directamente al perfil del usuario
         $profile = Auth::user()->profiles;
         $this->redirect(ProfileResource::getUrl('view', ['record' => $profile]));
     }

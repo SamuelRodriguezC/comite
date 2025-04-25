@@ -61,8 +61,6 @@ class CreateTransaction extends CreateRecord
             ->send();
     }
 
-
-
     // Esto desactiva la notificación por defecto de Filament
     protected function getCreatedNotification(): ?Notification
     {
