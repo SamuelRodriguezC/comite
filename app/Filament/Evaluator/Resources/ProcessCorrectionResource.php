@@ -40,7 +40,7 @@ class ProcessCorrectionResource extends Resource
                     ->label('Estado')
                     ->live()
                     ->preload()
-                    ->enum(state::class)
+                    ->enum(State::class)
                     ->options(State::class)
                     ->required(),
                 Forms\Components\Textarea::make('comment')
@@ -150,7 +150,7 @@ class ProcessCorrectionResource extends Resource
     {
         return [
             'index' => Pages\ListProcessCorrections::route('/'),
-            'create' => Pages\CreateProcessCorrection::route('/create'),
+            //'create' => Pages\CreateProcessCorrection::route('/create'),
             'view' => Pages\ViewProcessCorrection::route('/{record}'),
             'edit' => Pages\EditProcessCorrection::route('/{record}/edit'),
         ];

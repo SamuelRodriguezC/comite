@@ -40,7 +40,7 @@ class ProcessAplicationResource extends Resource
                     ->label('Estado')
                     ->live()
                     ->preload()
-                    ->enum(state::class)
+                    ->enum(State::class)
                     ->options(State::class)
                     ->required(),
                 Forms\Components\Textarea::make('comment')
@@ -150,7 +150,7 @@ class ProcessAplicationResource extends Resource
     {
         return [
             'index' => Pages\ListProcessAplications::route('/'),
-            'create' => Pages\CreateProcessAplication::route('/create'),
+            //'create' => Pages\CreateProcessAplication::route('/create'),
             'view' => Pages\ViewProcessAplication::route('/{record}'),
             'edit' => Pages\EditProcessAplication::route('/{record}/edit'),
         ];

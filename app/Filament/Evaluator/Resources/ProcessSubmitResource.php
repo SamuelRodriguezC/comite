@@ -150,7 +150,7 @@ class ProcessSubmitResource extends Resource
     {
         return [
             'index' => Pages\ListProcessSubmits::route('/'),
-            'create' => Pages\CreateProcessSubmit::route('/create'),
+            //'create' => Pages\CreateProcessSubmit::route('/create'),
             'view' => Pages\ViewProcessSubmit::route('/{record}'),
             'edit' => Pages\EditProcessSubmit::route('/{record}/edit'),
         ];

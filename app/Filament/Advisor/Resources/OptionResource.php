@@ -23,7 +23,7 @@ class OptionResource extends Resource
     protected static ?string $model = Option::class;
     protected static ?string $modelLabel = "Opción de grado";
     protected static ?string $pluralModelLabel = "Opciones de grado";
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {
@@ -152,7 +152,7 @@ class OptionResource extends Resource
     {
         return [
             'index' => Pages\ListOptions::route('/'),
-            'create' => Pages\CreateOption::route('/create'),
+            //'create' => Pages\CreateOption::route('/create'),
             'view' => Pages\ViewOption::route('/{record}'),
             'edit' => Pages\EditOption::route('/{record}/edit'),
         ];
