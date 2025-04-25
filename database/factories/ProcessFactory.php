@@ -23,7 +23,7 @@ class ProcessFactory extends Factory
     {
         return [
             'requirement' => fake()->word(),
-            'state' => fake()->numberBetween(1, 2),
+            'state' => 3,
             'comment' => fake()->text(),
             'transaction_id' => Transaction::factory(),
             'stage_id' => fake()->numberBetween(1, 6),

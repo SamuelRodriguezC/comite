@@ -24,6 +24,12 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->unsignedBigInteger('profile_id');
+            $table->foreign('profile_id')
+                ->references('id')
+                ->on('profiles')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
 
