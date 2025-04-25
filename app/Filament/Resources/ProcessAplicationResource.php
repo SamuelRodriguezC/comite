@@ -84,7 +84,8 @@ class ProcessAplicationResource extends Resource
                 Tables\Columns\TextColumn::make('stage.stage')
                     ->label("Etapa")
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(), //Seleccionada por defecto
+                    // ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
