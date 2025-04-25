@@ -37,17 +37,6 @@ class TransactionResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 2;
 
-    public static function getEloquentQuery(): Builder
-    {
-        // Obtén el perfil del usuario autenticado
-        $profileId = Auth::user()->profiles->id;
-
-        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
-        return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
-            $query->where('profile_id', $profileId);
-        });
-    }
-
     public static function form(Form $form): Form
     {
         return $form
@@ -108,6 +97,10 @@ class TransactionResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label("Número transacción")
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
@@ -196,6 +189,17 @@ class TransactionResource extends Resource
 
 
         ])->columns(3);
+    }
+
+    // Función para filtrar las transacciones por usuario
+    public static function getEloquentQuery(): Builder
+    {
+        // Obtén el perfil del usuario autenticado
+        $profileId = Auth::user()->profiles->id;
+        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
+        return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
+            $query->where('profile_id', $profileId);
+        });
     }
 
     public static function getRelations(): array

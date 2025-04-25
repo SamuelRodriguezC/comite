@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
@@ -60,7 +61,7 @@ class ProcessResource extends Resource
             ]);
         }
 
-        public static function table(Table $table): Table
+    public static function table(Table $table): Table
         {
             return $table
                 ->columns([
@@ -106,7 +107,7 @@ class ProcessResource extends Resource
                 ]);
         }
 
-        public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Infolist $infolist): Infolist
         {
             return $infolist
             ->schema([
@@ -133,14 +134,23 @@ class ProcessResource extends Resource
             ]);
         }
 
-        public static function getRelations(): array
+    // Función para filtrar los procesos a partir de las transacciones vinculadas con el id del autenticado
+    public static function getEloquentQuery(): Builder
+    {
+        $profileId = Auth::user()->profiles->id;
+        return Process::whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
+            $query->where('profile_id', $profileId);
+        });
+    }
+
+    public static function getRelations(): array
         {
             return [
                 //
             ];
         }
 
-        public static function getPages(): array
+    public static function getPages(): array
         {
             return [
                 'index' => Pages\ListProcesses::route('/'),

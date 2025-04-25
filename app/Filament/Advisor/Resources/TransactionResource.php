@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -113,6 +114,17 @@ class TransactionResource extends Resource
                         ->label('Actualizado en'),
                 ]),
         ]);
+    }
+
+    // Función para filtrar las transacciones por usuario
+    public static function getEloquentQuery(): Builder
+    {
+        // Obtén el perfil del usuario autenticado
+        $profileId = Auth::user()->profiles->id;
+        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
+        return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
+            $query->where('profile_id', $profileId);
+        });
     }
 
     public static function getRelations(): array

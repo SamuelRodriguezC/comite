@@ -23,7 +23,7 @@ class OptionResource extends Resource
     protected static ?string $model = Option::class;
     protected static ?string $modelLabel = "Opción de grado";
     protected static ?string $pluralModelLabel = "Opciones de grado";
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {

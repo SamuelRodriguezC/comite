@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -21,7 +22,7 @@ use App\Filament\Evaluator\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-ticket';
     protected static ?string $modelLabel = "Transacción";
     protected static ?string $pluralModelLabel = "Transacciones";
 
@@ -53,6 +54,10 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label("Número de Transacción")
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
@@ -113,6 +118,17 @@ class TransactionResource extends Resource
                         ->label('Actualizado en'),
                 ]),
         ]);
+    }
+
+    // Función para filtrar las transacciones por usuario
+    public static function getEloquentQuery(): Builder
+    {
+        // Obtén el perfil del usuario autenticado
+        $profileId = Auth::user()->profiles->id;
+        // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
+        return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
+            $query->where('profile_id', $profileId);
+        });
     }
 
     public static function getRelations(): array
