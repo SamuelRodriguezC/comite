@@ -17,8 +17,13 @@ class ListProcessAplications extends ListRecords
     {
         return [
             'all' => Tab::make('All Options')
-                ->label('Todos los estados'),
-            'Aprobado' => Tab::make('Aprobado')
+            ->label('Todos los estados'),
+            'Pendiente' => Tab::make('Pendiente')
+                ->label('Pendiente')
+                ->modifyQueryUsing(function ($query) {
+                    return $query->where('state', State::PENDIENTE);
+                }),
+                'Aprobado' => Tab::make('Aprobado')
                 ->label('Aprobado')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::APROBADO);
@@ -27,11 +32,6 @@ class ListProcessAplications extends ListRecords
                 ->label('Improbado')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::IMPROBADO);
-                }),
-            'Pendiente' => Tab::make('Pendiente')
-                ->label('Pendiente')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('state', State::PENDIENTE);
                 }),
         ];
     }
