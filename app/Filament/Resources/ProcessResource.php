@@ -10,8 +10,11 @@ use App\Models\Process;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -41,7 +44,8 @@ class ProcessResource extends Resource
                 Forms\Components\Select::make('state')
                     ->label('Estado')
                     ->live()
-                    ->preload()
+                    // ->preload()
+                    ->disabled()
                     ->enum(state::class)
                     ->options(State::class)
                     ->required(),
@@ -51,11 +55,12 @@ class ProcessResource extends Resource
                     ->visibleOn('create')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')
+                    ->disabled()
                     ->label("Requisitos")
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('comment')
-                    ->label("Comentario")
+                    ->label("Comentario del Estudiante")
                     ->required(),
                     // ->columnSpanFull(),
             ])->columns(2);
@@ -75,10 +80,15 @@ class ProcessResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
+                    ->badge()
+                    ->color(fn ($state) => State::from($state)->getColor())
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
-                    ->label("requisitos")
+                    ->label("Requisitos")
+                    ->formatStateUsing(function ($state){
+                        return Str::limit($state, 20);
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
@@ -99,9 +109,16 @@ class ProcessResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
-                //
+                SelectFilter::make('state')
+                    ->label('Estado')
+                    ->options([
+                        1 => 'Aprobado',
+                        2=> 'Improbado',
+                        3 => 'Pendiente',
+                    ])
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -167,7 +184,7 @@ class ProcessResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CommentsRelationManager::class,
         ];
     }
 
@@ -175,7 +192,7 @@ class ProcessResource extends Resource
     {
         return [
             'index' => Pages\ListProcesses::route('/'),
-            'create' => Pages\CreateProcess::route('/create'),
+            // 'create' => Pages\CreateProcess::route('/create'),
             'view' => Pages\ViewProcess::route('/{record}'),
             'edit' => Pages\EditProcess::route('/{record}/edit'),
         ];
