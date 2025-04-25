@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Evaluator\Resources;
+namespace App\Filament\Advisor\Resources;
 
 use Filament\Forms;
 use App\Enums\State;
@@ -8,7 +8,7 @@ use Filament\Tables;
 use App\Models\Process;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\ProcessOthers;
+use App\Models\ProcessSubmit;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
@@ -16,17 +16,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Evaluator\Resources\ProcessOthersResource\Pages;
-use App\Filament\Evaluator\Resources\ProcessOthersResource\RelationManagers;
+use App\Filament\Advisor\Resources\ProcessSubmitResource\Pages;
+use App\Filament\Advisor\Resources\ProcessSubmitResource\RelationManagers;
 
-class ProcessOthersResource extends Resource
+class ProcessSubmitResource extends Resource
 {
     protected static ?string $model = Process::class;
-    protected static ?string $modelLabel = "Otros";
-    protected static ?string $pluralModelLabel = "Otros";
+    protected static ?string $modelLabel = "Entrega";
+    protected static ?string $pluralModelLabel = "Entregas";
     protected static ?string $navigationGroup = "Procesos";
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationIcon = 'heroicon-o-document-arrow-up';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -128,12 +128,12 @@ class ProcessOthersResource extends Resource
         ]);
     }
 
-    // Filtra por usuario autenticado y por finalizado, cancelado o aplazado
+    // Filtra por usuario autenticado y por entregado
     public static function getEloquentQuery(): Builder
     {
         $profileId = Auth::user()->profiles->id;
         return parent::getEloquentQuery()
-            ->whereIn('stage_id', [5, 6, 7])
+            ->whereIn('stage_id', [2])
             ->whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
                 $query->where('profile_id', $profileId);
             });
@@ -149,10 +149,10 @@ class ProcessOthersResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProcessOthers::route('/'),
-            //'create' => Pages\CreateProcessOthers::route('/create'),
-            'view' => Pages\ViewProcessOthers::route('/{record}'),
-            'edit' => Pages\EditProcessOthers::route('/{record}/edit'),
+            'index' => Pages\ListProcessSubmits::route('/'),
+            //'create' => Pages\CreateProcessSubmit::route('/create'),
+            'view' => Pages\ViewProcessSubmit::route('/{record}'),
+            //'edit' => Pages\EditProcessSubmit::route('/{record}/edit'),
         ];
     }
 }

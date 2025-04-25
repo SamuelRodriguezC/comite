@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Evaluator\Resources;
+namespace App\Filament\Advisor\Resources;
 
 use Filament\Forms;
 use App\Enums\State;
@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Evaluator\Resources\ProcessOthersResource\Pages;
-use App\Filament\Evaluator\Resources\ProcessOthersResource\RelationManagers;
+use App\Filament\Advisor\Resources\ProcessOthersResource\Pages;
+use App\Filament\Advisor\Resources\ProcessOthersResource\RelationManagers;
 
 class ProcessOthersResource extends Resource
 {
@@ -152,7 +152,7 @@ class ProcessOthersResource extends Resource
             'index' => Pages\ListProcessOthers::route('/'),
             //'create' => Pages\CreateProcessOthers::route('/create'),
             'view' => Pages\ViewProcessOthers::route('/{record}'),
-            'edit' => Pages\EditProcessOthers::route('/{record}/edit'),
+            //'edit' => Pages\EditProcessOthers::route('/{record}/edit'),
         ];
     }
 }

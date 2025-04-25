@@ -22,7 +22,7 @@ use App\Filament\Advisor\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-ticket';
     protected static ?string $modelLabel = "Transacción";
     protected static ?string $pluralModelLabel = "Transacciones";
 
@@ -54,6 +54,10 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label("Número de Transacción")
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())

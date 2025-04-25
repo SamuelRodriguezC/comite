@@ -152,7 +152,7 @@ class OptionResource extends Resource
     {
         return [
             'index' => Pages\ListOptions::route('/'),
-            'create' => Pages\CreateOption::route('/create'),
+            //'create' => Pages\CreateOption::route('/create'),
             'view' => Pages\ViewOption::route('/{record}'),
             'edit' => Pages\EditOption::route('/{record}/edit'),
         ];
