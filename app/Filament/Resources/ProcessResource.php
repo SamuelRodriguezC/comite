@@ -5,16 +5,19 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
+use App\Enums\Enabled;
 use App\Models\Process;
+use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\ProcessResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\ProcessResource\RelationManagers;
 
 class ProcessResource extends Resource
@@ -33,6 +36,7 @@ class ProcessResource extends Resource
                 Forms\Components\Select::make('stage_id')
                     ->label("Etapa")
                     ->relationship('stage', 'stage')
+                    ->visibleOn('create')
                     ->required(),
                 Forms\Components\Select::make('state')
                     ->label('Estado')
@@ -41,19 +45,20 @@ class ProcessResource extends Resource
                     ->enum(state::class)
                     ->options(State::class)
                     ->required(),
-                Forms\Components\Textarea::make('comment')
-                    ->label("Comentario")
-                    ->required()
-                    ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
                     ->label("Número transacción")
                     ->relationship('transaction', 'id')
+                    ->visibleOn('create')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')
                     ->label("Requisitos")
                     ->required()
                     ->maxLength(255),
-            ]);
+                Forms\Components\Textarea::make('comment')
+                    ->label("Comentario")
+                    ->required(),
+                    // ->columnSpanFull(),
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table
@@ -61,8 +66,9 @@ class ProcessResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Número de Transacción")
+                    ->label("Transacción")
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.stage')
                     ->label("Etapa")
@@ -74,6 +80,15 @@ class ProcessResource extends Resource
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("requisitos")
                     ->searchable(),
+                Tables\Columns\TextColumn::make('transaction.Option.option')
+                    ->label("Opción")
+                    ->words(5)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('transaction.enabled')
+                    ->label('Habilitado')
+                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                    ->color(fn ($state) => Enabled::from($state)->getColor()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -103,27 +118,50 @@ class ProcessResource extends Resource
     {
         return $infolist
         ->schema([
-            Section::make('')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('stage.stage')
-                        ->label("Etapa"),
-                    TextEntry::make('state')
-                        ->label("Estado")
-                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
-                    TextEntry::make('requirement')
-                        ->label("requisitos"),
-                    TextEntry::make('transaction.id')
-                        ->label("Número de Transacción"),
-                    TextEntry::make('created_at')
-                        ->dateTime()
-                        ->label('Creado en'),
-                    TextEntry::make('update_at')
-                        ->dateTime()
-                        ->label('Actualizado en'),
-                ]),
-        ]);
+            InfoSection::make('Detalles del Proceso')
+            ->schema([
+                TextEntry::make('stage.stage')
+                    ->label("Etapa"),
+                TextEntry::make('created_at')
+                    ->dateTime()
+                    ->label('Creado en'),
+                TextEntry::make('state')
+                    ->label("Estado")
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->color(fn ($state) => State::from($state)->getColor()),
+                TextEntry::make('updated_at')
+                    ->dateTime()
+                    ->label('Actualizado en'),
+                TextEntry::make('requirement')
+                    ->label("requisitos"),
+            ])->columns(2)->columnSpan(1),
+
+            InfoSection::make('Transacción')
+            ->schema([
+                TextEntry::make('transaction.id')
+                    ->label("Número de Transacción"),
+                IconEntry::make('transaction.enabled')
+                        ->label('Habilitado')
+                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+                TextEntry::make('transaction.Option.option')
+                        ->label('Opción de grado'),
+                TextEntry::make('transaction.component')
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                TextEntry::make('transaction.profiles.name')
+                        ->label('Integrante(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
+                TextEntry::make('transaction.courses')
+                        ->label('Carrera(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
+            ])
+            ->columns(2)->columnSpan(1),
+
+        ])->columns(2);
     }
 
     public static function getRelations(): array
