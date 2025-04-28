@@ -17,13 +17,13 @@ class ListProcessAplications extends ListRecords
     {
         return [
             'all' => Tab::make('All Options')
-                ->label('Todos los estados'),
+            ->label('Todos los estados'),
             'Pendiente' => Tab::make('Pendiente')
                 ->label('Pendiente')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::PENDIENTE);
                 }),
-            'Aprobado' => Tab::make('Aprobado')
+                'Aprobado' => Tab::make('Aprobado')
                 ->label('Aprobado')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::APROBADO);
