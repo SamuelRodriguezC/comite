@@ -26,7 +26,8 @@ class ProcessFactory extends Factory
             'state' => 3,
             'comment' => fake()->text(),
             'transaction_id' => Transaction::factory(),
-            'stage_id' => fake()->numberBetween(1, 6),
+            'completed' => false,
+            'stage_id' => fake()->numberBetween(1, 7),
         ];
     }
 }

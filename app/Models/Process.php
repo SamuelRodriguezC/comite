@@ -23,6 +23,7 @@ class Process extends Model
         'state',
         'comment',
         'transaction_id',
+        'completed',
         'stage_id',
     ];
 

@@ -23,6 +23,7 @@ class Transaction extends Model
     protected $fillable = [
         'component',
         'option_id',
+        'certification',
         'enabled',
     ];
 

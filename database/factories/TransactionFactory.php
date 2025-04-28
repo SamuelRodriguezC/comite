@@ -24,6 +24,7 @@ class TransactionFactory extends Factory
             'component' => fake()->numberBetween(1, 2),
             'enabled' => fake()->numberBetween(1, 2),
             'option_id' => fake()->numberBetween(1, 17),
+            'certification' => 1,
         ];
     }
 }

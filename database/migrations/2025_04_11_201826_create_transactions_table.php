@@ -21,6 +21,7 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->tinyInteger('enabled');
+            $table->string('certification');
             $table->timestamps();
         });
 

@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         ]);
 
-        Process::factory(10)->create();
+        Process::factory(50)->create();
     }
 }
 /**
