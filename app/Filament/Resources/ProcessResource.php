@@ -36,32 +36,41 @@ class ProcessResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('stage_id')
-                    ->label("Etapa")
-                    ->relationship('stage', 'stage')
-                    ->visibleOn('create')
-                    ->required(),
                 Forms\Components\Select::make('state')
                     ->label('Estado')
                     ->live()
-                    // ->preload()
                     ->disabled()
                     ->enum(state::class)
                     ->options(State::class)
+                    ->disabledOn('edit')
+                    ->required(),
+                Forms\Components\Select::make('stage_id')
+                    ->label("Etapa")
+                    ->relationship('stage', 'stage')
+                    ->disabledOn('edit')
                     ->required(),
                 Forms\Components\Select::make('transaction_id')
                     ->label("Ticket")
                     ->relationship('transaction', 'id')
                     ->visibleOn('create')
                     ->required(),
-                Forms\Components\TextInput::make('requirement')
-                    ->disabled()
-                    ->label("Requisitos en PDF")
+                Forms\Components\FileUpload::make('requirement')
+                    ->label('Requisitos en PDF')
+                    ->disabledOn('edit')
                     ->required()
-                    ->maxLength(255),
+                    ->disk('public') // Indica que se usará el disco 'public'
+                    ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                    ->rules([
+                        'required',
+                        'mimes:pdf',
+                        'max:10240',
+                    ]) // Agrega validación: campo requerido y solo PDF
+                    ->maxSize(10240) // 10MB
+                    ->maxFiles(1) ,
                 Forms\Components\Textarea::make('comment')
                     ->label("Comentario del Estudiante")
-                    ->required(),
+                    ->required()
                     // ->columnSpanFull(),
             ])->columns(2);
     }

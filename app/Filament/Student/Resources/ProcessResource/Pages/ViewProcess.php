@@ -27,7 +27,7 @@ class ViewProcess extends ViewRecord
                 ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
                 ->openUrlInNewTab(), // Abre en una nueva pestaña
 
-            //Actions\EditAction::make(),
+            Actions\EditAction::make(),
         ];
     }
 }

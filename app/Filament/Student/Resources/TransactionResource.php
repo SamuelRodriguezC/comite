@@ -207,6 +207,7 @@ class TransactionResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\ProcessesRelationManager::class,
             RelationManagers\ProfilesRelationManager::class,
         ];
     }
