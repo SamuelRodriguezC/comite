@@ -6,6 +6,7 @@ use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
 use App\Models\Process;
+use App\Enums\Completed;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
@@ -45,6 +46,14 @@ class ProcessCorrectionResource extends Resource
                     ->enum(State::class)
                     ->options(State::class)
                     ->required(),
+                Forms\Components\Select::make('state')
+                    ->label('Estado')
+                    ->disabled()
+                    ->live()
+                    ->preload()
+                    ->enum(Completed::class)
+                    ->options(Completed::class)
+                    ->required(),
                 Forms\Components\Textarea::make('comment')
                     ->label("Comentario")
                     ->required()
@@ -75,6 +84,10 @@ class ProcessCorrectionResource extends Resource
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('completed')
+                    ->label("Finalizado")
+                    ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
@@ -119,6 +132,9 @@ class ProcessCorrectionResource extends Resource
                     TextEntry::make('state')
                         ->label("Estado")
                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                    TextEntry::make('completed')
+                        ->label("Finalizado")
+                        ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                     TextEntry::make('requirement')
                         ->label("Requisitos"),
                     TextEntry::make('created_at')

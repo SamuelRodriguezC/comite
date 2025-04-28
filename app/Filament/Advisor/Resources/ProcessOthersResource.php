@@ -6,6 +6,7 @@ use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
 use App\Models\Process;
+use App\Enums\Completed;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ProcessOthers;
@@ -44,6 +45,14 @@ class ProcessOthersResource extends Resource
                     ->preload()
                     ->enum(State::class)
                     ->options(State::class)
+                    ->required(),
+                Forms\Components\Select::make('completed')
+                    ->label('Finalizado')
+                    ->live()
+                    ->disabled()
+                    ->preload()
+                    ->enum(Completed::class)
+                    ->options(Completed::class)
                     ->required(),
                 Forms\Components\Textarea::make('comment')
                     ->label("Comentario")

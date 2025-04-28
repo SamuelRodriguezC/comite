@@ -55,13 +55,13 @@ class ProcessOthersResource extends Resource
             Forms\Components\Select::make('stage_id')
                 ->label("Etapa")
                 ->relationship('stage', 'stage')
-                ->visibleOn('create')
+                //->visibleOn('create')
                 ->required(),
             Forms\Components\Select::make('state')
                 ->label('Estado')
                 ->live()
                 // ->preload()
-                ->disabled()
+                //->disabled()
                 ->enum(state::class)
                 ->options(State::class)
                 ->required(),
