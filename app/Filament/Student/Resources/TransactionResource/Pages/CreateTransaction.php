@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
 use App\Filament\Employer\Resources\TalkResource\Pages\CreateTalk as PagesCreateTalk;
+use App\Filament\Student\Resources\ProcessResource\Pages\CreateProcess;
 
 class CreateTransaction extends CreateRecord
 {
@@ -53,11 +54,26 @@ class CreateTransaction extends CreateRecord
         //     }
         // }
 
+        // Crear proceso en Solicitud a la Transacción recién creada
+        $process = $transaction->processes()->create([
+            'state' => 3, // Pendiente default
+            'stage_id' => 1, // 1 = Solicitud
+            'requirement' => ' ',
+            'comment' => ' ',
+        ]);
+
+
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
-            ->body('Se han vinculado los perfiles y cursos correctamente.')
+            ->body('Se ha Creado un Proceso de Solicitud para la Transacción por favor completa el Fomulario')
             ->icon('heroicon-o-ticket')
             ->success()
+            ->actions([
+                Action::make('Ver Proceso')
+                    ->button()
+                    // Botón para redirigir a la página de vista del proceso de solicitud creado
+                    ->url(route('filament.student.resources.processes.edit', ['record' => $process->id]))
+            ])
             ->send();
     }
 

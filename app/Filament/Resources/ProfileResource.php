@@ -84,7 +84,7 @@ class ProfileResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->label("Número telefono")
-                    ->numeric()
+                    // ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label("Nivel universitario")
