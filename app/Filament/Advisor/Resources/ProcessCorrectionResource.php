@@ -33,11 +33,13 @@ class ProcessCorrectionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('stage_id')
+                    ->disabled()
                     ->label("Etapa")
                     ->relationship('stage', 'stage')
                     ->required(),
                 Forms\Components\Select::make('state')
                     ->label('Estado')
+                    ->disabled()
                     ->live()
                     ->preload()
                     ->enum(State::class)
@@ -49,6 +51,7 @@ class ProcessCorrectionResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
                     ->label("Ticket")
+                    ->disabled()
                     ->relationship('transaction', 'id')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')

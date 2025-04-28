@@ -45,6 +45,7 @@ class ProcessResource extends Resource
                     ->maxSize(10240) // 10MB
                     ->maxFiles(1) ,
                 Forms\Components\Select::make('stage_id')
+                    ->disabled()
                     ->label("Etapa")
                     ->relationship('Stage', 'stage')
                     ->required(),
@@ -59,80 +60,80 @@ class ProcessResource extends Resource
                     ->relationship('transaction', 'id')
                     ->required(),
             ]);
-        }
+    }
 
     public static function table(Table $table): Table
-        {
-            return $table
-                ->columns([
-                    Tables\Columns\TextColumn::make('transaction.id')
-                        ->label("Ticket")
-                        ->numeric()
-                        ->sortable(),
-                    Tables\Columns\TextColumn::make('stage.stage')
-                        ->label("Etapa")
-                        ->sortable(),
-                    Tables\Columns\TextColumn::make('state')
-                        ->label("Estado")
-                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                        ->sortable(),
-                    Tables\Columns\TextColumn::make('requirement')
-                        ->label("Requisitos")
-                        ->formatStateUsing(function ($state) {
-                            return Str::limit(basename($state), 20);
-                        })
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('created_at')
-                        ->label("Creado en")
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                    Tables\Columns\TextColumn::make('updated_at')
-                        ->label("Actualizado en")
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                ])
-                ->filters([
-                    //
-                ])
-                ->actions([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                ])
-                ->bulkActions([
-                    Tables\Actions\BulkActionGroup::make([
-                        Tables\Actions\DeleteBulkAction::make(),
-                    ]),
-                ]);
-        }
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('transaction.id')
+                    ->label("Ticket")
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stage.stage')
+                    ->label("Etapa")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('state')
+                    ->label("Estado")
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('requirement')
+                    ->label("Requisitos")
+                    ->formatStateUsing(function ($state) {
+                        return Str::limit(basename($state), 20);
+                    })
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label("Creado en")
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Actualizado en")
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
 
     public static function infolist(Infolist $infolist): Infolist
-        {
-            return $infolist
-            ->schema([
-                Section::make('')
-                    ->columnSpan(2)
-                    ->columns(2)
-                    ->schema([
-                        TextEntry::make('stage.stage')
-                            ->label("Etapa"),
-                        TextEntry::make('state')
-                            ->label("Estado")
-                            ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
-                        TextEntry::make('requirement')
-                            ->label("Requisitos"),
-                        TextEntry::make('transaction.id')
-                            ->label("Ticket"),
-                        TextEntry::make('created_at')
-                            ->dateTime()
-                            ->label('Creado en'),
-                        TextEntry::make('update_at')
-                            ->dateTime()
-                            ->label('Actualizado en'),
-                    ]),
-            ]);
-        }
+    {
+        return $infolist
+        ->schema([
+            Section::make('')
+                ->columnSpan(2)
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('stage.stage')
+                        ->label("Etapa"),
+                    TextEntry::make('state')
+                        ->label("Estado")
+                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                    TextEntry::make('requirement')
+                        ->label("Requisitos"),
+                    TextEntry::make('transaction.id')
+                        ->label("Ticket"),
+                    TextEntry::make('created_at')
+                        ->dateTime()
+                        ->label('Creado en'),
+                    TextEntry::make('update_at')
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                ]),
+        ]);
+    }
 
     // Función para filtrar los procesos a partir de las transacciones vinculadas con el id del autenticado
     public static function getEloquentQuery(): Builder
@@ -144,11 +145,11 @@ class ProcessResource extends Resource
     }
 
     public static function getRelations(): array
-        {
-            return [
-                //
-            ];
-        }
+    {
+        return [
+            //
+        ];
+    }
 
     public static function getPages(): array
         {

@@ -33,12 +33,14 @@ class ProcessOthersResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('stage_id')
+                    ->disabled()
                     ->label("Etapa")
                     ->relationship('stage', 'stage')
                     ->required(),
                 Forms\Components\Select::make('state')
                     ->label('Estado')
                     ->live()
+                    ->disabled()
                     ->preload()
                     ->enum(State::class)
                     ->options(State::class)
@@ -49,6 +51,7 @@ class ProcessOthersResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
                     ->label("Ticket")
+                    ->disabled()
                     ->relationship('transaction', 'id')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')
