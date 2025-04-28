@@ -18,6 +18,11 @@ class ListProcessSubmits extends ListRecords
         return [
             'all' => Tab::make('All Options')
                 ->label('Todos los estados'),
+            'Pendiente' => Tab::make('Pendiente')
+                ->label('Pendiente')
+                ->modifyQueryUsing(function ($query) {
+                    return $query->where('state', State::PENDIENTE);
+                }),
             'Aprobado' => Tab::make('Aprobado')
                 ->label('Aprobado')
                 ->modifyQueryUsing(function ($query) {
@@ -28,18 +33,13 @@ class ListProcessSubmits extends ListRecords
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::IMPROBADO);
                 }),
-            'Pendiente' => Tab::make('Pendiente')
-                ->label('Pendiente')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('state', State::PENDIENTE);
-                }),
         ];
     }
 
-    protected function getHeaderActions(): array
-    {
-        return [
+    //protected function getHeaderActions(): array
+    //{
+    //    return [
             // Actions\CreateAction::make(),
-        ];
-    }
+    //    ];
+    //}
 }

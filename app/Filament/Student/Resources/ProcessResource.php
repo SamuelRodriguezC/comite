@@ -33,7 +33,7 @@ class ProcessResource extends Resource
         return $form
             ->schema([
                 Forms\Components\FileUpload::make('requirement')
-                    ->label('Requerimientos en PDF')
+                    ->label('Requisitos en PDF')
                     ->disk('public') // Indica que se usará el disco 'public'
                     ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
                     ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
@@ -55,7 +55,7 @@ class ProcessResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
-                    ->label("Transacción")
+                    ->label("Ticket")
                     ->relationship('transaction', 'id')
                     ->required(),
             ]);
@@ -66,7 +66,7 @@ class ProcessResource extends Resource
             return $table
                 ->columns([
                     Tables\Columns\TextColumn::make('transaction.id')
-                        ->label("Número transacción")
+                        ->label("Ticket")
                         ->numeric()
                         ->sortable(),
                     Tables\Columns\TextColumn::make('stage.stage')
@@ -121,9 +121,9 @@ class ProcessResource extends Resource
                             ->label("Estado")
                             ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                         TextEntry::make('requirement')
-                            ->label("requisitos"),
+                            ->label("Requisitos"),
                         TextEntry::make('transaction.id')
-                            ->label("Número de Transacción"),
+                            ->label("Ticket"),
                         TextEntry::make('created_at')
                             ->dateTime()
                             ->label('Creado en'),
@@ -156,7 +156,7 @@ class ProcessResource extends Resource
                 'index' => Pages\ListProcesses::route('/'),
                 'create' => Pages\CreateProcess::route('/create'),
                 'view' => Pages\ViewProcess::route('/{record}'),
-                'edit' => Pages\EditProcess::route('/{record}/edit'),
+                //'edit' => Pages\EditProcess::route('/{record}/edit'),
             ];
         }
     }

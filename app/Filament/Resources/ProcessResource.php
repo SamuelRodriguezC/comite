@@ -50,13 +50,13 @@ class ProcessResource extends Resource
                     ->options(State::class)
                     ->required(),
                 Forms\Components\Select::make('transaction_id')
-                    ->label("Número transacción")
+                    ->label("Ticket")
                     ->relationship('transaction', 'id')
                     ->visibleOn('create')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')
                     ->disabled()
-                    ->label("Requisitos")
+                    ->label("Requisitos en PDF")
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('comment')
@@ -71,7 +71,7 @@ class ProcessResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->searchable()
                     ->sortable(),
@@ -154,10 +154,10 @@ class ProcessResource extends Resource
                     ->label("requisitos"),
             ])->columns(2)->columnSpan(1),
 
-            InfoSection::make('Transacción')
+            InfoSection::make('Detalles del Ticket')
             ->schema([
                 TextEntry::make('transaction.id')
-                    ->label("Número de Transacción"),
+                    ->label("Ticket"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
                         ->icon(fn ($state) => Enabled::from($state)->getIcon())

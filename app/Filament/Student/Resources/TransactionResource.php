@@ -32,8 +32,8 @@ use App\Filament\Student\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $modelLabel = "Transacción";
-    protected static ?string $pluralModelLabel = "Transacciones";
+    protected static ?string $modelLabel = "Ticket";
+    protected static ?string $pluralModelLabel = "Tickets";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 2;
 
@@ -98,7 +98,7 @@ class TransactionResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label("Número transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('component')
@@ -155,6 +155,8 @@ class TransactionResource extends Resource
         return $infolist
         ->schema([
             InfoSection::make([
+                TextEntry::make('id')
+                    ->label('Ticket'),
                 TextEntry::make('component')
                     ->label('Componente')
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),

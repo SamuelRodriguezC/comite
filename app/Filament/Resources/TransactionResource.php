@@ -62,7 +62,6 @@ class TransactionResource extends Resource
                     ->columnSpan(1)
                     ->icon('heroicon-m-ticket'),
 
-
                 FormSection::make('Agregar Integrante')
                     ->schema([
                         Forms\Components\Select::make('profile_id')
@@ -100,7 +99,7 @@ class TransactionResource extends Resource
             ->columns([
 
                 Tables\Columns\TextColumn::make('id')
-                    ->label('#')
+                    ->label('Ticket')
                     ->searchable()
                     ->numeric()
                     ->sortable(),

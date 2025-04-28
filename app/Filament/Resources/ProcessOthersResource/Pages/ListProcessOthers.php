@@ -18,27 +18,27 @@ class ListProcessOthers extends ListRecords
             'all' => Tab::make('All Options')
                 ->label('Todos los estados'),
             'Finalizado' => Tab::make('Finalizado')
-                ->label('Finalizado')
+                ->label('Finalizados')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('stage_id', '5');
                 }),
             'Cancelado' => Tab::make('Cancelado')
-                ->label('Cancelado')
+                ->label('Cancelados')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('stage_id', '6');
                 }),
             'Aplazado' => Tab::make('Aplazado')
-                ->label('Aplazado')
+                ->label('Aplazados')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('stage_id', '7');
                 }),
         ];
     }
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+    //protected function getHeaderActions(): array
+    //{
+    //    return [
+    //        Actions\CreateAction::make(),
+    //    ];
+    //}
 }

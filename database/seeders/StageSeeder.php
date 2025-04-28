@@ -15,7 +15,7 @@ class StageSeeder extends Seeder
     {
         DB::table('stages')->insert([
             ['stage' => 'Solicitud'],
-            ['stage' => 'Proceso'],
+            ['stage' => 'Primera entrega'],
             ['stage' => 'Primera corrección'],
             ['stage' => 'Segunda correción'],
             ['stage' => 'Finalizado'],

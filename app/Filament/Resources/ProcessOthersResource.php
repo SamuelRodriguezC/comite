@@ -27,6 +27,7 @@ class ProcessOthersResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 6;
 
+    // Filtra por etapa finalizado, cancelado y aplazado
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->whereIn('stage_id', [5, 6, 7]);
@@ -52,11 +53,11 @@ class ProcessOthersResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
-                    ->label("Número transacción")
+                    ->label("Ticket")
                     ->relationship('transaction', 'id')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')
-                    ->label("Requisitos")
+                    ->label("Requisitos en PDF")
                     ->required()
                     ->maxLength(255),
             ]);
@@ -67,7 +68,7 @@ class ProcessOthersResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Número de Transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.stage')
@@ -78,7 +79,7 @@ class ProcessOthersResource extends Resource
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
-                    ->label("requisitos")
+                    ->label("Requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -113,15 +114,15 @@ class ProcessOthersResource extends Resource
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
+                    TextEntry::make('transaction.id')
+                        ->label("Ticket"),
                     TextEntry::make('stage.stage')
                         ->label("Etapa"),
                     TextEntry::make('state')
                         ->label("Estado")
                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                     TextEntry::make('requirement')
-                        ->label("requisitos"),
-                    TextEntry::make('transaction.id')
-                        ->label("Número de Transacción"),
+                        ->label("Requisitos"),
                     TextEntry::make('created_at')
                         ->dateTime()
                         ->label('Creado en'),
@@ -143,7 +144,7 @@ class ProcessOthersResource extends Resource
     {
         return [
             'index' => Pages\ListProcessOthers::route('/'),
-            'create' => Pages\CreateProcessOthers::route('/create'),
+            //'create' => Pages\CreateProcessOthers::route('/create'),
             'view' => Pages\ViewProcessOthers::route('/{record}'),
             'edit' => Pages\EditProcessOthers::route('/{record}/edit'),
         ];

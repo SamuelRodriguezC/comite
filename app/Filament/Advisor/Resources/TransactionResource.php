@@ -23,8 +23,8 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
-    protected static ?string $modelLabel = "Transacción";
-    protected static ?string $pluralModelLabel = "Transacciones";
+    protected static ?string $modelLabel = "Ticket";
+    protected static ?string $pluralModelLabel = "Tickets";
 
     public static function form(Form $form): Form
     {
@@ -39,6 +39,7 @@ class TransactionResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('option_id')
                     ->relationship('option', 'option')
+                    ->label('Opción de grado')
                     ->required(),
                 Forms\Components\Select::make('enabled')
                     ->label('Habilitado')
@@ -55,7 +56,7 @@ class TransactionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label("Número de Transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('component')
@@ -102,14 +103,16 @@ class TransactionResource extends Resource
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
+                    TextEntry::make('id')
+                        ->label('Ticket'),
+                    TextEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
                     TextEntry::make('option.option')
                         ->label('Opción de grado'),
-                    TextEntry::make('enabled')
-                        ->label('Habilitado')
-                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
                     TextEntry::make('created_at')
                         ->dateTime()
                         ->label('Creado en'),

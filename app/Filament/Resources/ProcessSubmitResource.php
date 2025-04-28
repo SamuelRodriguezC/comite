@@ -32,6 +32,7 @@ class ProcessSubmitResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-arrow-up';
     protected static ?int $navigationSort = 4;
 
+    // Filtra etapa por primera entrega (antes llamado proceso)
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('stage_id', 2);
@@ -62,7 +63,7 @@ class ProcessSubmitResource extends Resource
                 ->required(),
             Forms\Components\TextInput::make('requirement')
                 ->disabled()
-                ->label("Requisitos")
+                ->label("Requisitos en PDF")
                 ->required()
                 ->maxLength(255),
             Forms\Components\Textarea::make('comment')
@@ -77,7 +78,7 @@ class ProcessSubmitResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->searchable()
                     ->sortable(),
@@ -137,8 +138,6 @@ class ProcessSubmitResource extends Resource
             ]);
     }
 
-
-
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -162,10 +161,10 @@ class ProcessSubmitResource extends Resource
                     ->label("Requisitos"),
             ])->columns(2)->columnSpan(1),
 
-            InfoSection::make('Transacción')
+            InfoSection::make('Detalles del Ticket')
             ->schema([
                 TextEntry::make('transaction.id')
-                    ->label("Número de Transacción"),
+                    ->label("Ticket"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
                         ->icon(fn ($state) => Enabled::from($state)->getIcon())
@@ -195,7 +194,6 @@ class ProcessSubmitResource extends Resource
             RelationManagers\CommentsRelationManager::class,
         ];
     }
-
 
     public static function getPages(): array
     {

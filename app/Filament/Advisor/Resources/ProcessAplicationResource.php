@@ -48,13 +48,21 @@ class ProcessAplicationResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
-                    ->label("Número transacción")
+                    ->label("Ticket")
                     ->relationship('transaction', 'id')
                     ->required(),
-                Forms\Components\TextInput::make('requirement')
-                    ->label("Requisitos")
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\FileUpload::make('requirement')
+                    ->label('Requisitos en PDF')
+                    ->disk('public') // Indica que se usará el disco 'public'
+                    ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                    ->rules([
+                        'required',
+                        'mimes:pdf',
+                        'max:10240',
+                    ]) // Agrega validación: campo requerido y solo PDF
+                    ->maxSize(10240) // 10MB
+                    ->maxFiles(1) ,
             ]);
     }
 
@@ -63,7 +71,7 @@ class ProcessAplicationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Número de Transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.stage')
@@ -74,7 +82,7 @@ class ProcessAplicationResource extends Resource
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
-                    ->label("requisitos")
+                    ->label("Requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -109,15 +117,15 @@ class ProcessAplicationResource extends Resource
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
+                    TextEntry::make('transaction.id')
+                        ->label("Ticket"),
                     TextEntry::make('stage.stage')
                         ->label("Etapa"),
                     TextEntry::make('state')
                         ->label("Estado")
                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                     TextEntry::make('requirement')
-                        ->label("requisitos"),
-                    TextEntry::make('transaction.id')
-                        ->label("Número de Transacción"),
+                        ->label("Requisitos"),
                     TextEntry::make('created_at')
                         ->dateTime()
                         ->label('Creado en'),

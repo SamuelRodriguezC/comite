@@ -48,11 +48,11 @@ class ProcessSubmitResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('transaction_id')
-                    ->label("Número transacción")
+                    ->label("Ticket")
                     ->relationship('transaction', 'id')
                     ->required(),
                 Forms\Components\TextInput::make('requirement')
-                    ->label("Requisitos")
+                    ->label("Requisitos en PDF")
                     ->required()
                     ->maxLength(255),
             ]);
@@ -63,7 +63,7 @@ class ProcessSubmitResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Número de Transacción")
+                    ->label("Ticket")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.stage')
@@ -74,7 +74,7 @@ class ProcessSubmitResource extends Resource
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
-                    ->label("requisitos")
+                    ->label("Requisitos")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -109,15 +109,15 @@ class ProcessSubmitResource extends Resource
                 ->columnSpan(2)
                 ->columns(2)
                 ->schema([
+                    TextEntry::make('transaction.id')
+                        ->label("Ticket"),
                     TextEntry::make('stage.stage')
                         ->label("Etapa"),
                     TextEntry::make('state')
                         ->label("Estado")
                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                     TextEntry::make('requirement')
-                        ->label("requisitos"),
-                    TextEntry::make('transaction.id')
-                        ->label("Número de Transacción"),
+                        ->label("Requisitos"),
                     TextEntry::make('created_at')
                         ->dateTime()
                         ->label('Creado en'),
