@@ -28,6 +28,14 @@ class ProfilesRelationManager extends RelationManager
     protected static string $relationship = 'profiles';
     protected static ?string $title = 'Integrante(s) de La Transacción';
 
+
+    // ---------- OPTENER LA TRANSACCIÓN A LA QUE PERTENECEN LOS PERFILES ----------
+    protected function getTransaction(): \App\Models\Transaction
+    {
+        return $this->ownerRecord; // $this->ownerRecord es el modelo Transaction al que pertenece este RelationManager
+    }
+
+
     public static function getEloquentQuery(): Builder
     {
         // Obtén el perfil del usuario autenticado
@@ -122,7 +130,7 @@ class ProfilesRelationManager extends RelationManager
                         })
                         ->searchable()
                         ->required(),
-                ])
+                ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
             ])
             ->actions([
                 // Botón para ver detalles de integrante
@@ -149,13 +157,19 @@ class ProfilesRelationManager extends RelationManager
                     ->record($record)),// El $record aquí viene del modelo actual en la tabla
 
 
-                // Solo la persona en sesión puede cambiar su carrera
+                // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => $record->id === auth_profile_id()),
+                        ->visible(fn ($record) =>
+                        $record->id === auth_profile_id() &&
+                        $this->getTransaction()->isEditable()
+                    ),
 
-                // la persona en sesión no puede desvincularse
+                // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
                 Tables\Actions\DetachAction::make()
-                    ->visible(fn ($record) => $record->id !== auth_profile_id()),
+                        ->visible(fn ($record) =>
+                        $record->id !== auth_profile_id() &&
+                        $this->getTransaction()->isEditable()
+                    ),
 
             ])
             ->emptyStateActions([
@@ -167,8 +181,6 @@ class ProfilesRelationManager extends RelationManager
                     ]),
                 ]);
     }
-
-
 
 }
 
