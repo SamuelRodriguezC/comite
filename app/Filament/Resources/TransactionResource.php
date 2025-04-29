@@ -213,6 +213,7 @@ class TransactionResource extends Resource
                 ])
                 ->columns(2)->columnSpan(2),
 
+<<<<<<< HEAD
             InfoSection::make('Detalles')
                 ->icon('heroicon-m-eye')
                 ->schema([
@@ -236,6 +237,21 @@ class TransactionResource extends Resource
                     ])->columns(2),
                 ])->columnSpan(1),
 
+=======
+            InfoSection::make([
+                Group::make([
+                    TextEntry::make('created_at')
+                        ->label('Creado en'),
+                    TextEntry::make('updated_at')
+                    ->label('Actualizado en'),
+                    IconEntry::make('enabled')
+                        ->label('Habilitado')
+                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+
+                ])->columns(2),
+            ])->columnSpan(1),
+>>>>>>> 4c05c26cbcb99c3ee3ca53480c7471f90594ef3a
         ])->columns(3);
     }
 
