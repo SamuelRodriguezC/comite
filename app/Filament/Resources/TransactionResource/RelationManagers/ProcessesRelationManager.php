@@ -107,38 +107,51 @@ class ProcessesRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
-                    // ->modalContentOnly() // Esta línea evita que Filament incluya los campos del formulario por defecto
-                    ->modalHeading('Información Personal')
-                    // Crear el modal con una infolista
-                    ->modalContent(fn ($record) => Infolist::make()
-                        ->schema([
-                            Section::make([
-                                TextEntry::make('transaction.id')->label('# Ticket'),
-                                TextEntry::make('id')->label('# Proceso'),
-                                TextEntry::make('state')
-                                    ->label('Estado')
-                                    ->badge()
-                                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                                    ->color(fn ($state) => State::from($state)->getColor()),
-                                TextEntry::make('stage.stage')->label('Etapa'),
-                                TextEntry::make('requirement')->label('Requisitos'),
-                                TextEntry::make('comment')->label('Tu Comentario'),
-                            ])->columns(2),
+                    ->infolist(function ($record) {
+                        return [
+                            Section::make('Información del Proceso')
+                                ->schema([
+                                    TextEntry::make('transaction.id')->label('# Ticket'),
+                                    TextEntry::make('id')->label('# Proceso'),
+                                    TextEntry::make('state')
+                                        ->label('Estado')
+                                        ->badge()
+                                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                                        ->color(fn ($state) => State::from($state)->getColor()),
+                                    TextEntry::make('stage.stage')->label('Etapa'),
+                                    TextEntry::make('requirement')->label('Requisitos')->placeholder('No ha Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
+                                    TextEntry::make('comment')->label('Tu Comentario')->placeholder('No ha Comentado Aún'),
+                                ])
+                                ->columns(2),
 
-                            Section::make([
-                                TextEntry::make('comment')
-                                    ->label('Comentario'),
-                                TextEntry::make('concept.concept')
-                                    ->label('Concepto')
-                                    ->badge()
-                                    ->color(fn ($state) => match ($state) {
-                                        'Aprobado' => 'success',
-                                        'No aprobado' => 'danger',
-                                    }),
-                            ]),
-
-                        ])
-                        ->record($record)),// El $record aquí viene del modelo actual en la tabla
+                            Section::make('Comentarios de Evaluadores')
+                                ->description('Recuerda que ambos conceptos de los evaluadores deben ser "Aprobados" para que el Estado del proceso sea aprobado')
+                                ->schema(
+                                    $record->comments->map(function ($comment) {
+                                        return Section::make()
+                                            ->schema([
+                                                TextEntry::make('comment')
+                                                    ->label('Comentario')
+                                                    ->default($comment->comment),
+                                                TextEntry::make('concept.concept')
+                                                    ->label('Concepto')
+                                                    ->default(optional($comment->concept)->concept ?? 'Sin Concepto')
+                                                    ->badge()
+                                                    ->color(fn () => match ($comment->concept->concept ?? null) {
+                                                        'Aprobado' => 'success',
+                                                        'No aprobado' => 'danger',
+                                                        default => 'gray',
+                                                    }),
+                                                TextEntry::make('profile.name')
+                                                    ->label('Evaluador')
+                                                    ->default(optional($comment->profile)->name ?? 'Desconocido'),
+                                            ])
+                                            ->columns(3);
+                                    })->toArray()
+                                )
+                                ->visible(fn ($record) => $record->comments->isNotEmpty()),
+                        ];
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
