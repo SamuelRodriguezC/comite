@@ -85,9 +85,10 @@ class ProcessSubmitResource extends Resource
                     ->label("Estado")
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('completed')
+                Tables\Columns\IconColumn::make('completed')
                     ->label("Finalizado")
-                    ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel())
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")

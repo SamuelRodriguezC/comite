@@ -7,6 +7,7 @@ use App\Enums\State;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Process;
+use App\Enums\Completed;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -32,12 +33,6 @@ class ProcessAplicationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?int $navigationSort = 3;
 
-    // Filtra por etapa solicitud
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->where('stage_id', 1);
-    }
-
     public static function form(Form $form): Form
     {
         return $form
@@ -54,6 +49,14 @@ class ProcessAplicationResource extends Resource
                 // ->disabled()
                 ->enum(state::class)
                 ->options(State::class)
+                ->required(),
+            Forms\Components\Select::make('completed')
+                ->label('Finalizado')
+                ->live()
+                ->preload()
+                // ->disabled()
+                ->enum(Completed::class)
+                ->options(Completed::class)
                 ->required(),
             Forms\Components\Select::make('transaction_id')
                 ->label("Ticket")
@@ -91,6 +94,11 @@ class ProcessAplicationResource extends Resource
                     ->badge()
                     ->color(fn ($state) => State::from($state)->getColor())
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
@@ -137,8 +145,6 @@ class ProcessAplicationResource extends Resource
             ]);
     }
 
-
-
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -155,6 +161,9 @@ class ProcessAplicationResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->color(fn ($state) => State::from($state)->getColor()),
+                TextEntry::make('completed')
+                    ->label("Finalizado")
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),
@@ -187,6 +196,12 @@ class ProcessAplicationResource extends Resource
             ->columns(2)->columnSpan(1),
 
         ])->columns(2);
+    }
+
+    // Filtra por etapa solicitud
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('stage_id', 1);
     }
 
     public static function getRelations(): array

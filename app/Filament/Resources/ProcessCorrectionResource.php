@@ -7,6 +7,7 @@ use App\Enums\State;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Process;
+use App\Enums\Completed;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -33,11 +34,6 @@ class ProcessCorrectionResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
     protected static ?int $navigationSort = 5;
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->whereIn('stage_id', [3, 4]);
-    }
-
     public static function form(Form $form): Form
     {
         return $form
@@ -54,6 +50,14 @@ class ProcessCorrectionResource extends Resource
                 ->disabled()
                 ->enum(state::class)
                 ->options(State::class)
+                ->required(),
+            Forms\Components\Select::make('completed')
+                ->label('Finalizado')
+                ->live()
+                // ->preload()
+                ->disabled()
+                ->enum(Completed::class)
+                ->options(Completed::class)
                 ->required(),
             Forms\Components\Select::make('transaction_id')
                 ->label("Ticket")
@@ -91,6 +95,11 @@ class ProcessCorrectionResource extends Resource
                     ->badge()
                     ->color(fn ($state) => State::from($state)->getColor())
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
@@ -158,6 +167,9 @@ class ProcessCorrectionResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->color(fn ($state) => State::from($state)->getColor()),
+                TextEntry::make('completed')
+                    ->label("Finalizado")
+                    ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),
@@ -190,6 +202,12 @@ class ProcessCorrectionResource extends Resource
             ->columns(2)->columnSpan(1),
 
         ])->columns(2);
+    }
+
+    // Filtra por etapa de corrección, primera y segunda
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('stage_id', [3, 4]);
     }
 
     public static function getRelations(): array

@@ -7,6 +7,7 @@ use App\Enums\State;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Process;
+use App\Enums\Completed;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -42,6 +43,14 @@ class ProcessResource extends Resource
                     ->disabled()
                     ->enum(state::class)
                     ->options(State::class)
+                    ->disabledOn('edit')
+                    ->required(),
+                Forms\Components\Select::make('completed')
+                    ->label('Finalizado')
+                    ->live()
+                    ->disabled()
+                    ->enum(Completed::class)
+                    ->options(Completed::class)
                     ->disabledOn('edit')
                     ->required(),
                 Forms\Components\Select::make('stage_id')
@@ -92,6 +101,11 @@ class ProcessResource extends Resource
                     ->badge()
                     ->color(fn ($state) => State::from($state)->getColor())
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
@@ -156,6 +170,9 @@ class ProcessResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->color(fn ($state) => State::from($state)->getColor()),
+                TextEntry::make('completed')
+                    ->label("Finalizado")
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),

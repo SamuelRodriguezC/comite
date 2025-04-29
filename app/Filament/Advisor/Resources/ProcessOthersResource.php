@@ -85,6 +85,11 @@ class ProcessOthersResource extends Resource
                     ->label("Estado")
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
+                Tables\Columns\IconColumn::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
                     ->searchable(),
@@ -128,6 +133,9 @@ class ProcessOthersResource extends Resource
                     TextEntry::make('state')
                         ->label("Estado")
                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                    TextEntry::make('completed')
+                        ->label("Finalizado")
+                        ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                     TextEntry::make('requirement')
                         ->label("Requisitos"),
                     TextEntry::make('created_at')

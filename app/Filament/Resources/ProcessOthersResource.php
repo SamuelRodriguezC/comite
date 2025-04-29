@@ -7,6 +7,7 @@ use App\Enums\State;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Process;
+use App\Enums\Completed;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -27,10 +28,10 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Infolists\Components\Section as InfoSection;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ProcessOthersResource\Pages;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\ProcessOthersResource\RelationManagers;
 
 class ProcessOthersResource extends Resource
@@ -62,8 +63,16 @@ class ProcessOthersResource extends Resource
                 ->live()
                 // ->preload()
                 //->disabled()
-                ->enum(state::class)
+                ->enum(State::class)
                 ->options(State::class)
+                ->required(),
+            Forms\Components\Select::make('completed')
+                ->label('Finalizado')
+                ->live()
+                // ->preload()
+                //->disabled()
+                ->enum(Completed::class)
+                ->options(Completed::class)
                 ->required(),
             Forms\Components\Select::make('transaction_id')
                 ->label("Número transacción")
@@ -102,6 +111,11 @@ class ProcessOthersResource extends Resource
                     ->color(fn ($state) => State::from($state)->getColor())
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->sortable(),
+                Tables\Columns\IconColumn::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
                     ->formatStateUsing(function ($state){
@@ -134,13 +148,13 @@ class ProcessOthersResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                    SelectFilter::make('state')
-                    ->label('Estado')
-                    ->options([
-                        1 => 'Aprobado',
-                        2 => 'Improbado',
-                        3 => 'Pendiente',
-                    ]),
+                SelectFilter::make('state')
+                ->label('Estado')
+                ->options([
+                    1 => 'Aprobado',
+                    2 => 'Improbado',
+                    3 => 'Pendiente',
+                ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -152,8 +166,6 @@ class ProcessOthersResource extends Resource
                 ]),
             ]);
     }
-
-
 
     public static function infolist(Infolist $infolist): Infolist
     {
@@ -171,6 +183,9 @@ class ProcessOthersResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->color(fn ($state) => State::from($state)->getColor()),
+                TextEntry::make('state')
+                    ->label("Estado")
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),

@@ -6,6 +6,7 @@ use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
 use App\Models\Process;
+use App\Enums\Completed;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ProcessOthers;
@@ -44,6 +45,13 @@ class ProcessOthersResource extends Resource
                     ->enum(State::class)
                     ->options(State::class)
                     ->required(),
+                Forms\Components\Select::make('completed')
+                    ->label('Finalizado')
+                    ->live()
+                    ->preload()
+                    ->enum(Completed::class)
+                    ->options(Completed::class)
+                    ->required(),
                 Forms\Components\Textarea::make('comment')
                     ->label("Comentario")
                     ->required()
@@ -74,6 +82,11 @@ class ProcessOthersResource extends Resource
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
@@ -118,6 +131,9 @@ class ProcessOthersResource extends Resource
                     TextEntry::make('state')
                         ->label("Estado")
                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                    TextEntry::make('completed')
+                        ->label("Finalizado")
+                        ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                     TextEntry::make('requirement')
                         ->label("Requisitos"),
                     TextEntry::make('created_at')
