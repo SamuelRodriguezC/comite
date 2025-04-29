@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Carbon\Carbon;
 use App\Models\Option;
 use App\Models\Process;
 use App\Models\Profile;
@@ -68,6 +68,13 @@ class Transaction extends Model
             ->filter()
             ->unique()
             ->implode(', ');
+    }
+
+
+    // ---------- VERIFICAR SI LA TRANSACCIÓN ES EDITABLE (ANTES DE 12 HRS) ----------
+    public function isEditable(): bool
+    {
+        return $this->created_at->diffInHours(now()) < 12;
     }
 
 }
