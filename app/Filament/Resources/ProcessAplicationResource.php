@@ -163,7 +163,7 @@ class ProcessAplicationResource extends Resource
                     ->color(fn ($state) => State::from($state)->getColor()),
                 TextEntry::make('completed')
                     ->label("Finalizado")
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                    ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),
