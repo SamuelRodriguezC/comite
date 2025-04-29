@@ -9,13 +9,16 @@ use App\Models\Option;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Infolists\Components\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Student\Resources\OptionResource\Pages;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Student\Resources\OptionResource\RelationManagers;
 
 class OptionResource extends Resource
@@ -64,6 +67,9 @@ class OptionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('option')
                     ->label("Opción de grado")
+                    ->formatStateUsing(function ($state){
+                        return Str::limit($state, 25);
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label("Nivel Universitario")
@@ -75,9 +81,15 @@ class OptionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label("Descripción")
+                    ->formatStateUsing(function ($state){
+                        return Str::limit($state, 25);
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
+                    ->formatStateUsing(function ($state){
+                        return Str::limit($state, 25);
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -108,37 +120,37 @@ class OptionResource extends Resource
     {
         return $infolist
         ->schema([
-            Section::make('')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('description')
-                        ->label('Descripción'),
-                    TextEntry::make('requirement')
-                        ->label('Requerimientos')
-                        ->formatStateUsing(fn($state) =>
-                            '<ul class="list-disc list-inside pl-8">' .
-                                collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
-                                ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
-                                ->implode('') .
-                            '</ul>'
-                    )->html(), // Permite HTML en la salida
-                    TextEntry::make('option')
-                        ->label('Opción de grado'),
+            InfoSection::make([
+                TextEntry::make('option')
+                    ->label('Opción de grado'),
+                TextEntry::make('description')
+                    ->label('Descripción'),
+                TextEntry::make('requirement')
+                    ->label('Requerimientos')
+                    ->formatStateUsing(fn($state) =>
+                        '<ul class="list-disc list-inside pl-8">' .
+                            collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
+                            ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
+                            ->implode('') .
+                        '</ul>'
+                    )->html() // Permite HTML en la salida
+                    ->columnSpan('full'), // Ocupa todo el ancho
+            ])->columns(2)->columnSpan(2),
+            InfoSection::make([
+                Group::make([
                     TextEntry::make('level')
-                        ->label('Nivel universitario')
+                        ->label('Nivel')
                         ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('created_at')
-                        ->dateTime()
-                        ->label('Creado en'),
                     TextEntry::make('update_at')
                         ->dateTime()
-                        ->label('Actualizado en'),
-                ]),
-        ]);
+                        ->label('Actualizado en')
+                        ->columnSpan('full'),
+                ])->columns(2),
+            ])->columnSpan(1),
+        ])->columns(3);
     }
 
     public static function getRelations(): array

@@ -189,8 +189,6 @@ class TransactionResource extends Resource
 
                 ])->columns(2),
             ])->columnSpan(1),
-
-
         ])->columns(3);
     }
 
