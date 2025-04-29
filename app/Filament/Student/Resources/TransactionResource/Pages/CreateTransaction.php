@@ -21,6 +21,7 @@ class CreateTransaction extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['enabled'] = 1;
+        $data['certification'] = 1;
         return $data;
     }
 
@@ -58,6 +59,7 @@ class CreateTransaction extends CreateRecord
         $process = $transaction->processes()->create([
             'state' => 3, // Pendiente default
             'stage_id' => 1, // 1 = Solicitud
+            'completed' => false,
             'requirement' => ' ',
             'comment' => ' ',
         ]);

@@ -2,23 +2,24 @@
 
 namespace App\Filament\Student\Resources\TransactionResource\RelationManagers;
 
-use App\Enums\Component;
-use App\Enums\Enabled;
-use App\Enums\Level;
 use Filament\Forms;
+use App\Enums\Level;
 use Filament\Tables;
+use App\Enums\Enabled;
 use App\Models\Course;
+use Filament\Forms\Get;
+use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
+use Filament\Infolists\Infolist;
 use Filament\Forms\Components\Group;
-use Filament\Infolists\Components\Section;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Tables\Actions\AttachAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -41,18 +42,36 @@ class ProfilesRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
-                    Forms\Components\TextInput::make('document_number')
-                    ->required()
-                    ->maxLength(255)
-                    ->visibleOn('create'),
+        ->schema([
+            Forms\Components\TextInput::make('document_number')
+                ->required()
+                ->maxLength(255)
+                ->visibleOn('create'),
 
-                    Select::make('courses_id')
-                    ->label('Curso')
-                    ->options(Course::all()->pluck('course', 'id'))
-                    ->searchable()
-                    ->required()
-                    ->columnSpanFull(),
+            Select::make('courses_id')
+                ->label('Curso')
+                ->options(function (Get $get) {
+                    $documentNumber = $get('document_number');
+
+                    if (!$documentNumber) {
+                        return [];
+                    }
+
+                    // Buscar el perfil usando el número de documento
+                    $profile = \App\Models\Profile::where('document_number', $documentNumber)->first();
+
+                    if (!$profile) {
+                        return [];
+                    }
+
+                    $userLevel = $profile->level;
+
+                    return \App\Models\Course::where('level', $userLevel)
+                        ->pluck('course', 'id');
+                })
+                ->searchable()
+                ->required()
+                ->columnSpanFull(),
         ]);
     }
 
@@ -62,7 +81,13 @@ class ProfilesRelationManager extends RelationManager
             ->recordTitleAttribute('document_number') //Atributo de busqueda
             ->columns([
                 Tables\Columns\TextColumn::make('document_number')->label('Documento'),
-                Tables\Columns\TextColumn::make('name')->label('Nombres'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nombres')
+                    ->formatStateUsing(function ($state, $record) {
+                        $userProfileId = Auth::user()?->profiles?->id;
+                        // Mostrar en la columna nombre Tú en caso de que sea el perfil autenticado
+                        return $state . ($record->profile_id === $userProfileId ? ' (Tú)' : '');
+                    }),
                 Tables\Columns\TextColumn::make('last_name')->label('Apellidos'),
                 Tables\Columns\TextColumn::make('pivot.courses_id')->label('Carrera')
                     ->words(4)
@@ -77,14 +102,27 @@ class ProfilesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\AttachAction::make()
-                    ->form(fn (AttachAction $action): array => [
-                        $action->getRecordSelect(),
-                        Select::make('courses_id')
-                            ->label('Carrera')
-                            ->options(Course::all()->pluck('course', 'id'))
-                            ->searchable()
-                            ->required(),
-                    ]),
+                ->form(fn (AttachAction $action): array => [
+                    $action->getRecordSelect()
+                        ->reactive(), // Necesario para que al seleccionar cambien las carreras
+                    Select::make('courses_id')
+                        ->label('Carrera')
+                        ->options(function (Get $get) {
+                            $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
+                            if (!$recordId) {
+                                return [];
+                            }
+                            $profile = \App\Models\Profile::find($recordId);
+
+                            if (!$profile) {
+                                return [];
+                            }
+
+                            return getCoursesByProfileLevel($profile->level);
+                        })
+                        ->searchable()
+                        ->required(),
+                ])
             ])
             ->actions([
                 // Botón para ver detalles de integrante
@@ -95,7 +133,8 @@ class ProfilesRelationManager extends RelationManager
                 ->modalContent(fn ($record) => Infolist::make()
                     ->schema([
                         Section::make([
-                            TextEntry::make('name')->label('Nombre'),
+                            TextEntry::make('name')
+                            ->label('Nombre'),
                             TextEntry::make('last_name')->label('Apellido'),
                             TextEntry::make('User.email')->label('Email'),
                             TextEntry::make('phone_number')->label('Número de Teléfono'),

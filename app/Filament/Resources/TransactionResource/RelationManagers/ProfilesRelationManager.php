@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProfilesRelationManager extends RelationManager
 {
     protected static string $relationship = 'Profiles';
-    protected static ?string $title = 'Integrante(s) de La Transacción';
+    protected static ?string $title = 'Integrante(s) del Ticket';
 
     public function form(Form $form): Form
     {
@@ -74,12 +74,12 @@ class ProfilesRelationManager extends RelationManager
                 // Botón para ver detalles de integrante
                 Tables\Actions\ViewAction::make()
                 ->label('Ver')
-                ->modalHeading('Información Personal')
+                ->modalHeading('Información del Proceso')
                 // Crear el modal con una infolista
                 ->modalContent(fn ($record) => Infolist::make()
                     ->schema([
                         Section::make([
-                            TextEntry::make('name')->label('Nombre'),
+                            TextEntry::make('stage')->label('Nombre'),
                             TextEntry::make('last_name')->label('Apellido'),
                             TextEntry::make('User.email')->label('Email'),
                             TextEntry::make('phone_number')->label('Número de Teléfono'),

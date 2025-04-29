@@ -13,6 +13,7 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
+use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
@@ -48,10 +49,12 @@ class TransactionResource extends Resource
                     ->required()
                     ->enum(Component::class)
                     ->options(Component::class)
+                    ->disabledOn('edit')
                     // Función para poner null el campo option_id cuando component se modifica
                     ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
                 Forms\Components\Select::make('option_id')
                     ->label("Opción de grado")
+                    ->disabledOn('edit')
                     ->relationship('Option', 'option')
                     ->required()
                     // Función para filtrar la opción de grado por nivel universitario y componente
@@ -73,7 +76,6 @@ class TransactionResource extends Resource
                 Forms\Components\Select::make('courses_id')
                     ->label('Curso')
                     ->visibleOn('create')
-                    //->relationship('profile_transaction', 'courses_id')
                     // Mostrar los cursos de la tabla
                     ->options(\App\Models\Course::all()->pluck('course', 'id'))
                     //->searchable()
@@ -157,6 +159,11 @@ class TransactionResource extends Resource
             InfoSection::make([
                 TextEntry::make('id')
                     ->label('Ticket'),
+                TextEntry::make('certification')
+                    ->label('Certificación')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
+                    ->color(fn ($state) => Certification::from($state)->getColor()),
                 TextEntry::make('component')
                     ->label('Componente')
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
@@ -165,12 +172,12 @@ class TransactionResource extends Resource
                     ->label('Opción de grado'),
 
                 TextEntry::make('profiles.name') // Campo para "Personas"
-                    ->label('Personas')
+                    ->label('Integrante(s)')
                     ->formatStateUsing(fn($state) => format_list_html($state))
                     ->html(), // Permite HTML en la salida
 
                 TextEntry::make('courses') // Campo para "Carreras"
-                    ->label('Carreras')
+                    ->label('Carrera(s)')
                     ->formatStateUsing(fn($state) => format_list_html($state))
                     ->html(), // Permite HTML en la salida
             ])->columns(2)->columnSpan(2),

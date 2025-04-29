@@ -30,9 +30,9 @@ enum Certification: int implements HasLabel, HasColor
     public function getColor(): string|array|null
     {
         return match ($this){
-            self::NOCERTIFICADO => 'success',
-            self::PORCERTIFICAR => 'danger',
-            self::CERTIFICADO => 'warning',
+            self::NOCERTIFICADO => 'danger',
+            self::PORCERTIFICAR => 'warning',
+            self::CERTIFICADO => 'success',
         };
     }
 }

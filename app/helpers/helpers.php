@@ -27,6 +27,7 @@ if (!function_exists('format_list_html')) {
 
 
 // ------------------ OBTENER PERFIL DE USUARIO EN SESIÓN ------------------
+use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 
 if (!function_exists('auth_profile_id')) {
@@ -36,3 +37,11 @@ if (!function_exists('auth_profile_id')) {
     }
 }
 
+
+
+// ------------------ OBTENER CARRERAS POR NIVEL DE PERFIL ------------------
+function getCoursesByProfileLevel($level) {
+    return \App\Models\Course::where('level', $level)
+        ->pluck('course', 'id')
+        ->toArray();
+}
