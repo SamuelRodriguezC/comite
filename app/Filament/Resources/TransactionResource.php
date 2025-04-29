@@ -9,19 +9,23 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
+use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\Group;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Group as FormGroup;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransactionResource\Pages;
-use Filament\Infolists\Components\Section as InfoSection;
 use Filament\Forms\Components\Section as FormSection;
+use Filament\Infolists\Components\Group as InfolistGroup;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\TransactionResource\RelationManagers;
-use Filament\Infolists\Components\Group;
-use Filament\Infolists\Components\IconEntry;
 
 class TransactionResource extends Resource
 {
@@ -36,28 +40,24 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                FormSection::make('Detalle de Transacción')
+                FormSection::make('Transacción')
 
                     ->schema([
+                        Forms\Components\TextInput::make('id')
+                            ->label('Ticket #')
+                            ->disabled()
+                            ->numeric()
+                            ->visibleOn('edit'),
                         Forms\Components\Select::make('component')
-                        ->label("Componente")
-                        ->live()
-                        ->preload()
-                        ->enum(Component::class)
-                        ->options(Component::class),
-                    Forms\Components\Select::make('option_id')
-                        ->label("Opción")
-                        ->relationship('option', 'option')
-                        ->required(),
-                    Forms\Components\Toggle::make('enabled')
-                        ->label('Habilitado')
-                        ->inline(false)
-                        ->onColor('success')
-                        ->offColor('danger')
-                        ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
-                        ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
-                            $component->state($state === 1); // Al cargar: 1 => true, 2 => false
-                        }),
+                            ->label("Componente")
+                            ->live()
+                            ->preload()
+                            ->enum(Component::class)
+                            ->options(Component::class),
+                        Forms\Components\Select::make('option_id')
+                            ->label("Opción de Grado")
+                            ->relationship('option', 'option')
+                            ->required(),
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-ticket'),
@@ -87,7 +87,41 @@ class TransactionResource extends Resource
                     ->columnSpan(1)
                     ->description('Para Crear una Transacción debes seleccionar un Primer Integrante y su Carrera. Luego puedes agregar más integrantes.')
                     ->icon('heroicon-m-user-circle')
-                    ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear
+                    ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear (Sección)
+
+
+                    FormSection::make('Detalles')
+                    ->schema([
+                        FormGroup::make([
+                            TextInput::make('created_at')
+                                ->label('Creado en')
+                                ->disabled(),
+                            TextInput::make('updated_at')
+                                ->label('Actualizado en')
+                                ->disabled(),
+                            Forms\Components\Toggle::make('enabled')
+                                ->label('Habilitado')
+                                ->inline(false)
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->onIcon(Enabled::HABILITADO->getIcon())
+                                ->offIcon(Enabled::DESHABILITADO->getIcon())
+                                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
+                                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                                }),
+                            Forms\Components\Select::make('certification')
+                                ->label("Certificación")
+                                ->live()
+                                ->preload()
+                                ->enum(Certification::class)
+                                ->options(Certification::class),
+
+                        ])->columns(2),
+                    ])
+                    ->columnSpan(1)
+                    ->icon('heroicon-m-eye')
+                    ->visible(fn (string $context) => $context === 'edit'), //Solo es visible al crear (Sección)
 
             ])->Columns(2);
     }
@@ -157,46 +191,59 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make([
-                TextEntry::make('component')
-                    ->label('Componente')
-                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+            InfoSection::make(fn ($record) => 'Transacción #' . $record->id)
+                ->icon('heroicon-m-ticket')
+                ->schema([
+                    TextEntry::make('component')
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
 
-                TextEntry::make('Option.option')
-                    ->label('Opción de grado'),
+                    TextEntry::make('Option.option')
+                        ->label('Opción de grado'),
 
-                TextEntry::make('profiles.name') // Campo para "Personas"
-                    ->label('Integrante(s)')
-                    ->formatStateUsing(fn($state) => format_list_html($state))
-                    ->html(), // Permite HTML en la salida
+                    TextEntry::make('profiles.name')
+                        ->label('Integrante(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
 
-                TextEntry::make('courses') // Campo para "Carreras"
-                    ->label('Carrera(s)')
-                    ->formatStateUsing(fn($state) => format_list_html($state))
-                    ->html(), // Permite HTML en la salida
-            ])->columns(2)->columnSpan(2),
+                    TextEntry::make('courses')
+                        ->label('Carrera(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
+                ])
+                ->columns(2)->columnSpan(2),
 
-            InfoSection::make([
-                Group::make([
-                    TextEntry::make('created_at')
-                        ->label('Creado en'),
-                    TextEntry::make('updated_at')
-                    ->label('Actualizado en'),
-                    IconEntry::make('enabled')
-                        ->label('Habilitado')
-                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+            InfoSection::make('Detalles')
+                ->icon('heroicon-m-eye')
+                ->schema([
+                    Group::make([
+                        TextEntry::make('created_at')
+                            ->label('Creado en'),
+                        TextEntry::make('updated_at')
+                            ->label('Actualizado en')
+                            ->dateTime()
+                            ->dateTimeTooltip(),
+                        IconEntry::make('enabled')
+                            ->label('Habilitado')
+                            ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                            ->color(fn ($state) => Enabled::from($state)->getColor()),
+                        TextEntry::make('certification')
+                            ->label('Certificación')
+                            ->badge()
+                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
+                            ->color(fn ($state) => Certification::from($state)->getColor()),
 
-                ])->columns(2),
-            ])->columnSpan(1),
-
+                    ])->columns(2),
+                ])->columnSpan(1),
 
         ])->columns(3);
     }
 
+
     public static function getRelations(): array
     {
         return [
+            RelationManagers\ProcessesRelationManager::class,
             RelationManagers\ProfilesRelationManager::class,
         ];
     }

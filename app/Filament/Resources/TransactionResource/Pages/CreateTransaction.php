@@ -14,6 +14,14 @@ class CreateTransaction extends CreateRecord
 {
     protected static string $resource = TransactionResource::class;
 
+    // Pasar el campo “enabled” por defecto en 1 = "Habilitado"
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['enabled'] = 1;
+        $data['certification'] = 1;
+        return $data;
+    }
+
     // Hacer luego de Crear
     protected function afterCreate(): void
     {
@@ -29,18 +37,16 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
-        // // Perfiles adicionales
-        // if (!empty($data['profiles'])) {
-        //     foreach ($data['profiles'] as $profileData) {
-        //         if ($profileData['profile_id'] != $profile->id) { // aseguramos que no se duplique el usuario actual
-        //             DB::table('profile_transaction')->insert([
-        //                 'profile_id' => $profileData['profile_id'],
-        //                 'transaction_id' => $transaction->id,
-        //                 'courses_id' => $profileData['courses_id'],
-        //             ]);
-        //         }
-        //     }
-        // }
+        // Crear Procesos con 3 etapas (1=solicitud 2=entrega 3=1°corrección) relacionados con la transacción
+        foreach ([1, 2, 3] as $stageId) {
+            $transaction->processes()->create([
+                'state' => 3,
+                'stage_id' => $stageId,
+                'completed' => false,
+                'requirement' => ' ',
+                'comment' => ' ',
+            ]);
+        }
 
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
@@ -49,7 +55,7 @@ class CreateTransaction extends CreateRecord
             ->success()
             ->send();
         }
-        
+
         // Esto desactiva la notificación por defecto de Filament
         protected function getCreatedNotification(): ?Notification
         {

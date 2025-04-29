@@ -19,11 +19,13 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Group;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Group as FormGroup;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Section as FormSection;
 use Filament\Infolists\Components\Section as InfoSection;
@@ -42,55 +44,101 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('component')
-                    ->label("Componente")
-                    ->live()
-                    ->preload()
-                    ->required()
-                    ->enum(Component::class)
-                    ->options(Component::class)
-                    ->disabledOn('edit')
-                    // Función para poner null el campo option_id cuando component se modifica
-                    ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
-                Forms\Components\Select::make('option_id')
-                    ->label("Opción de grado")
-                    ->disabledOn('edit')
-                    ->relationship('Option', 'option')
-                    ->required()
-                    // Función para filtrar la opción de grado por nivel universitario y componente
-                    ->options(function (callable $get) {
-                        $user = Auth::user();
-                        if (!$user || !$user->profiles) {
-                            return ["Aún no tiene perfil"]; // Si el perfil no está disponible, no se muestran opciones
-                        }
-                        $userLevel = $user->profiles->level;
-                        $selectedComponent = $get('component');
-                        if (!$selectedComponent) {
-                            return ["Aún no ha seleccionado componente"]; // Evita mostrar opciones si el componente aún no se ha seleccionado
-                        }
-                        return Option::where('level', $userLevel)
-                            ->where('component', $selectedComponent)
-                            ->pluck('option', 'id');
-                    }),
-                // Campo para seleccionar curso
-                Forms\Components\Select::make('courses_id')
-                    ->label('Curso')
-                    ->visibleOn('create')
-                    // Mostrar los cursos de la tabla
-                    ->options(\App\Models\Course::all()->pluck('course', 'id'))
-                    //->searchable()
-                    ->required()
-                    ->options(function () {
-                        $user = Auth::user();
-                        if (!$user || !$user->profiles) {
-                            return ["El perfil no tiene nivel universitario"]; // Retornamos un arreglo vacío si no hay usuario o perfil
-                        }
-                        // Obtenemos el nivel universitario del usuario autenticado (pregrado o posgrado)
-                        $userLevel = $user->profiles->level;
-                        // Filtramos las carreras que tengan el mismo nivel universitario
-                        return \App\Models\Course::where('level', $userLevel)
-                            ->pluck('course', 'id');
-                    }),
+
+                FormSection::make('Ticket')
+
+                    ->schema([
+                        Forms\Components\TextInput::make('id')
+                            ->label('Ticket #')
+                            ->disabled()
+                            ->numeric()
+                            ->visibleOn('edit'),
+                        Forms\Components\Select::make('component')
+                            ->label("Componente")
+                            ->live()
+                            ->preload()
+                            ->enum(Component::class)
+                            ->options(Component::class)
+                            ->disabledOn('edit')
+                            ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
+                        Forms\Components\Select::make('option_id')
+                            ->label("Opción de Grado")
+                            ->disabledOn('edit')
+                            ->relationship('option', 'option')
+                            ->required()
+                             // Función para filtrar la opción de grado por nivel universitario y componente
+                            ->options(function (callable $get) {
+                                $user = Auth::user();
+                                if (!$user || !$user->profiles) {
+                                    return ["Aún no tiene perfil"]; // Si el perfil no está disponible, no se muestran opciones
+                                }
+                                $userLevel = $user->profiles->level;
+                                $selectedComponent = $get('component');
+                                if (!$selectedComponent) {
+                                    return ["Aún no ha seleccionado componente"]; // Evita mostrar opciones si el componente aún no se ha seleccionado
+                                }
+                                return Option::where('level', $userLevel)
+                                    ->where('component', $selectedComponent)
+                                    ->pluck('option', 'id');
+                            }),
+                        // Campo para seleccionar curso
+                        Forms\Components\Select::make('courses_id')
+                            ->label('Curso')
+                            ->visibleOn('create')
+                            // Mostrar los cursos de la tabla
+                            ->options(\App\Models\Course::all()->pluck('course', 'id'))
+                            //->searchable()
+                            ->required()
+                            ->options(function () {
+                                $user = Auth::user();
+                                if (!$user || !$user->profiles) {
+                                    return ["El perfil no tiene nivel universitario"]; // Retornamos un arreglo vacío si no hay usuario o perfil
+                                }
+                                // Obtenemos el nivel universitario del usuario autenticado (pregrado o posgrado)
+                                $userLevel = $user->profiles->level;
+                                // Filtramos las carreras que tengan el mismo nivel universitario
+                                return \App\Models\Course::where('level', $userLevel)
+                                    ->pluck('course', 'id');
+                            }),
+
+                    ])
+                    ->columnSpan(1)
+                    ->icon('heroicon-m-ticket'),
+
+                    FormSection::make('Detalles')
+                    ->schema([
+                        FormGroup::make([
+                            TextInput::make('created_at')
+                                ->label('Creado en')
+                                ->disabled(),
+                            TextInput::make('updated_at')
+                                ->label('Actualizado en')
+                                ->disabled(),
+                            Forms\Components\Toggle::make('enabled')
+                                ->label('Habilitado')
+                                ->inline(false)
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->onIcon(Enabled::HABILITADO->getIcon())
+                                ->offIcon(Enabled::DESHABILITADO->getIcon())
+                                ->disabled()
+                                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
+                                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                                }),
+                            Forms\Components\Select::make('certification')
+                                ->label("Certificación")
+                                ->live()
+                                ->preload()
+                                ->enum(Certification::class)
+                                ->options(Certification::class)
+                                ->disabledOn('edit'),
+
+                        ])->columns(2),
+                    ])
+                    ->columnSpan(1)
+                    ->icon('heroicon-m-eye')
+                    ->visible(fn (string $context) => $context === 'edit'), //Solo es visible al crear (Sección)
             ]);
     }
 
@@ -156,49 +204,52 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make([
-                TextEntry::make('id')
-                    ->label('Ticket'),
-                TextEntry::make('certification')
-                    ->label('Certificación')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                    ->color(fn ($state) => Certification::from($state)->getColor()),
-                TextEntry::make('component')
-                    ->label('Componente')
-                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+            InfoSection::make(fn ($record) => 'Ticket #' . $record->id)
+                ->icon('heroicon-m-ticket')
+                ->schema([
+                    TextEntry::make('component')
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
 
-                TextEntry::make('Option.option')
-                    ->label('Opción de grado'),
+                    TextEntry::make('Option.option')
+                        ->label('Opción de grado'),
 
-                TextEntry::make('profiles.name') // Campo para "Personas"
-                    ->label('Integrante(s)')
-                    ->formatStateUsing(fn($state) => format_list_html($state))
-                    ->html(), // Permite HTML en la salida
+                    TextEntry::make('profiles.name')
+                        ->label('Integrante(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
 
-                TextEntry::make('courses') // Campo para "Carreras"
-                    ->label('Carrera(s)')
-                    ->formatStateUsing(fn($state) => format_list_html($state))
-                    ->html(), // Permite HTML en la salida
-            ])->columns(2)->columnSpan(2),
+                    TextEntry::make('courses')
+                        ->label('Carrera(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
+                ])
+                ->columns(2)->columnSpan(2),
 
-            InfoSection::make([
-                Group::make([
-                    TextEntry::make('created_at')
-                        ->label('Creado en'),
-                    TextEntry::make('updated_at')
-                    ->label('Actualizado en'),
-                    IconEntry::make('enabled')
-                        ->label('Habilitado')
-                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+            InfoSection::make('Detalles')
+                ->icon('heroicon-m-eye')
+                ->schema([
+                    Group::make([
+                        TextEntry::make('created_at')
+                            ->label('Creado en'),
+                        TextEntry::make('updated_at')
+                        ->label('Actualizado en'),
+                        IconEntry::make('enabled')
+                            ->label('Habilitado')
+                            ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                            ->color(fn ($state) => Enabled::from($state)->getColor()),
+                        TextEntry::make('certification')
+                            ->label('Certificación')
+                            ->badge()
+                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
+                            ->color(fn ($state) => Certification::from($state)->getColor()),
 
-                ])->columns(2),
-            ])->columnSpan(1),
-
+                    ])->columns(2),
+                ])->columnSpan(1),
 
         ])->columns(3);
     }
+
 
     // Función para filtrar las transacciones por usuario
     public static function getEloquentQuery(): Builder
