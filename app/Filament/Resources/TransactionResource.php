@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Group as FormGroup;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransactionResource\Pages;
@@ -93,10 +94,10 @@ class TransactionResource extends Resource
                     FormSection::make('Detalles')
                     ->schema([
                         FormGroup::make([
-                            TextInput::make('created_at')
+                            DateTimePicker::make('created_at')
                                 ->label('Creado en')
                                 ->disabled(),
-                            TextInput::make('updated_at')
+                            DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
                             Forms\Components\Toggle::make('enabled')
@@ -218,7 +219,9 @@ class TransactionResource extends Resource
                 ->schema([
                     Group::make([
                         TextEntry::make('created_at')
-                            ->label('Creado en'),
+                            ->label('Creado en')
+                            ->dateTime()
+                            ->dateTimeTooltip(),
                         TextEntry::make('updated_at')
                             ->label('Actualizado en')
                             ->dateTime()
