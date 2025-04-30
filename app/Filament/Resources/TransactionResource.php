@@ -41,50 +41,7 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                FormSection::make('Ticket')
-                    ->schema([
-                        Forms\Components\TextInput::make('id')
-                            ->label('Número de Ticket')
-                            ->disabled()
-                            ->numeric()
-                            ->visibleOn('edit'),
-                        Forms\Components\Select::make('component')
-                            ->label("Componente de la opción de grado")
-                            ->live()
-                            ->preload()
-                            ->enum(Component::class)
-                            ->options(Component::class),
-                        Forms\Components\Select::make('option_id')
-                            ->label("Opción de grado")
-                            ->options(function (callable $get) {
-                                // Toma el nivel guardado en el campo oculto level y el componente elegido
-                                $level = $get('level');
-                                $component = $get('component');
-                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
-                                $query = \App\Models\Option::query();
-                                if ($level) {
-                                    $query->where('level', $level);
-                                }
-                                else {
-                                    return ["Aún no ha vinculado a un integrante"];
-                                }
-                                if ($component !== null) {
-                                    $query->where('component', $component);
-                                }
-                                else {
-                                    return ["Aún no ha seleccionado el componente de la opción de grado"];
-                                }
-                                // Muestra las opciones de grado de acuerdo a la información anterior
-                                return $query->pluck('option', 'id');
-                            })
-                            ->required()
-                            ->searchable()
-                            ->live(), // Para reaccionar a cambios del componente
-                    ])
-                    ->columnSpan(1)
-                    ->icon('heroicon-m-ticket'),
-
-                FormSection::make('Vincular integrante al Ticket')
+                FormSection::make('Vincular integrante')
                     ->schema([
                         Forms\Components\Select::make('profile_id')
                             ->label('Número de documento del integrante')
@@ -121,7 +78,7 @@ class TransactionResource extends Resource
                         // Agrega un campo oculto para guardar el nivel universitario del perfil seleccionado
                         Forms\Components\Hidden::make('level'),
                         Forms\Components\Select::make('courses_id')
-                            ->label('Carrera PRUEBA')
+                            ->label('Carrera universitaria de la persona vinculada')
                             ->visibleOn('create')
                             // La carrera se filtra con la información del perfil seleccionado
                             ->options(function (callable $get) {
@@ -138,9 +95,54 @@ class TransactionResource extends Resource
                             ->live(),
                     ])
                     ->columnSpan(1)
-                    ->description('Debes ingresar el número de documento del primer Integrante y su Carrera. Posteriormente puedes agregar más integrantes en el modo de edición.')
+                    ->description('Ingresa el número de documento del primer integrante y su carrera. (Puedes agregar más integrantes en el modo de edición).')
                     ->icon('heroicon-m-user-circle')
                     ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear (Sección)
+
+                FormSection::make('Opción de grado')
+                    ->schema([
+                        Forms\Components\TextInput::make('id')
+                            ->label('Número de Ticket')
+                            ->disabled()
+                            ->numeric()
+                            ->visibleOn('edit'),
+                        Forms\Components\Select::make('component')
+                            ->label("Componente de la opción de grado")
+                            ->live()
+                            ->preload()
+                            ->required()
+                            ->enum(Component::class)
+                            ->options(Component::class),
+                        Forms\Components\Select::make('option_id')
+                            ->label("Opción de grado")
+                            ->options(function (callable $get) {
+                                // Toma el nivel guardado en el campo oculto level y el componente elegido
+                                $level = $get('level');
+                                $component = $get('component');
+                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
+                                $query = \App\Models\Option::query();
+                                    if ($level) {
+                                        $query->where('level', $level);
+                                    }
+                                    else {
+                                        return ["Aún no ha vinculado a un integrante"];
+                                    }
+                                    if ($component !== null) {
+                                        $query->where('component', $component);
+                                    }
+                                    else {
+                                        return ["Aún no ha seleccionado el componente"];
+                                    }
+                                // Muestra las opciones de grado de acuerdo a la información anterior
+                                return $query->pluck('option', 'id');
+                            })
+                            ->required()
+                            ->searchable()
+                            ->live(), // Para reaccionar a cambios del componente
+                    ])
+                    ->columnSpan(1)
+                    ->description('Debes ingresar el componente y la opción de grado del integrante vinculado.')
+                    ->icon('heroicon-m-ticket'),
 
                     FormSection::make('Detalles')
                     ->schema([

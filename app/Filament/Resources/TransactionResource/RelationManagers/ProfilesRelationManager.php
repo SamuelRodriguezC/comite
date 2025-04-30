@@ -101,7 +101,7 @@ class ProfilesRelationManager extends RelationManager
                         ->options(function (Get $get) {
                             $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
                             if (!$recordId) {
-                                return [];
+                                return ["Aún no ha vinculado integrante"];
                             }
                             $profile = \App\Models\Profile::find($recordId);
                             if (!$profile) {
