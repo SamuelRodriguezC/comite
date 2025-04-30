@@ -183,13 +183,11 @@ class TransactionResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-
                 Tables\Columns\TextColumn::make('id')
                     ->label('Ticket')
                     ->searchable()
                     ->numeric()
                     ->sortable(),
-
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())

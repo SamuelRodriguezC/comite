@@ -61,6 +61,4 @@ class CreateTransaction extends CreateRecord
         {
             return null;
         }
-
-
     }
