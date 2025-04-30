@@ -41,51 +41,104 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                FormSection::make('Transacción')
+                FormSection::make('Ticket')
                     ->schema([
                         Forms\Components\TextInput::make('id')
-                            ->label('Ticket #')
+                            ->label('Número de Ticket')
                             ->disabled()
                             ->numeric()
                             ->visibleOn('edit'),
                         Forms\Components\Select::make('component')
-                            ->label("Componente")
+                            ->label("Componente de la opción de grado")
                             ->live()
                             ->preload()
                             ->enum(Component::class)
                             ->options(Component::class),
                         Forms\Components\Select::make('option_id')
-                            ->label("Opción de Grado")
-                            ->relationship('option', 'option')
-                            ->required(),
+                            ->label("Opción de grado")
+                            ->options(function (callable $get) {
+                                // Toma el nivel guardado en el campo oculto level y el componente elegido
+                                $level = $get('level');
+                                $component = $get('component');
+                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
+                                $query = \App\Models\Option::query();
+                                if ($level) {
+                                    $query->where('level', $level);
+                                }
+                                else {
+                                    return ["Aún no ha vinculado a un integrante"];
+                                }
+                                if ($component !== null) {
+                                    $query->where('component', $component);
+                                }
+                                else {
+                                    return ["Aún no ha seleccionado el componente de la opción de grado"];
+                                }
+                                // Muestra las opciones de grado de acuerdo a la información anterior
+                                return $query->pluck('option', 'id');
+                            })
+                            ->required()
+                            ->searchable()
+                            ->live(), // Para reaccionar a cambios del componente
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-ticket'),
 
-                FormSection::make('Agregar Integrante')
+                FormSection::make('Vincular integrante al Ticket')
                     ->schema([
                         Forms\Components\Select::make('profile_id')
-                            ->label('Documento del Integrante')
+                            ->label('Número de documento del integrante')
                             ->visibleOn('create')
                             ->searchable()
-                            ->getSearchResultsUsing(fn (string $search) =>
-                                \App\Models\Profile::where('document_number', 'like', "%{$search}%")
+                            ->live() // Esto permite que al cambiar se activen otros campos
+                            ->required()
+                            // Consulta a los perfiles de acuerdo al número de documento
+                            ->getSearchResultsUsing(function (string $search) {
+                                return \App\Models\Profile::where('document_number', 'like', "%{$search}%")
+                                    //->orWhere('name', 'like', "%{$search}%")
+                                    //->orWhere('last_name', 'like', "%{$search}%")
                                     ->limit(10)
-                                    ->pluck('document_number', 'id')
-                            )
+                                    ->get()
+                                    // A partir del id muestra número de documento y nombre completo
+                                    ->mapWithKeys(fn ($profile) => [$profile->id => "{$profile->document_number} - {$profile->name} {$profile->last_name}"]);
+                            })
                             ->getOptionLabelUsing(fn ($value) =>
-                                \App\Models\Profile::find($value)?->document_number
+                                optional(\App\Models\Profile::find($value))->document_number . ' - ' . optional(\App\Models\Profile::find($value))->name
                             )
-                            ->required(),
+                            // Al seleccionar un perfil actualiza la carrera, la opción de grado y guarda el nivel en un campo oculto
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $profile = \App\Models\Profile::find($state);
+                                if ($profile) {
+                                    $set('courses_id', null);
+                                    $set('option_id', null);
+                                    $set('level', $profile->level); // guardar temporalmente el nivel
+                                } else {
+                                    $set('courses_id', null);
+                                    $set('option_id', null);
+                                    $set('level', null);
+                                }
+                            }),
+                        // Agrega un campo oculto para guardar el nivel universitario del perfil seleccionado
+                        Forms\Components\Hidden::make('level'),
                         Forms\Components\Select::make('courses_id')
-                            ->label('Carrera')
+                            ->label('Carrera PRUEBA')
                             ->visibleOn('create')
-                            ->options(\App\Models\Course::all()->pluck('course', 'id')) // Mostrar los cursos de la tabla
+                            // La carrera se filtra con la información del perfil seleccionado
+                            ->options(function (callable $get) {
+                                $level = $get('level');
+                                if ($level !== null) {
+                                    return \App\Models\Course::where('level', $level)->pluck('course', 'id');
+                                }
+                                else {
+                                    return ["Aún no ha vinculado a un integrante"];
+                                }
+                            })
                             ->searchable()
-                            ->required(),
+                            ->required()
+                            ->live(),
                     ])
                     ->columnSpan(1)
-                    ->description('Para Crear una Transacción debes seleccionar un Primer Integrante y su Carrera. Luego puedes agregar más integrantes.')
+                    ->description('Debes ingresar el número de documento del primer Integrante y su Carrera. Posteriormente puedes agregar más integrantes en el modo de edición.')
                     ->icon('heroicon-m-user-circle')
                     ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear (Sección)
 
