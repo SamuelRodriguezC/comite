@@ -42,39 +42,22 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
-        // // Perfiles adicionales
-        // if (!empty($data['profiles'])) {
-        //     foreach ($data['profiles'] as $profileData) {
-        //         if ($profileData['profile_id'] != $profile->id) { // aseguramos que no se duplique el usuario actual
-        //             DB::table('profile_transaction')->insert([
-        //                 'profile_id' => $profileData['profile_id'],
-        //                 'transaction_id' => $transaction->id,
-        //                 'courses_id' => $profileData['courses_id'],
-        //             ]);
-        //         }
-        //     }
-        // }
-
-        // Crear proceso en Solicitud a la Transacción recién creada
-        $process = $transaction->processes()->create([
-            'state' => 3, // Pendiente default
-            'stage_id' => 1, // 1 = Solicitud
-            'completed' => false,
-            'requirement' => ' ',
-            'comment' => ' ',
-        ]);
+        // Crear Procesos con 3 etapas (1=solicitud 2=entrega 3=1°corrección) relacionados con la transacción
+        foreach ([1, 2, 3] as $stageId) {
+            $transaction->processes()->create([
+                'state' => 3,
+                'stage_id' => $stageId,
+                'completed' => false,
+                'requirement' => ' ',
+                'comment' => ' ',
+            ]);
+        }
 
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
-            ->body('Se ha Creado un Proceso de Solicitud para la Transacción por favor completa el Fomulario')
+            ->body('Se han Creado los Procesos Correspondientes a la Transacción por Favor Completa el Fomulario de Solicitud')
             ->icon('heroicon-o-ticket')
             ->success()
-            ->actions([
-                Action::make('Ver Proceso')
-                    ->button()
-                    // Botón para redirigir a la página de vista del proceso de solicitud creado
-                    ->url(route('filament.student.resources.processes.edit', ['record' => $process->id]))
-            ])
             ->send();
     }
 
