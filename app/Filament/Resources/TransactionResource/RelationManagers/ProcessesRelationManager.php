@@ -19,7 +19,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ProcessesRelationManager extends RelationManager
 {
     protected static string $relationship = 'Processes';
-    protected static ?string $title = 'Procesos de la Transacción';
+    protected static ?string $title = 'Procesos vinculados al Ticket';
 
     public function form(Form $form): Form
     {
@@ -72,7 +72,6 @@ class ProcessesRelationManager extends RelationManager
                         if (!$state) {
                             return null;
                         }
-
                         // Solo tomar el nombre del archivo, quitando el directorio
                         return basename($state);
                     })
@@ -85,7 +84,7 @@ class ProcessesRelationManager extends RelationManager
                     })
                     ->sortable()
                     ->searchable(),
-                 Tables\Columns\IconColumn::make('completed')
+                Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
                     ->icon(fn ($state) => Completed::from($state)->getIcon())
                     ->color(fn ($state) => Completed::from($state)->getColor()),
@@ -99,7 +98,6 @@ class ProcessesRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
             ])
             ->filters([
                 //
@@ -136,7 +134,6 @@ class ProcessesRelationManager extends RelationManager
                                         'No aprobado' => 'danger',
                                     }),
                             ]),
-
                         ])
                         ->record($record)),// El $record aquí viene del modelo actual en la tabla
                 Tables\Actions\EditAction::make(),
@@ -146,7 +143,5 @@ class ProcessesRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-
     }
-
 }

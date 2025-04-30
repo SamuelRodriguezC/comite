@@ -64,7 +64,6 @@ class CreateTransaction extends CreateRecord
             'comment' => ' ',
         ]);
 
-
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
             ->body('Se ha Creado un Proceso de Solicitud para la Transacción por favor completa el Fomulario')

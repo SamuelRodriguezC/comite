@@ -24,7 +24,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ProcessesRelationManager extends RelationManager
 {
     protected static string $relationship = 'Processes';
-    protected static ?string $title = 'Procesos del Ticket';
+    protected static ?string $title = 'Procesos vinculados al Ticket';
 
     public function form(Form $form): Form
     {
@@ -89,7 +89,7 @@ class ProcessesRelationManager extends RelationManager
                     })
                     ->sortable()
                     ->searchable(),
-                 Tables\Columns\IconColumn::make('completed')
+                Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
                     ->icon(fn ($state) => Completed::from($state)->getIcon())
                     ->color(fn ($state) => Completed::from($state)->getColor()),
@@ -164,7 +164,5 @@ class ProcessesRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-
     }
-
 }

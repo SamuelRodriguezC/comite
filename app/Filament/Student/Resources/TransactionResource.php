@@ -44,17 +44,15 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-
                 FormSection::make('Ticket')
-
                     ->schema([
                         Forms\Components\TextInput::make('id')
-                            ->label('Ticket #')
+                            ->label('Número de Ticket')
                             ->disabled()
                             ->numeric()
                             ->visibleOn('edit'),
                         Forms\Components\Select::make('component')
-                            ->label("Componente")
+                            ->label("Componente de la opción de grado")
                             ->live()
                             ->preload()
                             ->enum(Component::class)
@@ -83,7 +81,7 @@ class TransactionResource extends Resource
                             }),
                         // Campo para seleccionar curso
                         Forms\Components\Select::make('courses_id')
-                            ->label('Curso')
+                            ->label('Carrera universitaria')
                             ->visibleOn('create')
                             // Mostrar los cursos de la tabla
                             ->options(\App\Models\Course::all()->pluck('course', 'id'))
@@ -100,7 +98,6 @@ class TransactionResource extends Resource
                                 return \App\Models\Course::where('level', $userLevel)
                                     ->pluck('course', 'id');
                             }),
-
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-ticket'),
@@ -133,7 +130,6 @@ class TransactionResource extends Resource
                                 ->enum(Certification::class)
                                 ->options(Certification::class)
                                 ->disabledOn('edit'),
-
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
@@ -210,15 +206,12 @@ class TransactionResource extends Resource
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-
                     TextEntry::make('Option.option')
                         ->label('Opción de grado'),
-
                     TextEntry::make('profiles.name')
                         ->label('Integrante(s)')
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
-
                     TextEntry::make('courses')
                         ->label('Carrera(s)')
                         ->formatStateUsing(fn($state) => format_list_html($state))
@@ -243,13 +236,10 @@ class TransactionResource extends Resource
                             ->badge()
                             ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
                             ->color(fn ($state) => Certification::from($state)->getColor()),
-
                     ])->columns(2),
                 ])->columnSpan(1),
-
         ])->columns(3);
     }
-
 
     // Función para filtrar las transacciones por usuario
     public static function getEloquentQuery(): Builder

@@ -70,7 +70,6 @@ class Transaction extends Model
             ->implode(', ');
     }
 
-
     // ---------- VERIFICAR SI LA TRANSACCIÓN ES EDITABLE (ANTES DE 12 HRS) ----------
     public function isEditable(): bool
     {

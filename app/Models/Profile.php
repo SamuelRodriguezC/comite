@@ -69,12 +69,16 @@ class Profile extends Model
     {
         // Asumiendo que una transacción tiene un solo perfil en esta relación
         $profile = $this->profiles()->first();
-
         if (!$profile || !$profile->pivot || !$profile->pivot->courses_id) {
             return null;
         }
-
         return \App\Models\Course::find($profile->pivot->courses_id)?->course;
+    }
+
+    // Crea función de nombre completo
+    public function getFullNameAttribute()
+    {
+        return "{$this->name} {$this->last_name}";
     }
 
 }

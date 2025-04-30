@@ -14,7 +14,8 @@ class EditTransaction extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            // Oculta el botón de eliminar del encabezado de edición
+            //Actions\DeleteAction::make(),
         ];
     }
 }

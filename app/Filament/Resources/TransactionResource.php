@@ -30,8 +30,8 @@ use App\Filament\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $modelLabel = "Transacción";
-    protected static ?string $pluralModelLabel = "Transacciones";
+    protected static ?string $modelLabel = "Ticket";
+    protected static ?string $pluralModelLabel = "Tickets";
     protected static ?string $navigationGroup = "Etapas";
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
     protected static ?int $navigationSort = 1;
@@ -41,7 +41,6 @@ class TransactionResource extends Resource
         return $form
             ->schema([
                 FormSection::make('Transacción')
-
                     ->schema([
                         Forms\Components\TextInput::make('id')
                             ->label('Ticket #')
@@ -89,7 +88,6 @@ class TransactionResource extends Resource
                     ->icon('heroicon-m-user-circle')
                     ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear (Sección)
 
-
                     FormSection::make('Detalles')
                     ->schema([
                         FormGroup::make([
@@ -116,13 +114,11 @@ class TransactionResource extends Resource
                                 ->preload()
                                 ->enum(Certification::class)
                                 ->options(Certification::class),
-
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-eye')
                     ->visible(fn (string $context) => $context === 'edit'), //Solo es visible al crear (Sección)
-
             ])->Columns(2);
     }
 
@@ -191,21 +187,18 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make(fn ($record) => 'Transacción #' . $record->id)
+            InfoSection::make(fn ($record) => 'Número de Ticket: ' . $record->id)
                 ->icon('heroicon-m-ticket')
                 ->schema([
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-
                     TextEntry::make('Option.option')
                         ->label('Opción de grado'),
-
                     TextEntry::make('profiles.name')
                         ->label('Integrante(s)')
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
-
                     TextEntry::make('courses')
                         ->label('Carrera(s)')
                         ->formatStateUsing(fn($state) => format_list_html($state))
@@ -232,13 +225,10 @@ class TransactionResource extends Resource
                             ->badge()
                             ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
                             ->color(fn ($state) => Certification::from($state)->getColor()),
-
                     ])->columns(2),
                 ])->columnSpan(1),
-
         ])->columns(3);
     }
-
 
     public static function getRelations(): array
     {

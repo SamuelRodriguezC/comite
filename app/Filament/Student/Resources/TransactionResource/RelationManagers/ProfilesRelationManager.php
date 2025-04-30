@@ -7,7 +7,9 @@ use App\Enums\Level;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Course;
+use App\Models\Profile;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -26,8 +28,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ProfilesRelationManager extends RelationManager
 {
     protected static string $relationship = 'profiles';
-    protected static ?string $title = 'Integrante(s) del Ticket';
-
+    protected static ?string $title = 'Integrante(s) vinculados al Ticket';
 
     // ---------- OPTENER LA TRANSACCIÓN A LA QUE PERTENECEN LOS PERFILES ----------
     protected function getTransaction(): \App\Models\Transaction
@@ -35,12 +36,10 @@ class ProfilesRelationManager extends RelationManager
         return $this->ownerRecord; // $this->ownerRecord es el modelo Transaction al que pertenece este RelationManager
     }
 
-
     public static function getEloquentQuery(): Builder
     {
         // Obtén el perfil del usuario autenticado
         $profileId = Auth::user()->profiles->id;
-
         // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
         return Transaction::whereNHas('profiles', function (Builder $query) use ($profileId) {
             $query->where('profile_id', $profileId);
@@ -104,29 +103,28 @@ class ProfilesRelationManager extends RelationManager
                     ->formatStateUsing(function ($state) {
                         return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';
                 }),
-
             ])
             ->filters([
                 //
             ])
+            // No se puede filtrar estudiantes con mi mismo nivel universitario, porque el método getRecordSelect está en la carpeta vendor
             ->headerActions([
                 Tables\Actions\AttachAction::make()
+                ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
                 ->form(fn (AttachAction $action): array => [
                     $action->getRecordSelect()
                         ->reactive(), // Necesario para que al seleccionar cambien las carreras
                     Select::make('courses_id')
-                        ->label('Carrera')
+                        ->label('Ingrese la carrera de la persona vinculada')
                         ->options(function (Get $get) {
                             $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
                             if (!$recordId) {
                                 return [];
                             }
                             $profile = \App\Models\Profile::find($recordId);
-
                             if (!$profile) {
                                 return [];
                             }
-
                             return getCoursesByProfileLevel($profile->level);
                         })
                         ->searchable()
@@ -148,29 +146,23 @@ class ProfilesRelationManager extends RelationManager
                                 TextEntry::make('User.email')->label('Email'),
                                 TextEntry::make('phone_number')->label('Número de Teléfono'),
                             ])->columns(2)->columnSpan(2),
-
                             Section::make([
                                 TextEntry::make('level')->label('Nivel Universitario')->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
                             ])->columnSpan(1)
-
                     ])->columns(3)
                     ->record($record)),// El $record aquí viene del modelo actual en la tabla
-
-
                 // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
                 Tables\Actions\EditAction::make()
                         ->visible(fn ($record) =>
                         $record->id === auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
-
                 // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
                 Tables\Actions\DetachAction::make()
                         ->visible(fn ($record) =>
                         $record->id !== auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
-
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
@@ -181,6 +173,4 @@ class ProfilesRelationManager extends RelationManager
                     ]),
                 ]);
     }
-
 }
-
