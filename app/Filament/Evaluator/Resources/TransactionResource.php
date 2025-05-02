@@ -91,6 +91,23 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
+                             //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
+                             ToggleButtons::make('certification')
+                             ->disabled(fn ($get) => $get('certification') == 3) // Se deshabilitan si ya está certificado
+                             ->label('Certificación')
+                             ->columns(2)
+                             ->options([
+                                 1 => 'No Certificado',
+                                 2 => 'Por Certificar',
+                             ])
+                             ->colors([
+                                 1 => 'danger',
+                                 2 => 'warning',
+                             ]),
+                             Forms\Components\Placeholder::make('certification_notice')
+                                 ->label('Información Importante')
+                                 ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
+                                 ->visible(fn ($get) => $get('certification') == 3),
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
@@ -103,24 +120,6 @@ class TransactionResource extends Resource
                                 ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                                 }),
-
-                            //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                            ToggleButtons::make('certification')
-                                ->disabled(fn ($get) => $get('certification') == 3) // Se deshabilitan si ya está certificado
-                                ->label('Certificación')
-                                ->columns(2)
-                                ->options([
-                                    1 => 'No Certificado',
-                                    2 => 'Por Certificar',
-                                ])
-                                ->colors([
-                                    1 => 'danger',
-                                    2 => 'warning',
-                                ]),
-                                Forms\Components\Placeholder::make('certification_notice')
-                                    ->label('Información Importante')
-                                    ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
-                                    ->visible(fn ($get) => $get('certification') == 3),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
