@@ -19,7 +19,7 @@ class RoleSeeder extends Seeder
             ['name' => 'Asesor', 'guard_name' => 'web'],
             ['name' => 'Evaluador', 'guard_name' => 'web'],
             ['name' => 'Coordinador', 'guard_name' => 'web'],
-            ['name' => 'Administrador', 'guard_name' => 'web'],
+            ['name' => 'Super administrador', 'guard_name' => 'web'],
         ]);
     }
 }

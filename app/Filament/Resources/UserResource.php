@@ -41,7 +41,12 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
-            ]);
+                // Utiliza CheckboxList para asignarle roles a los usuarios
+                Forms\Components\CheckboxList::make('roles')
+                    ->relationship('roles', 'name')
+                    ->searchable()
+                    ->columns(2),
+                ]);
     }
 
     public static function table(Table $table): Table
