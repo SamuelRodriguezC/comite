@@ -116,7 +116,11 @@ class TransactionResource extends Resource
                                 ->colors([
                                     1 => 'danger',
                                     2 => 'warning',
-                                ])
+                                ]),
+                                Forms\Components\Placeholder::make('certification_notice')
+                                    ->label('Información Importante')
+                                    ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
+                                    ->visible(fn ($get) => $get('certification') == 3),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
