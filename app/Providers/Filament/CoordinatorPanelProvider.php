@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\CourcesAplicationChartWidget;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -55,6 +56,9 @@ class CoordinatorPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

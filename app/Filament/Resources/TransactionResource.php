@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Enums\Enabled;
+use App\Models\Profile;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -76,7 +77,8 @@ class TransactionResource extends Resource
                                 }
                             }),
                         // Agrega un campo oculto para guardar el nivel universitario del perfil seleccionado
-                        Forms\Components\Hidden::make('level'),
+                        Forms\Components\Hidden::make('level')
+                            ->default(fn (?Transaction $record) => $record?->profile?->level),
                         Forms\Components\Select::make('courses_id')
                             ->label('Carrera universitaria de la persona vinculada')
                             ->visibleOn('create')
@@ -101,6 +103,20 @@ class TransactionResource extends Resource
 
                 FormSection::make('Opción de grado')
                     ->schema([
+                        //Forms\Components\TextInput::make('profile_id')
+                        //    ->label('Estudiante vinculado')
+                        //    ->default(fn (?Transaction $record) =>
+                        //        $record?->profile
+                        //        ? "{$record->profile->document_number} - {$record->profile->name} {$record->profile->last_name}"
+                        //        : 'No asignado')
+                        //    ->disabled()
+                        //    ->visibleOn('edit'),
+                        // calcula el level del modelo si esta en edición
+                        //Forms\Components\TextInput::make('level')
+                        //    ->label('Nivel')
+                        //    ->disabled()
+                        //    ->default(fn (?Profile $record) => $record?->profile?->level)
+                        //    ->visibleOn('edit'),
                         Forms\Components\TextInput::make('id')
                             ->label('Número de Ticket')
                             ->disabled()
@@ -112,7 +128,11 @@ class TransactionResource extends Resource
                             ->preload()
                             ->required()
                             ->enum(Component::class)
-                            ->options(Component::class),
+                            ->options(Component::class)
+                            // Limpiar el campo de opción de grado luego de modificar el componente
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $set('option_id', null);
+                            }),
                         Forms\Components\Select::make('option_id')
                             ->label("Opción de grado")
                             ->options(function (callable $get) {
@@ -127,6 +147,27 @@ class TransactionResource extends Resource
                                     else {
                                         return ["Aún no ha vinculado a un integrante"];
                                     }
+                                    if ($component !== null) {
+                                        $query->where('component', $component);
+                                    }
+                                    else {
+                                        return ["Aún no ha seleccionado el componente"];
+                                    }
+                                // Muestra las opciones de grado de acuerdo a la información anterior
+                                return $query->pluck('option', 'id');
+                            })
+                            ->required()
+                            ->visibleOn('create')
+                            ->searchable()
+                            ->live(), // Para reaccionar a cambios del componente
+                            Forms\Components\Select::make('option_id')
+                            ->label("Opción de grado")
+                            ->visibleOn('edit')
+                            ->options(function (callable $get) {
+                                // Toma el nivel guardado en el campo oculto level y el componente elegido
+                                $component = $get('component');
+                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
+                                $query = \App\Models\Option::query();
                                     if ($component !== null) {
                                         $query->where('component', $component);
                                     }
