@@ -180,11 +180,18 @@ class TransactionResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('component')
+                ->label('Componente')
                 ->options([
                     '1' => 'Investigativo',
                     '2' => 'No Investigativo',
-                ])
-                ->attribute('component')
+                ])->attribute('component'),
+                SelectFilter::make('enabled')
+                ->label('Habilitado')
+                ->options([
+                    '1' => 'Habilitado',
+                    '2' => 'Deshabilitado',
+                ])->attribute('enabled')
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
