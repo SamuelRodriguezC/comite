@@ -29,7 +29,7 @@ class ProcessResource extends Resource
     protected static ?string $model = Process::class;
     protected static ?string $modelLabel = "Proceso";
     protected static ?string $pluralModelLabel = "Todos Los Procesos";
-    protected static ?string $navigationGroup = "Etapas";
+    //protected static ?string $navigationGroup = "Etapas";
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
     protected static ?int $navigationSort = 2;
 

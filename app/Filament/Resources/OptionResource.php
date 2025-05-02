@@ -28,7 +28,7 @@ class OptionResource extends Resource
     protected static ?string $pluralModelLabel = "Opciones de grado";
     protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 13;
 
     public static function form(Form $form): Form
     {

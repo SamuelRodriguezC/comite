@@ -31,7 +31,7 @@ class ProcessAplicationResource extends Resource
     protected static ?string $pluralModelLabel = "Solicitudes";
     protected static ?string $navigationGroup = "Etapas";
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

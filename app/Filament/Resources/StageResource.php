@@ -23,7 +23,7 @@ class StageResource extends Resource
     protected static ?string $pluralModelLabel = "Etapas";
     protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 12;
 
     public static function form(Form $form): Form
     {

@@ -24,8 +24,9 @@ class ProfileResource extends Resource
     //protected static ?string $label = 'Información de perfil';
     protected static ?string $navigationIcon = 'heroicon-o-identification';
 
-    protected static ?string $modelLabel = 'Perfil';
-    protected static ?string $pluralModelLabel = 'Perfiles';
+    protected static ?string $modelLabel = 'Perfil de usuario';
+    protected static ?string $pluralModelLabel = 'Perfiles de usuarios';
+    protected static ?int $navigationSort = 3;
     //protected static ?string $slug = 'perfiles';
     //protected static ?string $navigationLabel = '1. Información de perfil';
 

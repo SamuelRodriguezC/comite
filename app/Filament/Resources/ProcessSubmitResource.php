@@ -31,7 +31,7 @@ class ProcessSubmitResource extends Resource
     protected static ?string $pluralModelLabel = "Entregas";
     protected static ?string $navigationGroup = "Etapas";
     protected static ?string $navigationIcon = 'heroicon-o-document-arrow-up';
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

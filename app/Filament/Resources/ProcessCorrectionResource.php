@@ -32,7 +32,7 @@ class ProcessCorrectionResource extends Resource
     protected static ?string $pluralModelLabel = "Correcciones";
     protected static ?string $navigationGroup = "Etapas";
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {

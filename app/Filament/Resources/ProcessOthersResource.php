@@ -41,7 +41,7 @@ class ProcessOthersResource extends Resource
     protected static ?string $pluralModelLabel = "Otros";
     protected static ?string $navigationGroup = "Etapas";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 7;
 
     // Filtra por etapa finalizado, cancelado y aplazado
     public static function getEloquentQuery(): Builder

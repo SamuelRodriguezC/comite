@@ -25,7 +25,7 @@ class ConceptResource extends Resource
     protected static ?string $pluralModelLabel = "Conceptos";
     protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 15;
 
     public static function form(Form $form): Form
     {

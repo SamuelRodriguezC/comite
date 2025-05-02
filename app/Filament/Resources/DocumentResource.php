@@ -23,7 +23,7 @@ class DocumentResource extends Resource
     protected static ?string $pluralModelLabel = "Tipos de documento";
     protected static ?string $navigationGroup = "Administrativo";
     protected static ?string $navigationIcon = 'heroicon-o-identification';
-    protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 14;
 
     public static function form(Form $form): Form
     {
