@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
@@ -41,11 +42,15 @@ class ProcessesRelationManager extends RelationManager
                         'mimes:pdf',
                         'max:10240',
                     ])
-                    ->maxSize(10240) // 10MB
-                    ->maxFiles(1) ,
-                Forms\Components\TextInput::make('comment')
+                    ->maxSize(10240)
+                    ->columnSpan(1)
+                    ->columnSpanFull()
+                    ->maxFiles(1),
+                Forms\Components\RichEditor::make('comment')
                     ->label('Comentario')
                     ->required()
+                    ->columnSpanFull()
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                     ->maxLength(255),
             ]);
     }
@@ -80,14 +85,14 @@ class ProcessesRelationManager extends RelationManager
                         // Solo tomar el nombre del archivo, quitando el directorio
                         return basename($state);
                     })
+                    ->limit(20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Comentario")
+                    ->label("Tu Comentario")
                     ->placeholder('Sin Comentario Aún')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    })
+                    ->limit(30)
                     ->sortable()
+                    ->markdown()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
@@ -123,8 +128,8 @@ class ProcessesRelationManager extends RelationManager
                                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                                         ->color(fn ($state) => State::from($state)->getColor()),
                                     TextEntry::make('stage.stage')->label('Etapa'),
+                                    TextEntry::make('comment')->label('Tu Comentario')->placeholder('No ha Comentado Aún')->markdown(),
                                     TextEntry::make('requirement')->label('Requisitos')->placeholder('No ha Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
-                                    TextEntry::make('comment')->label('Tu Comentario')->placeholder('No ha Comentado Aún'),
                                 ])
                                 ->columns(2),
 
@@ -134,8 +139,12 @@ class ProcessesRelationManager extends RelationManager
                                     $record->comments->map(function ($comment) {
                                         return Section::make()
                                             ->schema([
-                                                TextEntry::make('comment')
+                                                TextEntry::make('profile.name')
+                                                    ->label('Evaluador')
+                                                    ->default(optional($comment->profile)->name ?? 'Desconocido'),
+                                                TextEntry::make('comment.comment')
                                                     ->label('Comentario')
+                                                    ->markdown()
                                                     ->default($comment->comment),
                                                 TextEntry::make('concept.concept')
                                                     ->label('Concepto')
@@ -146,9 +155,6 @@ class ProcessesRelationManager extends RelationManager
                                                         'No aprobado' => 'danger',
                                                         default => 'gray',
                                                     }),
-                                                TextEntry::make('profile.name')
-                                                    ->label('Evaluador')
-                                                    ->default(optional($comment->profile)->name ?? 'Desconocido'),
                                             ])
                                             ->columns(3);
                                     })->toArray()
@@ -157,7 +163,31 @@ class ProcessesRelationManager extends RelationManager
                         ];
                     }),
 
-                Tables\Actions\EditAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->label('Completar')
+                        ->icon('heroicon-o-document-arrow-up')
+                        ->visible(fn ($record) =>
+                            (!$record->requirement || trim($record->requirement) === '') &&
+                            (!$record->comment || trim($record->comment) === '')
+                        ),
+
+                    ActionGroup::make([
+                        // --------------------------- VER REQUERIMIENTOS ---------------------------
+                        Tables\Actions\Action::make('show')
+                            ->label('Visualizar requerimiento')
+                            ->icon('heroicon-o-eye') // Icono de ver
+                            ->url(fn ($record) => route('file.view', ['file' => basename($record->requirement)]))
+                            ->openUrlInNewTab()
+                            ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
+
+                        // --------------------------- DESCARGAR REQUERIMIENTOS ---------------------------
+                        Tables\Actions\Action::make('download')
+                            ->icon('heroicon-o-folder-arrow-down') // Icono de descarga
+                            ->label('Descargar requerimiento')
+                            ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
+                            ->openUrlInNewTab()
+                            ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
+                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
