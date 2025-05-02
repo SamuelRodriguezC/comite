@@ -159,6 +159,12 @@ class ProcessCorrectionResource extends Resource
             });
     }
 
+    // Filtra por solicitudes pendientes
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getEloquentQuery()->where('state', '3')->count();
+    }
+
     public static function getRelations(): array
     {
         return [

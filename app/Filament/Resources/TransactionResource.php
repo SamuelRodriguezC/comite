@@ -327,6 +327,12 @@ class TransactionResource extends Resource
         ])->columns(3);
     }
 
+    // Filtra por solicitudes pendientes
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getEloquentQuery()->where('certification', '2')->count();
+    }
+
     public static function getRelations(): array
     {
         return [
