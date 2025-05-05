@@ -5,16 +5,23 @@ namespace App\Filament\Resources\TransactionResource\RelationManagers;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
+use App\Models\Concept;
 use App\Enums\Completed;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
+use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\IconColumn;
 
 class ProcessesRelationManager extends RelationManager
 {
@@ -75,19 +82,24 @@ class ProcessesRelationManager extends RelationManager
                         // Solo tomar el nombre del archivo, quitando el directorio
                         return basename($state);
                     })
+                    ->limit(20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Comentario")
+                    ->label("Comentario Estudiante")
+                    ->markdown()
                     ->placeholder('Sin Comentario Aún')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    })
-                    ->sortable()
+                    ->limit(30)
                     ->searchable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
-                    ->icon(fn ($state) => Completed::from($state)->getIcon())
-                    ->color(fn ($state) => Completed::from($state)->getColor()),
+                    ->icon(fn ($record) => Completed::from($record->completed)->getIcon())
+                    ->color(fn ($record) => Completed::from($record->completed)->getColor())
+                    ->action(fn ($record) => $record->update([ // Cambiar el completado del proceso
+                        'completed' => $record->completed === Completed::SI->value
+                            ? Completed::NO->value
+                            : Completed::SI->value
+                    ]))
+                    ->tooltip('Haz clic para cambiar'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -98,11 +110,13 @@ class ProcessesRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
+                // --------------------------- VER PROCESO ---------------------------
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->infolist(function ($record) {
@@ -117,8 +131,8 @@ class ProcessesRelationManager extends RelationManager
                                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                                         ->color(fn ($state) => State::from($state)->getColor()),
                                     TextEntry::make('stage.stage')->label('Etapa'),
-                                    TextEntry::make('requirement')->label('Requisitos')->placeholder('No ha Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
-                                    TextEntry::make('comment')->label('Tu Comentario')->placeholder('No ha Comentado Aún'),
+                                    TextEntry::make('comment')->label('Comentario del Estudiante')->placeholder('No ha Comentado Aún')->markdown(),
+                                    TextEntry::make('requirement')->label('Requisitos')->placeholder('No se han Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
                                 ])
                                 ->columns(2),
 
@@ -128,8 +142,12 @@ class ProcessesRelationManager extends RelationManager
                                     $record->comments->map(function ($comment) {
                                         return Section::make()
                                             ->schema([
-                                                TextEntry::make('comment')
+                                                TextEntry::make('profile.name')
+                                                    ->label('Evaluador')
+                                                    ->default(optional($comment->profile)->name ?? 'Desconocido'),
+                                                TextEntry::make('comment.comment')
                                                     ->label('Comentario')
+                                                    ->markdown()
                                                     ->default($comment->comment),
                                                 TextEntry::make('concept.concept')
                                                     ->label('Concepto')
@@ -140,9 +158,6 @@ class ProcessesRelationManager extends RelationManager
                                                         'No aprobado' => 'danger',
                                                         default => 'gray',
                                                     }),
-                                                TextEntry::make('profile.name')
-                                                    ->label('Evaluador')
-                                                    ->default(optional($comment->profile)->name ?? 'Desconocido'),
                                             ])
                                             ->columns(3);
                                     })->toArray()
@@ -150,7 +165,101 @@ class ProcessesRelationManager extends RelationManager
                                 ->visible(fn ($record) => $record->comments->isNotEmpty()),
                         ];
                     }),
-                Tables\Actions\EditAction::make(),
+
+                // --------------------------- GRUPO DE BOTONES ---------------------------
+                ActionGroup::make([
+                    // --------------------------- COMENTAR ---------------------------
+                    Tables\Actions\Action::make('comentar')
+                    ->label(function ($record) {
+                        // Verificar si el perfil ya tiene un comentario en este proceso
+                        $existingComment = $record->comments()->where('profile_id', Auth::user()->profiles->id)->first();
+
+                        // Cambiar el label dependiendo si es crear o editar
+                        return $existingComment ? 'Editar Comentario' : 'Comentar';
+                    })
+                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->form(function ($record) {
+                        // Verificar si el perfil ya tiene un comentario en este proceso
+                        $existingComment = $record->comments()->where('profile_id', Auth::user()->profiles->id)->first();
+
+                        // Si existe un comentario, precargar los datos del comentario y el concepto
+                        if ($existingComment) {
+                            return [
+                                Forms\Components\RichEditor::make('comment')
+                                    ->label('Comentario')
+                                    ->required()
+                                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                                    ->maxLength(255)
+                                    ->default($existingComment->comment), // Cargar el comentario actual
+
+                                Forms\Components\Select::make('concept_id')
+                                    ->label('Concepto')
+                                    ->required()
+                                    ->options(Concept::pluck('concept', 'id'))
+                                    ->default($existingComment->concept_id), // Cargar el concepto actual
+                            ];
+                        } else {
+                            // Si no existe un comentario, mostrar los campos vacíos
+                            return [
+                                Forms\Components\RichEditor::make('comment')
+                                    ->label('Comentario')
+                                    ->required()
+                                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('concept_id')
+                                    ->label('Concepto')
+                                    ->required()
+                                    ->options(Concept::pluck('concept', 'id')),
+                            ];
+                        }
+                    })
+                    ->action(function ($data, $record) {
+                        // Verificar si el perfil ya tiene un comentario en este proceso
+                        $existingComment = $record->comments()->where('profile_id', Auth::user()->profiles->id)->first();
+
+                        if ($existingComment) {
+                            // Si ya existe un comentario, actualizarlo
+                            $existingComment->update([
+                                'comment' => $data['comment'],
+                                'concept_id' => $data['concept_id'],
+                            ]);
+                        } else {
+                            // Si no existe un comentario, crear uno nuevo
+                            $record->comments()->create([
+                                'comment' => $data['comment'],
+                                'concept_id' => $data['concept_id'],
+                                'profile_id' => Auth::user()->profiles->id,
+                            ]);
+                        }
+                    })
+                    ->modalHeading(function ($record) {
+                        // Cambiar el encabezado del modal dependiendo si es crear o editar
+                        $existingComment = $record->comments()->where('profile_id', Auth::user()->profiles->id)->first();
+                        return $existingComment ? 'Editar Comentario' : 'Agregar Comentario';
+                    })
+                    ->modalSubmitActionLabel(function ($record) {
+                        // Cambiar el texto del botón de envío dependiendo si es crear o editar
+                        $existingComment = $record->comments()->where('profile_id', Auth::user()->profiles->id)->first();
+                        return $existingComment ? 'Actualizar' : 'Guardar';
+                    })
+                    ->modalCancelActionLabel('Cancelar'),
+
+                    // --------------------------- VER REQUERIMIENTOS ---------------------------
+                    Tables\Actions\Action::make('show')
+                    ->label('Visualizar requerimiento')
+                    ->icon('heroicon-o-eye') // Icono de ver
+                    ->url(fn ($record) => route('file.view', ['file' => basename($record->requirement)]))
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
+
+                    // --------------------------- DESCARGAR REQUERIMIENTOS ---------------------------
+                    Tables\Actions\Action::make('download')
+                        ->icon('heroicon-o-folder-arrow-down') // Icono de descarga
+                        ->label('Descargar requerimiento')
+                        ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
+                        ->openUrlInNewTab()
+                        ->visible(fn ($record) => trim($record->requirement) !== '')
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
