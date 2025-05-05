@@ -83,7 +83,7 @@ class TransactionResource extends Resource
                             }),
                         // Campo para seleccionar curso
                         Forms\Components\Select::make('courses_id')
-                            ->label('Carrera universitaria')
+                            ->label('Tu carrera universitaria')
                             ->visibleOn('create')
                             // Mostrar los cursos de la tabla
                             ->options(\App\Models\Course::all()->pluck('course', 'id'))

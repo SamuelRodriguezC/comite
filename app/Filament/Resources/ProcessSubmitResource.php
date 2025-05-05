@@ -209,6 +209,12 @@ class ProcessSubmitResource extends Resource
         return static::getEloquentQuery()->where('state', '3')->count();
     }
 
+    // Describe el getNavigationBadge
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Primeras entregas pendientes';
+    }
+
     public static function getRelations(): array
     {
         return [

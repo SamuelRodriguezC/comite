@@ -43,12 +43,6 @@ class ProcessOthersResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 7;
 
-    // Filtra por etapa finalizado, cancelado y aplazado
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->whereIn('stage_id', [5, 6, 7]);
-    }
-
     public static function form(Form $form): Form
     {
         return $form
@@ -227,10 +221,22 @@ class ProcessOthersResource extends Resource
         ];
     }
 
+    // Filtra por etapa finalizado, cancelado y aplazado
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('stage_id', [5, 6, 7]);
+    }
+
     // Filtra por solicitudes pendientes
     public static function getNavigationBadge(): ?string
     {
         return static::getEloquentQuery()->where('state', '3')->count();
+    }
+
+    // Describe el getNavigationBadge
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Finalizados, cancelados y aplazados pendientes';
     }
 
     public static function getPages(): array

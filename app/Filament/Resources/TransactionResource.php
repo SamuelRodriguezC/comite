@@ -327,10 +327,16 @@ class TransactionResource extends Resource
         ])->columns(3);
     }
 
-    // Filtra por solicitudes pendientes
+    // Filtra por solicitudes pendientes por certificar
     public static function getNavigationBadge(): ?string
     {
         return static::getEloquentQuery()->where('certification', '2')->count();
+    }
+
+    // Describe el getNavigationBadge
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Tickets pendientes por generar actas';
     }
 
     public static function getRelations(): array
