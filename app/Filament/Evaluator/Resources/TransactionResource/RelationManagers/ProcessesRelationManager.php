@@ -5,6 +5,7 @@ namespace App\Filament\Evaluator\Resources\TransactionResource\RelationManagers;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
+use App\Models\Stage;
 use App\Models\Concept;
 use App\Enums\Completed;
 use Filament\Forms\Form;
@@ -27,7 +28,21 @@ class ProcessesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('stage_id')
+                    ->label("Etapa")
+                    ->options(function ($livewire) {
+                        // Obtener IDs de etapas ya utilizadas en esta transacción
+                        $usedStageIds = $livewire->ownerRecord->processes()->pluck('stage_id')->toArray();
+
+                        // Traer solo las etapas que NO están en esa lista
+                        return Stage::whereNotIn('id', $usedStageIds)
+                            ->orderBy('stage')
+                            ->get()
+                            ->pluck('stage', 'id')
+                            ->mapWithKeys(fn ($stage, $id) => [$id => "#{$id} - {$stage}"]);
+                    })
+                    ->columnSpanFull()
+                    ->required(),
             ]);
     }
 
@@ -93,6 +108,19 @@ class ProcessesRelationManager extends RelationManager
             ])
             ->filters([
                 //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Crear Proceso')
+                    ->using(function ($data, $livewire) {
+                        return $livewire->ownerRecord->processes()->create([
+                            'stage_id' => $data['stage_id'],
+                            'state' => 3,
+                            'completed' => false,
+                            'requirement' => ' ',
+                            'comment' => ' ',
+                        ]);
+                    }),
             ])
             ->actions([
                 // --------------------------- VER PROCESO ---------------------------

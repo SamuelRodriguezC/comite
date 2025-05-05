@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TransactionResource\RelationManagers;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
+use App\Models\Stage;
 use App\Models\Concept;
 use App\Enums\Completed;
 use Filament\Forms\Form;
@@ -12,16 +13,16 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\IconColumn;
 
 class ProcessesRelationManager extends RelationManager
 {
@@ -32,23 +33,21 @@ class ProcessesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\FileUpload::make('requirement')
-                    ->label('Requisitos en PDF')
-                    ->required()
-                    ->disk('public')
-                    ->directory('processes/requirements')
-                    ->acceptedFileTypes(['application/pdf'])
-                    ->rules([
-                        'required',
-                        'mimes:pdf',
-                        'max:10240',
-                    ])
-                    ->maxSize(10240) // 10MB
-                    ->maxFiles(1) ,
-                Forms\Components\TextInput::make('comment')
-                    ->label('Comentario')
-                    ->required()
-                    ->maxLength(255),
+                    Forms\Components\Select::make('stage_id')
+                    ->label("Etapa")
+                    ->options(function ($livewire) {
+                        // Obtener IDs de etapas ya utilizadas en esta transacción
+                        $usedStageIds = $livewire->ownerRecord->processes()->pluck('stage_id')->toArray();
+
+                        // Traer solo las etapas que NO están en esa lista
+                        return Stage::whereNotIn('id', $usedStageIds)
+                            ->orderBy('stage')
+                            ->get()
+                            ->pluck('stage', 'id')
+                            ->mapWithKeys(fn ($stage, $id) => [$id => "#{$id} - {$stage}"]);
+                    })
+                    ->columnSpanFull()
+                    ->required(),
             ]);
     }
 
@@ -114,6 +113,19 @@ class ProcessesRelationManager extends RelationManager
             ])
             ->filters([
                 //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Crear Proceso')
+                    ->using(function ($data, $livewire) {
+                        return $livewire->ownerRecord->processes()->create([
+                            'stage_id' => $data['stage_id'],
+                            'state' => 3,
+                            'completed' => false,
+                            'requirement' => ' ',
+                            'comment' => ' ',
+                        ]);
+                    }),
             ])
             ->actions([
                 // --------------------------- VER PROCESO ---------------------------
@@ -258,7 +270,7 @@ class ProcessesRelationManager extends RelationManager
                         ->label('Descargar requerimiento')
                         ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
                         ->openUrlInNewTab()
-                        ->visible(fn ($record) => trim($record->requirement) !== '')
+                        ->visible(fn ($record) => trim($record->requirement) !== ''),
                 ])
             ])
             ->bulkActions([
