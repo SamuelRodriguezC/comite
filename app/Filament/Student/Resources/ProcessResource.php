@@ -67,7 +67,7 @@ class ProcessResource extends Resource
 
     public static function table(Table $table): Table
     {
-         return $table
+        return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
                     ->label("Ticket")

@@ -33,18 +33,6 @@ class ListProcesses extends ListRecords
             'segunda_correccion' => Tab::make('Segunda corrección')
                 ->label('2a Corrección')
                 ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '4')),
-
-            'finalizado' => Tab::make('Finalizado')
-                ->label('Finalizados')
-                ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '5')),
-
-            'cancelado' => Tab::make('Cancelado')
-                ->label('Cancelados')
-                ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '6')),
-
-            'aplazado' => Tab::make('Aplazado')
-                ->label('Aplazados')
-                ->modifyQueryUsing(fn ($query) => $query->where('stage_id', '7')),
         ];
     }
 

@@ -18,9 +18,6 @@ class StageSeeder extends Seeder
             ['stage' => 'Entrega'],
             ['stage' => 'Primera corrección'],
             ['stage' => 'Segunda correción'],
-            ['stage' => 'Finalizado'],
-            ['stage' => 'Cancelado'],
-            ['stage' => 'Aplazado'],
         ]);
     }
 }

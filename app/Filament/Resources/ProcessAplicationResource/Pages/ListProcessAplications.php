@@ -23,7 +23,7 @@ class ListProcessAplications extends ListRecords
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::PENDIENTE);
                 }),
-                'Aprobado' => Tab::make('Aprobado')
+            'Aprobado' => Tab::make('Aprobado')
                 ->label('Aprobado')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::APROBADO);
@@ -32,6 +32,16 @@ class ListProcessAplications extends ListRecords
                 ->label('Improbado')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('state', State::IMPROBADO);
+                }),
+            'Aplazado' => Tab::make('Aplazado')
+                ->label('Aplazado')
+                ->modifyQueryUsing(function ($query) {
+                    return $query->where('state', State::APLAZADO);
+                }),
+            'Cancelado' => Tab::make('Cancelado')
+                ->label('Cancelado')
+                ->modifyQueryUsing(function ($query) {
+                    return $query->where('state', State::CANCELADO);
                 }),
         ];
     }

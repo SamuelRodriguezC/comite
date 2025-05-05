@@ -13,6 +13,8 @@ enum State: int implements HasLabel, HasColor
     case APROBADO = 1;
     case IMPROBADO = 2;
     case PENDIENTE = 3;
+    case APLAZADO = 4;
+    case CANCELADO = 5;
     /**
      * Generates function to display a label
      */
@@ -20,8 +22,10 @@ enum State: int implements HasLabel, HasColor
     {
         return match ($this) {
             self::APROBADO => 'Aprobado',
-            self::IMPROBADO => 'Improbado',
+            self::IMPROBADO => 'No aprobado',
             self::PENDIENTE => 'Pendiente',
+            self::APLAZADO => 'Aplazado',
+            self::CANCELADO => 'Cancelado',
         };
     }
     /**
@@ -33,6 +37,8 @@ enum State: int implements HasLabel, HasColor
             self::APROBADO => 'success',
             self::IMPROBADO => 'danger',
             self::PENDIENTE => 'warning',
+            self::APLAZADO => 'gray',
+            self::CANCELADO => 'danger',
         };
     }
 }
