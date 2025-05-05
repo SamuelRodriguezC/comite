@@ -271,6 +271,7 @@ class ProcessesRelationManager extends RelationManager
                         ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
                         ->openUrlInNewTab()
                         ->visible(fn ($record) => trim($record->requirement) !== ''),
+                    Tables\Actions\EditAction::make()->label('Editar Etapa')
                 ])
             ])
             ->bulkActions([
