@@ -50,28 +50,42 @@ class ProcessAplicationResource extends Resource
                 ->enum(state::class)
                 ->options(State::class)
                 ->required(),
-            Forms\Components\Select::make('completed')
+            Forms\Components\Toggle::make('completed')
                 ->label('Finalizado')
-                ->live()
-                ->preload()
-                // ->disabled()
-                ->enum(Completed::class)
-                ->options(Completed::class)
-                ->required(),
+                ->inline(false)
+                ->onColor('success')
+                ->offColor('danger')
+                ->onIcon(Completed::SI->getIcon())
+                ->offIcon(Completed::NO->getIcon())
+                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 0)
+                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                }),
             Forms\Components\Select::make('transaction_id')
                 ->label("Ticket")
                 ->relationship('transaction', 'id')
                 ->visibleOn('create')
                 ->required(),
-            Forms\Components\TextInput::make('requirement')
-                ->disabled()
-                ->label("Requisitos en PDF")
+            Forms\Components\FileUpload::make('requirement')
+                ->label('Requisitos en PDF')
                 ->required()
-                ->maxLength(255),
-            Forms\Components\Textarea::make('comment')
-                ->label("Comentario del Estudiante")
-                ->required(),
-                // ->columnSpanFull(),
+                ->columnSpanFull()
+                ->disk('public') // Indica que se usará el disco 'public'
+                ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                ->rules([
+                    'required',
+                    'mimes:pdf',
+                    'max:10240',
+                ]) // Agrega validación: campo requerido y solo PDF
+                ->maxSize(10240) // 10MB
+                ->maxFiles(1),
+            Forms\Components\RichEditor::make('comment')
+                ->label('Comentario del Estudiante')
+                ->required()
+                ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                ->maxLength(255)
+                ->columnSpanFull(),
         ])->columns(2);
     }
 
@@ -102,9 +116,8 @@ class ProcessAplicationResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    })
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
@@ -161,14 +174,20 @@ class ProcessAplicationResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->color(fn ($state) => State::from($state)->getColor()),
-                TextEntry::make('completed')
-                    ->label("Finalizado")
-                    ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                 TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->label('Actualizado en'),
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                IconEntry::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->limit(20)
                     ->label("Requisitos"),
+                TextEntry::make('comment')
+                    ->markdown()
+                    ->label("Comentario del Estudiante"),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')
