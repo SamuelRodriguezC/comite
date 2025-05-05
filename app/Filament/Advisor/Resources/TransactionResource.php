@@ -52,18 +52,19 @@ class TransactionResource extends Resource
                         Forms\Components\TextInput::make('id')
                             ->label('Número de Ticket')
                             ->disabled()
-                            ->numeric(),
+                            ->numeric()
+                            ->visibleOn('edit'),
                         Forms\Components\Select::make('component')
                             ->label("Componente de la opción de grado")
                             ->live()
                             ->preload()
-                            ->disabled()
                             ->enum(Component::class)
                             ->options(Component::class)
+                            ->disabledOn('edit')
                             ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
                         Forms\Components\Select::make('option_id')
                             ->label("Opción de Grado")
-                            ->disabled()
+                            ->disabledOn('edit')
                             ->relationship('option', 'option')
                             ->required()
                              // Función para filtrar la opción de grado por nivel universitario y componente
@@ -81,6 +82,25 @@ class TransactionResource extends Resource
                                     ->where('component', $selectedComponent)
                                     ->pluck('option', 'id');
                             }),
+                        // Campo para seleccionar curso
+                        Forms\Components\Select::make('courses_id')
+                            ->label('Carrera universitaria')
+                            ->visibleOn('create')
+                            // Mostrar los cursos de la tabla
+                            ->options(\App\Models\Course::all()->pluck('course', 'id'))
+                            //->searchable()
+                            ->required()
+                            ->options(function () {
+                                $user = Auth::user();
+                                if (!$user || !$user->profiles) {
+                                    return ["El perfil no tiene nivel universitario"]; // Retornamos un arreglo vacío si no hay usuario o perfil
+                                }
+                                // Obtenemos el nivel universitario del usuario autenticado (pregrado o posgrado)
+                                $userLevel = $user->profiles->level;
+                                // Filtramos las carreras que tengan el mismo nivel universitario
+                                return \App\Models\Course::where('level', $userLevel)
+                                    ->pluck('course', 'id');
+                            }),
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-ticket'),
@@ -94,23 +114,23 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
-                             //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                             ToggleButtons::make('certification')
-                             ->disabled(fn ($get) => $get('certification') == 3) // Se deshabilitan si ya está certificado
-                             ->label('Certificación')
-                             ->columns(2)
-                             ->options([
-                                 1 => 'No Certificado',
-                                 2 => 'Por Certificar',
-                             ])
-                             ->colors([
-                                 1 => 'danger',
-                                 2 => 'warning',
-                             ]),
-                             Forms\Components\Placeholder::make('certification_notice')
-                                 ->label('Información Importante')
-                                 ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
-                                 ->visible(fn ($get) => $get('certification') == 3),
+                            //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
+                            ToggleButtons::make('certification')
+                                   ->disabled()
+                                   ->columns(3)
+                                   ->visibleOn('edit')
+                                   ->label('Certificación')
+                                   ->columns(2)
+                                   ->options([
+                                       1 => 'No Certificado',
+                                       3 => 'Certificado',
+                                       2 => 'Por Certificar',
+                                   ])
+                                   ->colors([
+                                       1 => 'danger',
+                                       3 => 'success',
+                                       2 => 'warning',
+                                ]),
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
@@ -127,9 +147,9 @@ class TransactionResource extends Resource
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-eye')
-                    ->visible(fn (string $context) => $context === 'edit'),
+                    ->visible(fn (string $context) => $context === 'edit'), //Solo es visible al crear (Sección)
             ]);
-    }
+        }
 
 
     public static function table(Table $table): Table

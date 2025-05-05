@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Tables\Actions\Action;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,6 +46,7 @@ class ProcessesRelationManager extends RelationManager
                     ->maxSize(10240)
                     ->columnSpan(1)
                     ->columnSpanFull()
+                    ->disabled(fn (?Model $record) => filled($record?->requirement))
                     ->maxFiles(1),
                 Forms\Components\RichEditor::make('comment')
                     ->label('Comentario')
@@ -167,7 +169,7 @@ class ProcessesRelationManager extends RelationManager
                         ->label('Completar')
                         ->icon('heroicon-o-document-arrow-up')
                         ->visible(fn ($record) =>
-                            (!$record->requirement || trim($record->requirement) === '') &&
+                            (!$record->requirement || trim($record->requirement) === '') ||
                             (!$record->comment || trim($record->comment) === '')
                         ),
 

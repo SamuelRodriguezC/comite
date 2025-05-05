@@ -113,6 +113,23 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
+                            //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
+                            ToggleButtons::make('certification')
+                                   ->disabled()
+                                   ->columns(3)
+                                   ->visibleOn('edit')
+                                   ->label('Certificación')
+                                   ->columns(2)
+                                   ->options([
+                                       1 => 'No Certificado',
+                                       3 => 'Certificado',
+                                       2 => 'Por Certificar',
+                                   ])
+                                   ->colors([
+                                       1 => 'danger',
+                                       3 => 'success',
+                                       2 => 'warning',
+                                   ]),
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
@@ -125,23 +142,6 @@ class TransactionResource extends Resource
                                 ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                                 }),
-                             //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                             ToggleButtons::make('certification')
-                                ->disabled()
-                                ->columns(3)
-                                ->visibleOn('edit')
-                                ->label('Certificación')
-                                ->columns(2)
-                                ->options([
-                                    1 => 'No Certificado',
-                                    3 => 'Certificado',
-                                    2 => 'Por Certificar',
-                                ])
-                                ->colors([
-                                    1 => 'danger',
-                                    3 => 'success',
-                                    2 => 'warning',
-                                ]),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
