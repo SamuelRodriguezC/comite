@@ -1,25 +1,17 @@
 <?php
 
-namespace App\Filament\Student\Resources\TransactionResource\RelationManagers;
+namespace App\Filament\Advisor\Resources\TransactionResource\RelationManagers;
 
 use Filament\Forms;
 use App\Enums\Level;
-use App\Enums\State;
 use Filament\Tables;
-use App\Enums\Enabled;
-use App\Models\Course;
-use App\Models\Profile;
 use Filament\Forms\Get;
-use Filament\Forms\Set;
-use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
 use Filament\Infolists\Infolist;
-use Filament\Forms\Components\Group;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Actions\AttachAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -110,52 +102,31 @@ class ProfilesRelationManager extends RelationManager
             ])
             // No se puede filtrar estudiantes con mi mismo nivel universitario, porque el método getRecordSelect está en la carpeta vendor
             ->headerActions([
-                Tables\Actions\AttachAction::make()
-                ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
-                ->form(fn (AttachAction $action): array => [
-                    $action->getRecordSelect()
-                        ->reactive(), // Necesario para que al seleccionar cambien las carreras
-                    Select::make('courses_id')
-                        ->label('Ingrese la carrera de la persona vinculada')
-                        ->options(function (Get $get) {
-                            $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
-                            if (!$recordId) {
-                                return [];
-                            }
-                            $profile = \App\Models\Profile::find($recordId);
-                            if (!$profile) {
-                                return [];
-                            }
-                            return getCoursesByProfileLevel($profile->level);
-                        })
-                        ->searchable()
-                        ->required(),
-                ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
+                // -------------------------- FUNCIONALIDAD PARA VINCULAR PERSONAS DESHABILITADA ----------------------------
+                // Tables\Actions\AttachAction::make()
+                // ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
+                // ->form(fn (AttachAction $action): array => [
+                //     $action->getRecordSelect()
+                //         ->reactive(), // Necesario para que al seleccionar cambien las carreras
+                //     Select::make('courses_id')
+                //         ->label('Ingrese la carrera de la persona vinculada')
+                //         ->options(function (Get $get) {
+                //             $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
+                //             if (!$recordId) {
+                //                 return [];
+                //             }
+                //             $profile = \App\Models\Profile::find($recordId);
+                //             if (!$profile) {
+                //                 return [];
+                //             }
+                //             return getCoursesByProfileLevel($profile->level);
+                //         })
+                //         ->searchable()
+                //         ->required(),
+                // ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
             ])
             ->actions([
-                // // Botón para ver detalles de integrante
-                // Tables\Actions\ViewAction::make()
-                // ->label('Ver')
-                // ->modalHeading('Información del Integrante')
-                // // Crear el modal con una infolista
-                // ->infolist(function ($record){
-                //     return [
-                //         Section::make('Información Personal')
-                //         ->schema([
-                //             TextEntry::make('name')->label('Nombre'),
-                //             TextEntry::make('last_name')->label('Apellido'),
-                //             TextEntry::make('User.email')->label('Email'),
-                //             TextEntry::make('phone_number')->label('Número de Teléfono'),
-                //         ])->columns(2)->columnSpan(2),
-                //     //     Section::make([
-                //     //         extEntry::make('level')->label('Nivel Universitario')->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                //     //     ])->columnSpan(1)
-                //     // ])->columns(3)
-                //     ->record($record)),// El $record aquí viene del modelo actual en la tabla
 
-                //     ];
-                // }),
-                // --------------------------- VER PROCESO ---------------------------
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->infolist(function ($record) {
@@ -177,19 +148,19 @@ class ProfilesRelationManager extends RelationManager
                         ];
                     }),
 
-
                 // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
                 Tables\Actions\EditAction::make()
                         ->visible(fn ($record) =>
                         $record->id === auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
+             // -------------------------- FUNCIONALIDAD PARA DESIVINCULAR PERSONAS DESHABILITADA ----------------------------
                 // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
-                Tables\Actions\DetachAction::make()
-                        ->visible(fn ($record) =>
-                        $record->id !== auth_profile_id() &&
-                        $this->getTransaction()->isEditable()
-                    ),
+                // Tables\Actions\DetachAction::make()
+                //         ->visible(fn ($record) =>
+                //         $record->id !== auth_profile_id() &&
+                //         $this->getTransaction()->isEditable()
+                //     ),
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),

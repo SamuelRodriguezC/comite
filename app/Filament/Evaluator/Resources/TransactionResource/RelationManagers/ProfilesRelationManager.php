@@ -127,25 +127,27 @@ class ProfilesRelationManager extends RelationManager
                 // ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
             ])
             ->actions([
-                // Botón para ver detalles de integrante
                 Tables\Actions\ViewAction::make()
                 ->label('Ver')
-                ->modalHeading('Información del Integrante')
-                // Crear el modal con una infolista
-                ->modalContent(fn ($record) => Infolist::make()
-                    ->schema([
+                ->infolist(function ($record) {
+                    return [
                         Section::make('Información Personal')
                             ->schema([
                                 TextEntry::make('name')->label('Nombre'),
                                 TextEntry::make('last_name')->label('Apellido'),
                                 TextEntry::make('User.email')->label('Email'),
                                 TextEntry::make('phone_number')->label('Número de Teléfono'),
-                            ])->columns(2)->columnSpan(2),
-                            Section::make([
+                            ]) ->columns(1),  // Esto asegura que cada sección ocupe una columna
+
+
+                        Section::make('Información Institucional')
+                            ->schema([
                                 TextEntry::make('level')->label('Nivel Universitario')->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                            ])->columnSpan(1)
-                    ])->columns(3)
-                    ->record($record)),// El $record aquí viene del modelo actual en la tabla
+                                TextEntry::make('pivot.courses_id')->label('Carrera')->formatStateUsing(function ($state) {return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';}),
+                        ])->columns(1),  // Esto asegura que cada sección ocupe una columna
+                    ];
+                }),
+
                 // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
                 Tables\Actions\EditAction::make()
                         ->visible(fn ($record) =>

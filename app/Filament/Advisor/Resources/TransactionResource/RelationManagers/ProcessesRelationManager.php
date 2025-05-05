@@ -1,59 +1,46 @@
 <?php
 
-namespace App\Filament\Student\Resources\TransactionResource\RelationManagers;
+namespace App\Filament\Advisor\Resources\TransactionResource\RelationManagers;
 
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
-use App\Enums\Enabled;
-use App\Models\Comment;
+use App\Models\Concept;
 use App\Enums\Completed;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Infolists\Infolist;
-use Filament\Tables\Actions\Action;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class ProcessesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'Processes';
+    protected static string $relationship = 'processes';
     protected static ?string $title = 'Procesos vinculados al Ticket';
 
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\FileUpload::make('requirement')
-                    ->label('Requisitos en PDF')
-                    ->required()
-                    ->disk('public')
-                    ->directory('processes/requirements')
-                    ->acceptedFileTypes(['application/pdf'])
-                    ->rules([
-                        'required',
-                        'mimes:pdf',
-                        'max:10240',
-                    ])
-                    ->maxSize(10240)
-                    ->columnSpan(1)
-                    ->columnSpanFull()
-                    ->disabled(fn (?Model $record) => filled($record?->requirement))
-                    ->maxFiles(1),
-                Forms\Components\RichEditor::make('comment')
-                    ->label('Comentario')
-                    ->required()
-                    ->columnSpanFull()
-                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
-                    ->maxLength(255),
+        ->schema([
+            Forms\Components\FileUpload::make('requirement')
+                ->label('Requisitos en PDF')
+                ->required()
+                ->disk('public')
+                ->directory('processes/requirements')
+                ->acceptedFileTypes(['application/pdf'])
+                ->rules([
+                    'required',
+                    'mimes:pdf',
+                    'max:10240',
+                ])
+                ->maxSize(10240)
+                ->columnSpan(1)
+                ->columnSpanFull()
+                ->maxFiles(1),
             ]);
     }
 
@@ -90,16 +77,15 @@ class ProcessesRelationManager extends RelationManager
                     ->limit(20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Tu Comentario")
+                    ->label("Comentario Estudiante")
+                    ->markdown()
                     ->placeholder('Sin Comentario Aún')
                     ->limit(30)
-                    ->sortable()
-                    ->markdown()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
-                    ->icon(fn ($state) => Completed::from($state)->getIcon())
-                    ->color(fn ($state) => Completed::from($state)->getColor()),
+                    ->icon(fn ($record) => Completed::from($record->completed)->getIcon())
+                    ->color(fn ($record) => Completed::from($record->completed)->getColor()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -116,6 +102,7 @@ class ProcessesRelationManager extends RelationManager
                 //
             ])
             ->actions([
+                // --------------------------- VER PROCESO ---------------------------
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->infolist(function ($record) {
@@ -130,8 +117,8 @@ class ProcessesRelationManager extends RelationManager
                                         ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                                         ->color(fn ($state) => State::from($state)->getColor()),
                                     TextEntry::make('stage.stage')->label('Etapa'),
-                                    TextEntry::make('comment')->label('Tu Comentario')->placeholder('No ha Comentado Aún')->markdown(),
-                                    TextEntry::make('requirement')->label('Requisitos')->placeholder('No ha Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
+                                    TextEntry::make('comment')->label('Comentario del Estudiante')->placeholder('No ha Comentado Aún')->markdown(),
+                                    TextEntry::make('requirement')->label('Requisitos')->placeholder('No se han Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
                                 ])
                                 ->columns(2),
 
@@ -165,31 +152,31 @@ class ProcessesRelationManager extends RelationManager
                         ];
                     }),
 
-                    Tables\Actions\EditAction::make()
-                        ->label('Completar')
-                        ->icon('heroicon-o-document-arrow-up')
-                        ->visible(fn ($record) =>
-                            (!$record->requirement || trim($record->requirement) === '') ||
-                            (!$record->comment || trim($record->comment) === '')
-                        ),
+                Tables\Actions\EditAction::make()
+                    ->label('Subir')
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->visible(fn ($record) =>
+                        (!$record->requirement || trim($record->requirement) === '')
+                ),
 
-                    ActionGroup::make([
-                        // --------------------------- VER REQUERIMIENTOS ---------------------------
-                        Tables\Actions\Action::make('show')
-                            ->label('Visualizar requerimiento')
-                            ->icon('heroicon-o-eye') // Icono de ver
-                            ->url(fn ($record) => route('file.view', ['file' => basename($record->requirement)]))
-                            ->openUrlInNewTab()
-                            ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
+                // --------------------------- GRUPO DE BOTONES ---------------------------
+                ActionGroup::make([
+                    // --------------------------- VER REQUERIMIENTOS ---------------------------
+                    Tables\Actions\Action::make('show')
+                    ->label('Visualizar requerimiento')
+                    ->icon('heroicon-o-eye') // Icono de ver
+                    ->url(fn ($record) => route('file.view', ['file' => basename($record->requirement)]))
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
 
-                        // --------------------------- DESCARGAR REQUERIMIENTOS ---------------------------
-                        Tables\Actions\Action::make('download')
-                            ->icon('heroicon-o-folder-arrow-down') // Icono de descarga
-                            ->label('Descargar requerimiento')
-                            ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
-                            ->openUrlInNewTab()
-                            ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
-                    ]),
+                    // --------------------------- DESCARGAR REQUERIMIENTOS ---------------------------
+                    Tables\Actions\Action::make('download')
+                        ->icon('heroicon-o-folder-arrow-down') // Icono de descarga
+                        ->label('Descargar requerimiento')
+                        ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
+                        ->openUrlInNewTab()
+                        ->visible(fn ($record) => trim($record->requirement) !== '')
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

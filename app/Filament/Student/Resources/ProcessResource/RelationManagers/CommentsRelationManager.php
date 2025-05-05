@@ -40,6 +40,7 @@ class CommentsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('comment')
+            ->description('Recuerda que para que el "Estado" del proceso sea aprobado todos los conceptos de los comentarios deben ser APROBADOS, si al menos uno de los conceptos es NO APROBADO el proceso será improbado.')
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('concept.concept')
@@ -51,9 +52,8 @@ class CommentsRelationManager extends RelationManager
                     }),
                 TextColumn::make('comment')
                     ->label('Comentario')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->markdown()
+                    ->limit(20),
                 Tables\Columns\TextColumn::make('profile.name')
                     ->label('Nombre'),
                 Tables\Columns\TextColumn::make('profile.last_name')
@@ -82,18 +82,19 @@ class CommentsRelationManager extends RelationManager
                     // ->modalContentOnly() // Esta línea evita que Filament incluya los campos del formulario por defecto
                     ->modalHeading('Información Personal')
                     // Crear el modal con una infolista
-                    ->modalContent(fn ($record) => Infolist::make()
+                    ->infolist(fn ($record) => Infolist::make()
                         ->schema([
                             Section::make([
                                 TextEntry::make('profile.name')->label('Nombre(s)'),
                                 TextEntry::make('profile.last_name')->label('Apellido)(s)'),
                                 TextEntry::make('profile.User.email')->label('Email'),
                                 TextEntry::make('profile.phone_number')->label('Número de Teléfono'),
-                            ])->columns(2)->columnSpan(1),
+                            ])->columns(2),
 
                             Section::make([
                                 TextEntry::make('comment')
-                                    ->label('Comentario'),
+                                    ->label('Comentario')
+                                    ->markdown(),
                                 TextEntry::make('concept.concept')
                                     ->label('Concepto')
                                     ->badge()
@@ -101,7 +102,7 @@ class CommentsRelationManager extends RelationManager
                                         'Aprobado' => 'success',
                                         'No aprobado' => 'danger',
                                     }),
-                            ])->columnSpan(1),
+                            ])->columns(2),
 
                         ])->columns(2)
                         ->record($record)),// El $record aquí viene del modelo actual en la tabla

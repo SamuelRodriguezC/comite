@@ -5,17 +5,34 @@ namespace App\Filament\Advisor\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Enums\Enabled;
+use App\Models\Option;
+use Filament\Forms\Set;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
+use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\Group;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 use Filament\Infolists\Components\Section;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Group as FormGroup;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Section as FormSection;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Advisor\Resources\TransactionResource\Pages;
 use App\Filament\Advisor\Resources\TransactionResource\RelationManagers;
 
@@ -30,30 +47,115 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('component')
-                    ->label('Componente')
-                    ->live()
-                    ->preload()
-                    ->enum(Component::class)
-                    ->options(component::class)
-                    ->required(),
-                Forms\Components\Select::make('option_id')
-                    ->relationship('option', 'option')
-                    ->label('Opción de grado')
-                    ->required(),
-                Forms\Components\Select::make('enabled')
-                    ->label('Habilitado')
-                    ->live()
-                    ->preload()
-                    ->enum(Enabled::class)
-                    ->options(Enabled::class)
-                    ->required(),
+                FormSection::make('Ticket')
+                    ->schema([
+                        Forms\Components\TextInput::make('id')
+                            ->label('Número de Ticket')
+                            ->disabled()
+                            ->numeric()
+                            ->visibleOn('edit'),
+                        Forms\Components\Select::make('component')
+                            ->label("Componente de la opción de grado")
+                            ->live()
+                            ->preload()
+                            ->enum(Component::class)
+                            ->options(Component::class)
+                            ->disabledOn('edit')
+                            ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
+                        Forms\Components\Select::make('option_id')
+                            ->label("Opción de Grado")
+                            ->disabledOn('edit')
+                            ->relationship('option', 'option')
+                            ->required()
+                             // Función para filtrar la opción de grado por nivel universitario y componente
+                            ->options(function (callable $get) {
+                                $user = Auth::user();
+                                if (!$user || !$user->profiles) {
+                                    return ["Aún no tiene perfil"]; // Si el perfil no está disponible, no se muestran opciones
+                                }
+                                $userLevel = $user->profiles->level;
+                                $selectedComponent = $get('component');
+                                if (!$selectedComponent) {
+                                    return ["Aún no ha seleccionado componente"]; // Evita mostrar opciones si el componente aún no se ha seleccionado
+                                }
+                                return Option::where('level', $userLevel)
+                                    ->where('component', $selectedComponent)
+                                    ->pluck('option', 'id');
+                            }),
+                        // Campo para seleccionar curso
+                        Forms\Components\Select::make('courses_id')
+                            ->label('Carrera universitaria')
+                            ->visibleOn('create')
+                            // Mostrar los cursos de la tabla
+                            ->options(\App\Models\Course::all()->pluck('course', 'id'))
+                            //->searchable()
+                            ->required()
+                            ->options(function () {
+                                $user = Auth::user();
+                                if (!$user || !$user->profiles) {
+                                    return ["El perfil no tiene nivel universitario"]; // Retornamos un arreglo vacío si no hay usuario o perfil
+                                }
+                                // Obtenemos el nivel universitario del usuario autenticado (pregrado o posgrado)
+                                $userLevel = $user->profiles->level;
+                                // Filtramos las carreras que tengan el mismo nivel universitario
+                                return \App\Models\Course::where('level', $userLevel)
+                                    ->pluck('course', 'id');
+                            }),
+                    ])
+                    ->columnSpan(1)
+                    ->icon('heroicon-m-ticket'),
+
+                    FormSection::make('Detalles')
+                    ->schema([
+                        FormGroup::make([
+                            DateTimePicker::make('created_at')
+                                ->label('Creado en')
+                                ->disabled(),
+                            DateTimePicker::make('updated_at')
+                                ->label('Actualizado en')
+                                ->disabled(),
+                            //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
+                            ToggleButtons::make('certification')
+                                   ->disabled()
+                                   ->columns(3)
+                                   ->visibleOn('edit')
+                                   ->label('Certificación')
+                                   ->columns(2)
+                                   ->options([
+                                       1 => 'No Certificado',
+                                       3 => 'Certificado',
+                                       2 => 'Por Certificar',
+                                   ])
+                                   ->colors([
+                                       1 => 'danger',
+                                       3 => 'success',
+                                       2 => 'warning',
+                                ]),
+                            Forms\Components\Toggle::make('enabled')
+                                ->label('Habilitado')
+                                ->inline(false)
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->onIcon(Enabled::HABILITADO->getIcon())
+                                ->offIcon(Enabled::DESHABILITADO->getIcon())
+                                ->disabled()
+                                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
+                                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                                }),
+                        ])->columns(2),
+                    ])
+                    ->columnSpan(1)
+                    ->icon('heroicon-m-eye')
+                    ->visible(fn (string $context) => $context === 'edit'), //Solo es visible al crear (Sección)
             ]);
-    }
+        }
+
 
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label("Ticket")
@@ -62,14 +164,22 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('enabled')
-                    ->label("Habilitado")
-                    ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel())
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('option.option')
                     ->label("Opción de grado")
-                    ->sortable(),
+                    ->words(3)
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('courses')
+                    ->label('Carreras')
+                    ->sortable()
+                    ->words(4),
+                    // ->searchable(),
+                Tables\Columns\IconColumn::make('enabled')
+                    ->label('Habilitado')
+                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                    ->color(fn ($state) => Enabled::from($state)->getColor()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -82,7 +192,19 @@ class TransactionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('component')
+                ->label('Componente')
+                ->options([
+                    '1' => 'Investigativo',
+                    '2' => 'No Investigativo',
+                ])->attribute('component'),
+                SelectFilter::make('enabled')
+                ->label('Habilitado')
+                ->options([
+                    '1' => 'Habilitado',
+                    '2' => 'Deshabilitado',
+                ])->attribute('enabled')
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -99,28 +221,49 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            Section::make('')
-                ->columnSpan(2)
-                ->columns(2)
+            InfoSection::make(fn ($record) => 'Ticket #' . $record->id)
+                ->icon('heroicon-m-ticket')
                 ->schema([
-                    TextEntry::make('id')
-                        ->label('Ticket'),
-                    TextEntry::make('enabled')
-                        ->label('Habilitado')
-                        ->formatStateUsing(fn ($state) => Enabled::from($state)->getLabel()),
                     TextEntry::make('component')
                         ->label('Componente')
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('option.option')
+                    TextEntry::make('Option.option')
                         ->label('Opción de grado'),
-                    TextEntry::make('created_at')
-                        ->dateTime()
-                        ->label('Creado en'),
-                    TextEntry::make('update_at')
-                        ->dateTime()
-                        ->label('Actualizado en'),
-                ]),
-        ]);
+                    TextEntry::make('profiles.name')
+                        ->label('Integrante(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
+                    TextEntry::make('courses')
+                        ->label('Carrera(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
+                ])
+                ->columns(2)->columnSpan(2),
+
+            InfoSection::make('Detalles')
+                ->icon('heroicon-m-eye')
+                ->schema([
+                    Group::make([
+                        TextEntry::make('created_at')
+                            ->label('Creado en')
+                            ->dateTime()
+                            ->dateTimeTooltip(),
+                        TextEntry::make('updated_at')
+                            ->label('Actualizado en')
+                            ->dateTime()
+                            ->dateTimeTooltip(),
+                        IconEntry::make('enabled')
+                            ->label('Habilitado')
+                            ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                            ->color(fn ($state) => Enabled::from($state)->getColor()),
+                        TextEntry::make('certification')
+                            ->label('Certificación')
+                            ->badge()
+                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
+                            ->color(fn ($state) => Certification::from($state)->getColor()),
+                    ])->columns(2),
+                ])->columnSpan(1),
+        ])->columns(3);
     }
 
     // Función para filtrar las transacciones por usuario
@@ -137,7 +280,8 @@ class TransactionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ProcessesRelationManager::class,
+            RelationManagers\ProfilesRelationManager::class,
         ];
     }
 
@@ -145,7 +289,7 @@ class TransactionResource extends Resource
     {
         return [
             'index' => Pages\ListTransactions::route('/'),
-            'create' => Pages\CreateTransaction::route('/create'),
+            // 'create' => Pages\CreateTransaction::route('/create'),
             'view' => Pages\ViewTransaction::route('/{record}'),
             'edit' => Pages\EditTransaction::route('/{record}/edit'),
         ];

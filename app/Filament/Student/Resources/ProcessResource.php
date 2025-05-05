@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,21 +38,9 @@ class ProcessResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('state')
-                    ->label('Estado')
-                    ->live()
-                    // ->preload()
-                    ->disabled()
-                    ->enum(state::class)
-                    ->options(State::class)
-                    ->required(),
-                Forms\Components\Select::make('stage_id')
-                    ->disabled()
-                    ->label("Etapa")
-                    ->relationship('Stage', 'stage')
-                    ->required(),
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
+                    ->disabled(fn (?Model $record) => filled($record?->requirement))
                     ->required()
                     ->disk('public') // Indica que se usará el disco 'public'
                     ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
@@ -62,12 +51,16 @@ class ProcessResource extends Resource
                         'max:10240',
                     ]) // Agrega validación: campo requerido y solo PDF
                     ->maxSize(10240) // 10MB
-                    ->maxFiles(1) ,
+                    ->maxFiles(1)
+                    ->columnSpanFull(),
                 // Funcionalidad para evaluadores
                 //Forms\Components\Select::make('state')->label("Estado")->live()->preload()->enum(State::class)->options(State::class),
-                Forms\Components\Textarea::make('comment')
-                    ->label("Comentario")
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Tu Comentario')
                     ->required()
+                    ->disabled(fn (?Model $record) => filled($record?->requirement))
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
                     ->columnSpanFull(),
             ]);
     }
@@ -92,13 +85,13 @@ class ProcessResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    })
+                    ->placeholder('Sin Archivos Aún')
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
-                    ->words(5)
+                    ->limit(25)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('transaction.enabled')
@@ -156,8 +149,13 @@ class ProcessResource extends Resource
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),
+                TextEntry::make('comment')
+                    ->label("Tu Comentario")
+                    ->markdown()
+                    ->limit(25),
                 TextEntry::make('requirement')
-                    ->label("requisitos"),
+                    ->label("Requisitos")
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);}),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')
@@ -207,7 +205,7 @@ class ProcessResource extends Resource
         {
             return [
                 'index' => Pages\ListProcesses::route('/'),
-                'create' => Pages\CreateProcess::route('/create'),
+                // 'create' => Pages\CreateProcess::route('/create'),
                 'view' => Pages\ViewProcess::route('/{record}'),
                 'edit' => Pages\EditProcess::route('/{record}/edit'),
             ];
