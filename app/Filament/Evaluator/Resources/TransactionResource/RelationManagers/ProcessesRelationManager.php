@@ -185,6 +185,9 @@ class ProcessesRelationManager extends RelationManager
                         return $existingComment ? 'Editar Comentario' : 'Comentar';
                     })
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->disabled(function ($record) {
+                        return !in_array($record->estado, ['Pendiente', 'Aprobado', 'Improbado']);
+                    })
                     ->form(function ($record) {
                         // Verificar si el perfil ya tiene un comentario en este proceso
                         $existingComment = $record->comments()->where('profile_id', Auth::user()->profiles->id)->first();
