@@ -2,19 +2,20 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Widgets\CourcesAplicationChartWidget;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Shanerbaner82\PanelRoles\PanelRoles;
 use App\Filament\Widgets\ProcessesWidget;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use App\Filament\Widgets\CourcesAplicationChartWidget;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -59,6 +60,9 @@ class CoordinatorPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                PanelRoles::make()
+                ->roleToAssign('Coordinador')
+                ->restrictedRoles(['Coordinador', 'Super administrador']),
             ])
             ->authMiddleware([
                 Authenticate::class,
