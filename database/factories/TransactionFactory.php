@@ -20,10 +20,19 @@ class TransactionFactory extends Factory
      */
     public function definition(): array
     {
+        // Paso 1: Escoger componente aleatoriamente (1 o 2)
+        $component = fake()->numberBetween(1, 2);
+
+        // Paso 2: Obtener IDs de opciones que tengan ese componente
+        $optionIds = \App\Models\Option::where('component', $component)->pluck('id');
+
+        // Paso 3: Elegir aleatoriamente un option_id entre los resultados filtrados
+        $optionId = $optionIds->isNotEmpty() ? fake()->randomElement($optionIds->toArray()) : null;
+
         return [
-            'component' => fake()->numberBetween(1, 2),
+            'component' => $component,
             'enabled' => fake()->numberBetween(1, 2),
-            'option_id' => fake()->numberBetween(1, 17),
+            'option_id' => $optionId,
             'certification' => 1,
         ];
     }

@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Profile;
+use Spatie\Permission\Models\Role;
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -11,9 +12,8 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-
         // --------------------- COORDINATOR ----------------------
-        $coordinator = User::factory()->create([
+        $coordinator = User::create([
             'name' => 'Coordinador',
             'email' => 'coo@gmail.com',
             'password' => bcrypt('coordinador'),
@@ -24,12 +24,17 @@ class UserSeeder extends Seeder
             'last_name' => fake()->lastName(),
             'document_number' => fake()->numberBetween(10000000, 99999999),
             'phone_number' => fake()->numerify('3#########'),
-            'level' => fake()->numberBetween(1, 2),
+            'level' => 3,
             'document_id' => fake()->numberBetween(1, 3),
         ]);
+        $coordinator->assignRole('Coordinador');
+        $coordinator->assignRole('Estudiante');
+        $coordinator->assignRole('Asesor');
+        $coordinator->assignRole('Evaluador');
+        $coordinator->assignRole('Super administrador');
 
         //--------------------- ADVISOR ----------------------
-        $advisor = User::factory()->create([
+        $advisor = User::create([
             'name' => 'Asesor',
             'email' => 'ase@gmail.com',
             'password' => bcrypt('asesor'),
@@ -43,9 +48,10 @@ class UserSeeder extends Seeder
             'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 3),
         ]);
+        $advisor->assignRole('Asesor');
 
         //--------------------- STUDENT ----------------------
-        $student = User::factory()->create([
+        $student = User::create([
             'name' => 'Estudiante',
             'email' => 'est@gmail.com',
             'password' => bcrypt('estudiante'),
@@ -59,9 +65,10 @@ class UserSeeder extends Seeder
             'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 3),
         ]);
+        $student->assignRole('Estudiante');
 
         //--------------------- EVALUATOR ----------------------
-        $evaluator = User::factory()->create([
+        $evaluator = User::create([
             'name' => 'Evaluador',
             'email' => 'eva@gmail.com',
             'password' => bcrypt('evaluador'),
@@ -75,5 +82,8 @@ class UserSeeder extends Seeder
             'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 3),
         ]);
+        $evaluator->assignRole('Evaluador');
+        $evaluator->assignRole('Asesor');
+
     }
 }

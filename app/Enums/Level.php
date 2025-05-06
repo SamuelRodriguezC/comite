@@ -11,6 +11,7 @@ enum Level: int implements HasLabel
 {
     case PREGRADO = 1;
     case POSGRADO = 2;
+    case NOAPLICA = 3;
     /**
      * Generates function to display a label
      */
@@ -19,6 +20,7 @@ enum Level: int implements HasLabel
         return match ($this) {
             self::PREGRADO => 'Pregrado',
             self::POSGRADO => 'Posgrado',
+            self::NOAPLICA => 'No Aplica',
         };
     }
 }

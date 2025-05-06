@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
-use App\Models\Document;
+use App\Models\User;
 use App\Models\Profile;
+use App\Models\Document;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProfileFactory extends Factory
 {
@@ -25,8 +26,9 @@ class ProfileFactory extends Factory
             'last_name' => fake()->lastName(),
             'document_number' => fake()->numberBetween(-100000, 100000),
             'phone_number' => fake()->phoneNumber(),
-            'level' => fake()->numberBetween(-8, 8),
+            'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 5),
+            'user_id' => User::class(),
         ];
     }
 }

@@ -2,43 +2,38 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    protected $model = User::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => bcrypt('password'), // o Hash::make()
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    // ---------- ASIGNAR ROL A CADA USUARIO ----------
+    public function configure()
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+    return $this->afterCreating(function (User $user) {
+        // Obtener nombres de los roles disponibles
+        $roles = Role::where('id', '!=', 5)->pluck('id')->toArray(); //Deshabilitar rol Super Admin al crear usuarios
+        // $roles = Role::whereNotIn('id', ['coordinator', 'student'])->pluck('name')->toArray(); //Deshabilitar uno o mas roles a ejecutar la factory crear usuarios
+
+        if (!empty($roles)) {
+            // Escoge uno aleatorio y lo asigna
+            $user->assignRole(fake()->randomElement($roles));
+        }
+    });
     }
 }

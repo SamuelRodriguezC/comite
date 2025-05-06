@@ -26,10 +26,8 @@ class DatabaseSeeder extends Seeder
             // php artisan db:seed --class=ProfileTransactionSeeder
             // ProfileTransactionSeeder::class,
         ]);
-        Process::factory(50)->create();
+        Process::factory(30)->create();
+        User::factory(30)->create();
     }
 }
-/**
- * User::factory()->create(['name' => 'Test User', 'email' => 'test@ example.com',]);
- * User::factory(10)->create();
- */
+
