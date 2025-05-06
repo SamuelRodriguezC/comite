@@ -201,7 +201,7 @@ class ProcessesRelationManager extends RelationManager
                     })
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
                     ->disabled(function ($record) {
-                        return !in_array($record->estado, ['Pendiente', 'Aprobado', 'Improbado']);
+                        return !in_array($record->state, [3, 1, 2]);
                     })
                     ->form(function ($record) {
                         // Verificar si el perfil ya tiene un comentario en este proceso
@@ -286,6 +286,10 @@ class ProcessesRelationManager extends RelationManager
                         ->visible(fn ($record) => trim($record->requirement) !== ''),
 
                     Tables\Actions\EditAction::make()->label('Editar Estado')
+                    ->requiresConfirmation() // Esto activa el modal de confirmación
+                    ->modalHeading('¿Estás seguro de cambiar el estado?')
+                    ->modalSubheading('Si cambias el estado a Aplazado o Cancelado tu o los evaluadores no podrán realizar comenarios en el proceso')
+                    ->modalButton('Sí, cambiar estado')
                 ])
             ])
             ->bulkActions([
