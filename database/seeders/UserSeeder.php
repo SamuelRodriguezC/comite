@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
             'last_name' => fake()->lastName(),
             'document_number' => fake()->numberBetween(10000000, 99999999),
             'phone_number' => fake()->numerify('3#########'),
-            'level' => 3,
+            'level' => 2,
             'document_id' => fake()->numberBetween(1, 3),
         ]);
         $coordinator->assignRole('Coordinador');

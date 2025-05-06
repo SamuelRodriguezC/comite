@@ -34,20 +34,30 @@ class ProcessesRelationManager extends RelationManager
         return $form
             ->schema([
                     Forms\Components\Select::make('stage_id')
-                    ->label("Etapa")
-                    ->options(function ($livewire) {
-                        // Obtener IDs de etapas ya utilizadas en esta transacción
-                        $usedStageIds = $livewire->ownerRecord->processes()->pluck('stage_id')->toArray();
+                        ->label("Etapa")
+                        ->options(function ($livewire) {
+                            // Obtener IDs de etapas ya utilizadas en esta transacción
+                            $usedStageIds = $livewire->ownerRecord->processes()->pluck('stage_id')->toArray();
 
-                        // Traer solo las etapas que NO están en esa lista
-                        return Stage::whereNotIn('id', $usedStageIds)
-                            ->orderBy('stage')
-                            ->get()
-                            ->pluck('stage', 'id')
-                            ->mapWithKeys(fn ($stage, $id) => [$id => "#{$id} - {$stage}"]);
-                    })
-                    ->columnSpanFull()
-                    ->required(),
+                            // Traer solo las etapas que NO están en esa lista
+                            return Stage::whereNotIn('id', $usedStageIds)
+                                ->orderBy('stage')
+                                ->get()
+                                ->pluck('stage', 'id')
+                                ->mapWithKeys(fn ($stage, $id) => [$id => "#{$id} - {$stage}"]);
+                        })
+                        ->columnSpanFull()
+                        ->visibleOn('create')
+                        ->required(),
+                    Forms\Components\Select::make('state')
+                        ->label('Estado')
+                        ->live()
+                        ->preload()
+                        ->columnSpanFull()
+                        ->visibleOn('edit')
+                        ->enum(state::class)
+                        ->options(State::class)
+                        ->required(),
             ]);
     }
 
@@ -271,7 +281,8 @@ class ProcessesRelationManager extends RelationManager
                         ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
                         ->openUrlInNewTab()
                         ->visible(fn ($record) => trim($record->requirement) !== ''),
-                    Tables\Actions\EditAction::make()->label('Editar Etapa')
+
+                    Tables\Actions\EditAction::make()->label('Editar Estado')
                 ])
             ])
             ->bulkActions([

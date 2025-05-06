@@ -24,7 +24,7 @@ class ProfileFactory extends Factory
         return [
             'name' => fake()->name(),
             'last_name' => fake()->lastName(),
-            'document_number' => fake()->numberBetween(-100000, 100000),
+            'document_number' => fake()->numberBetween(10000000, 99999999),
             'phone_number' => fake()->numerify('3#########'),
             'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 5),
