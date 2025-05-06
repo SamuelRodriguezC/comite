@@ -25,10 +25,10 @@ class ProfileFactory extends Factory
             'name' => fake()->name(),
             'last_name' => fake()->lastName(),
             'document_number' => fake()->numberBetween(-100000, 100000),
-            'phone_number' => fake()->phoneNumber(),
+            'phone_number' => fake()->numerify('3#########'),
             'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 5),
-            'user_id' => User::class(),
+            'user_id' => User::factory(),
         ];
     }
 }

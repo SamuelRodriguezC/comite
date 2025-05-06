@@ -125,7 +125,7 @@ class ProcessAplicationResource extends Resource
                 // ]),
             ]);
     }
-    
+
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -215,7 +215,7 @@ class ProcessAplicationResource extends Resource
             'index' => Pages\ListProcessAplications::route('/'),
             // 'create' => Pages\CreateProcessAplication::route('/create'),
             'view' => Pages\ViewProcessAplication::route('/{record}'),
-            // 'edit' => Pages\EditProcessAplication::route('/{record}/edit'),
+            'edit' => Pages\EditProcessAplication::route('/{record}/edit'),
         ];
     }
 }
