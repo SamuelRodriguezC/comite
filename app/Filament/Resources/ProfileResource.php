@@ -95,7 +95,7 @@ class ProfileResource extends Resource
                     ->label("Tipo de documento")
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label("Nombres")
+                    ->label("Nombre de usuario")
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -150,8 +150,8 @@ class ProfileResource extends Resource
                     TextEntry::make('level')
                         ->label('Nivel universitario')
                         ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                    TextEntry::make('UniversityCourse.course')
-                        ->label('Carrera universitaria'),
+                    //TextEntry::make('UniversityCourse.course')
+                    //    ->label('Carrera universitaria'),
                     TextEntry::make('institutional_code')
                         ->label('Código institucional'),
                 ]),
@@ -165,6 +165,9 @@ class ProfileResource extends Resource
                         ->label('Registrado en'),
                     TextEntry::make('User.id')
                         ->label('Id de usuario'),
+                    TextEntry::make('Role.name')
+                        ->label('Rol')
+                        ->formatStateUsing(fn ($state) => $state->getRoleNames()->implode(', ')),
                     //TextEntry::make('User.roles')
                     //    ->label('Rol')
                     //    ->formatStateUsing(fn ($record) => $record->user

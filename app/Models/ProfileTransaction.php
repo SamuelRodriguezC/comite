@@ -16,7 +16,8 @@ class ProfileTransaction extends Model
     protected $fillable = [
         'profile_id',
         'transaction_id',
-        'courses_id'
+        'courses_id',
+        'role_id'
     ];
 
     public function profile(): BelongsTo
@@ -32,5 +33,11 @@ class ProfileTransaction extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    // retorna la colección de roles que tiene el usuario dueño del perfil vinculado a esta transacción
+    public function availableRoles()
+    {
+        return $this->profile->user->roles;
     }
 }

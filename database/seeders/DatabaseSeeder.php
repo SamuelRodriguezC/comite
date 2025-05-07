@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             OptionSeeder::class,
             RoleSeeder::class,
             StageSeeder::class,
-            UserSeeder::class,
             RoleHasPermissionsSeeder::class,
+            UserSeeder::class,
             TransactionProcessSeeder::class,
             //Esta clase debe ejecutarse luego hacer los seeders
             // php artisan db:seed --class=ProfileTransactionSeeder

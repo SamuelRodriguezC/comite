@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Profile;
+use Filament\Forms\Get;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -95,6 +96,21 @@ class TransactionResource extends Resource
                             ->searchable()
                             ->required()
                             ->live(),
+                        Forms\Components\Select::make('role_id')
+                            ->label('Función del integrante')
+                            ->options(function (Get $get) {
+                                $profileId = $get('profile_id');
+                                if (!$profileId) return ["No hay perfil seleccionado"];
+                                $profile = \App\Models\Profile::find($profileId);
+                                if (!$profile || !$profile->user) return ["El perfil no existe o no tiene usuario asociado"];
+                                // Retorna los roles como array
+                                return $profile->user->roles->pluck('name', 'id');
+                            })
+                            ->searchable()
+                            ->required()
+                            // Solo se muestra cuando se ha seleccionado un perfil
+                            //->visible(fn (Get $get) => !is_null($get('profile_id')))
+
                     ])
                     ->columnSpan(1)
                     ->description('Ingresa el número de documento del primer integrante y su carrera. (Puedes agregar más integrantes en el modo de edición).')
@@ -184,7 +200,7 @@ class TransactionResource extends Resource
                     ->columnSpan(1)
                     ->description('Debes ingresar el componente y la opción de grado del integrante vinculado.')
                     ->icon('heroicon-m-ticket'),
-
+                    // ---------------- solamente es visible en edición --------------------
                     FormSection::make('Detalles')
                     ->schema([
                         FormGroup::make([
@@ -244,6 +260,11 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->words(4),
                     // ->searchable(),
+                Tables\Columns\TextColumn::make('role_id')
+                    ->label('Rol local')
+                    //->formatStateUsing(fn ($state) => Profile::from($state)->getLabel())
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\IconColumn::make('enabled')
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())

@@ -11,6 +11,11 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Crear los roles si no existen aún
+        $roles = ['Estudiante', 'Asesor', 'Evaluador', 'Coordinador', 'Super administrador'];
+        foreach ($roles as $roleName) {
+            Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
+        }
 
         // --------------------- COORDINATOR ----------------------
         $coordinator = User::create([
@@ -27,11 +32,12 @@ class UserSeeder extends Seeder
             'level' => 2,
             'document_id' => fake()->numberBetween(1, 3),
         ]);
-        $coordinator->assignRole('Coordinador');
-        $coordinator->assignRole('Estudiante');
-        $coordinator->assignRole('Asesor');
-        $coordinator->assignRole('Evaluador');
-        $coordinator->assignRole('Super administrador');
+        //$coordinator->assignRole('Coordinador');
+        //$coordinator->assignRole('Estudiante');
+        //$coordinator->assignRole('Asesor');
+        //$coordinator->assignRole('Evaluador');
+        //$coordinator->assignRole('Super administrador');
+        $coordinator->assignRole(['Coordinador', 'Estudiante', 'Asesor', 'Evaluador', 'Super administrador']);
 
         //--------------------- ADVISOR ----------------------
         $advisor = User::create([
@@ -82,8 +88,8 @@ class UserSeeder extends Seeder
             'level' => fake()->numberBetween(1, 2),
             'document_id' => fake()->numberBetween(1, 3),
         ]);
-        $evaluator->assignRole('Evaluador');
-        $evaluator->assignRole('Asesor');
-
+        //$evaluator->assignRole('Evaluador');
+        //$evaluator->assignRole('Asesor');
+        $evaluator->assignRole(['Evaluador', 'Asesor']);
     }
 }

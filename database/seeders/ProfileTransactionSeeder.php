@@ -71,6 +71,7 @@ class ProfileTransactionSeeder extends Seeder
 
             $profile->transactions()->attach($transaction->id, [
                 'courses_id' => $course->id,
+                'role_id' => $roleId,
             ]);
 
             $assigned++;

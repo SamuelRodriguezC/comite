@@ -16,7 +16,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasPanelShield;
+    use HasFactory, Notifiable, HasPanelShield;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -64,4 +65,5 @@ class User extends Authenticatable implements FilamentUser
     {
         return true;
     }
+
 }

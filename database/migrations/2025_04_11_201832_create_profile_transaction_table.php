@@ -26,6 +26,15 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            //$table->unsignedBigInteger('role_id')
+            //    ->nullable();
+            //$table->foreign('role_id')
+            //    ->references('id')
+            //    ->on('roles');
+            $table->foreignId('role_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
 
         Schema::enableForeignKeyConstraints();
