@@ -22,14 +22,50 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    //public function store(LoginRequest $request): RedirectResponse
+    //{
+    //    $request->authenticate();
+    //    $request->session()->regenerate();
+    //    return redirect()->intended(route('dashboard', absolute: false));
+    //}
+
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
-
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+    
+        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            return back()->withErrors([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+    
         $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
-    }
+    
+        $user = Auth::user();
+    
+        // Redirección personalizada según el rol
+        if ($user->hasRole('Coordinador')) {
+            return redirect('coordinator'); // Cambia 'admin' por el ID del panel de coordinador
+        }
+    
+        if ($user->hasRole('Asesor')) {
+            return redirect('advisor'); // Cambia 'admin' por el ID del panel de asesor
+        }
+    
+        if ($user->hasRole('Evaluador')) {
+            return redirect('evaluator'); // Cambia 'admin' por el ID del panel de evaluador
+        }
+    
+        if ($user->hasRole('Estudiante')) {
+            return redirect('student'); // Cambia 'admin' por el ID del panel de estudiante
+        }
+    
+        // Redirección por defecto si no tiene roles válidos
+        return redirect('/'); 
+    }    
 
     /**
      * Destroy an authenticated session.

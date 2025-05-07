@@ -39,6 +39,7 @@ class CreateTransaction extends CreateRecord
                 'profile_id' => $profile->id,
                 'transaction_id' => $transaction->id,
                 'courses_id' => $data['courses_id'],
+                'role_id' => 1,
             ]);
         }
 

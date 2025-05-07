@@ -23,14 +23,34 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
-            // Custom configurations go here
+            $user = Auth::user();
+        
+            // Verifica si hay un usuario autenticado
+            if (! $user) {
+                return;
+            }
+        
+            // Mapea roles a sus respectivos paneles
+            $roleToPanel = [
+                1 => 'student',
+                3 => 'evaluator',
+                2 => 'advisor',
+                4 => 'coordinator',
+            ];
+        
+            // Construye el array de paneles visibles basados en los roles del usuario
+            $availablePanels = [];
+            foreach ($roleToPanel as $role => $panel) {
+                if ($user->hasRole($role)) {
+                    $availablePanels[$panel] = $role; // panel => etiqueta
+                }
+            }
+        
+            // Configura el panel switch solo con los paneles accesibles
             $panelSwitch
-            ->simple()
-            ->visible(fn (): bool => Auth::user()?->hasAnyRole([
-                'Asesor',
-                'Evaluador',
-                'Coordinador',
-            ]));
+                ->simple()
+                ->labels($availablePanels)
+                ->visible(count($availablePanels) > 1); // Solo mostrar si hay más de un panel visible
         });
     }
 }
