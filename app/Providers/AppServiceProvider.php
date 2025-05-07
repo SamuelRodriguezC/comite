@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use BezhanSalleh\PanelSwitch\PanelSwitch;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use BezhanSalleh\PanelSwitch\PanelSwitch;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
             // Custom configurations go here
             $panelSwitch
             ->simple()
-            ->visible(fn (): bool => auth()->user()?->hasAnyRole([
+            ->visible(fn (): bool => Auth::user()?->hasAnyRole([
                 'Asesor',
                 'Evaluador',
                 'Coordinador',

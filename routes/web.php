@@ -1,26 +1,44 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Visualizar PDF (se muestra en el navegador)
-Route::get('/files/view/{file}', function ($file) {
-    $path = storage_path('app/public/processes/requirements/' . $file);
-    if (!file_exists($path)) {
-        abort(404);
+Route::get('/dashboard', function () {
+    $user = Auth::user();
+    if ($user->hasRole('Coordinador')) {
+        return redirect('coordinator');
     }
-    return response()->file($path);
-})->name('file.view');
 
-// Descargar PDF (se descarga automáticamente)
-Route::get('/files/download/{file}', function ($file) {
-    $path = storage_path('app/public/processes/requirements/' . $file);
-    if (!file_exists($path)) {
-        abort(404);
+    if ($user->hasRole('Super administrador')) {
+        return redirect('coordinator');
     }
-    return response()->download($path);
-})->name('file.download');
+
+    if ($user->hasRole('Estudiante')) {
+        return redirect('student');
+    }
+
+    if ($user->hasRole('Asesor')) {
+        return redirect('advisor');
+    }
+
+    if ($user->hasRole('Evaluador')) {
+        return redirect('evaluator');
+    }
+
+    // En caso de no tener rol asignado
+    abort(403, 'No tienes un rol asignado');
+    return redirect('admin');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';

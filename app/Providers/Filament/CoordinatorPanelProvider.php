@@ -30,11 +30,11 @@ class CoordinatorPanelProvider extends PanelProvider
             ->default()
             ->id('coordinator')
             ->path('coordinator')
-            ->login()
-            ->registration()
-            ->passwordReset()
+            // ->login()
+            // ->registration()
+            // ->passwordReset()
             //->emailVerification()
-            ->profile()
+            // ->profile()
             ->colors([
                 'primary' => Color::Orange,
             ])
