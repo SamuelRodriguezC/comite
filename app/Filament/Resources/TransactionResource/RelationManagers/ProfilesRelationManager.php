@@ -111,6 +111,18 @@ class ProfilesRelationManager extends RelationManager
                         })
                         ->searchable()
                         ->required(),
+                    Select::make('role_id')
+                        ->label('Función del integrante')
+                        ->options(function (Get $get) {
+                            $recordId = $get('recordId');
+                            if (!$recordId) return ["No hay perfil seleccionado"];
+                            $profile = \App\Models\Profile::find($recordId);
+                            if (!$profile || !$profile->user) return ["El perfil no existe o no tiene usuario asociado"];
+                            // Retorna los roles como array
+                            return $profile->user->roles->pluck('name', 'id');
+                        })
+                        ->searchable()
+                        ->required()
                 ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
             ])
             ->actions([

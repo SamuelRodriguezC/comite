@@ -2,6 +2,8 @@
 
 namespace App\Models;
 use Carbon\Carbon;
+use App\Models\Course;
+use App\Models\Role;
 use App\Models\Option;
 use App\Models\Process;
 use App\Models\Profile;
@@ -42,7 +44,7 @@ class Transaction extends Model
      */
     public function profiles(): BelongsToMany
     {
-        return $this->belongsToMany(Profile::class)->withPivot('courses_id');
+        return $this->belongsToMany(Profile::class)->withPivot('courses_id', 'role_id');
     }
     public function option(): BelongsTo
     {

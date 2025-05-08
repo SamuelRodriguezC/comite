@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Models\User;
+use Carbon\Carbon;
+use App\Models\Course;
+use App\Models\Role;
 use App\Models\Document;
 use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Model;
@@ -49,7 +52,7 @@ class Profile extends Model
      */
     public function transactions(): BelongsToMany
     {
-        return $this->belongsToMany(Transaction::class)->withPivot('courses_id');
+        return $this->belongsToMany(Transaction::class)->withPivot('courses_id', 'role_id');
     }
     public function document(): BelongsTo
     {

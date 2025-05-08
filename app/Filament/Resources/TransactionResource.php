@@ -70,10 +70,12 @@ class TransactionResource extends Resource
                                 if ($profile) {
                                     $set('courses_id', null);
                                     $set('option_id', null);
+                                    $set('role_id', null);
                                     $set('level', $profile->level); // guardar temporalmente el nivel
                                 } else {
                                     $set('courses_id', null);
                                     $set('option_id', null);
+                                    $set('role_id', null);
                                     $set('level', null);
                                 }
                             }),
@@ -176,7 +178,7 @@ class TransactionResource extends Resource
                             ->visibleOn('create')
                             ->searchable()
                             ->live(), // Para reaccionar a cambios del componente
-                            Forms\Components\Select::make('option_id')
+                        Forms\Components\Select::make('option_id')
                             ->label("Opción de grado")
                             ->visibleOn('edit')
                             ->options(function (callable $get) {

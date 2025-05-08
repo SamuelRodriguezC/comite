@@ -92,22 +92,22 @@ class TransactionResource extends Resource
                                 ->label('Actualizado en')
                                 ->disabled(),
                              //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                             ToggleButtons::make('certification')
-                             ->disabled(fn ($get) => $get('certification') == 3) // Se deshabilitan si ya está certificado
-                             ->label('Certificación')
-                             ->columns(2)
-                             ->options([
-                                 1 => 'No Certificado',
-                                 2 => 'Por Certificar',
-                             ])
-                             ->colors([
-                                 1 => 'danger',
-                                 2 => 'warning',
-                             ]),
-                             Forms\Components\Placeholder::make('certification_notice')
-                                 ->label('Información Importante')
-                                 ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
-                                 ->visible(fn ($get) => $get('certification') == 3),
+                            ToggleButtons::make('certification')
+                                 ->disabled(fn ($get) => $get('certification') == 3) // Se deshabilitan si ya está certificado
+                                ->label('Certificación')
+                                ->columns(2)
+                                ->options([
+                                    1 => 'No Certificado',
+                                    2 => 'Por Certificar',
+                                ])
+                                ->colors([
+                                    1 => 'danger',
+                                    2 => 'warning',
+                                ]),
+                            Forms\Components\Placeholder::make('certification_notice')
+                                ->label('Información Importante')
+                                ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
+                                ->visible(fn ($get) => $get('certification') == 3),
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
@@ -250,7 +250,9 @@ class TransactionResource extends Resource
         $profileId = Auth::user()->profiles->id;
         // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
         return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
-            $query->where('profile_id', $profileId);
+            // Selecciona las transacciones con el perfil autenticado y el rol evaluador para el panel evaluador
+            $query->where('profile_id', $profileId)
+                ->where('role_id', 3);
         });
     }
 

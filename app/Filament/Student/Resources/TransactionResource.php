@@ -115,21 +115,21 @@ class TransactionResource extends Resource
                                 ->disabled(),
                             //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
                             ToggleButtons::make('certification')
-                                   ->disabled()
-                                   ->columns(3)
-                                   ->visibleOn('edit')
-                                   ->label('Certificación')
-                                   ->columns(2)
-                                   ->options([
-                                       1 => 'No Certificado',
-                                       3 => 'Certificado',
-                                       2 => 'Por Certificar',
-                                   ])
-                                   ->colors([
-                                       1 => 'danger',
-                                       3 => 'success',
-                                       2 => 'warning',
-                                   ]),
+                                ->disabled()
+                                ->columns(3)
+                                ->visibleOn('edit')
+                                ->label('Certificación')
+                                ->columns(2)
+                                ->options([
+                                    1 => 'No Certificado',
+                                    3 => 'Certificado',
+                                    2 => 'Por Certificar',
+                                ])
+                                ->colors([
+                                    1 => 'danger',
+                                    3 => 'success',
+                                    2 => 'warning',
+                                ]),
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
@@ -271,7 +271,9 @@ class TransactionResource extends Resource
         $profileId = Auth::user()->profiles->id;
         // Realiza la consulta para obtener las transacciones relacionadas con el perfil del usuario
         return Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
-            $query->where('profile_id', $profileId);
+            // Filtra por usuario autenticado y rol estudiante en panel estudiante
+            $query->where('profile_id', $profileId)
+                ->where('role_id', 1);
         });
     }
 

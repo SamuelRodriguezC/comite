@@ -53,20 +53,15 @@ class ProfilesRelationManager extends RelationManager
                 ->label('Curso')
                 ->options(function (Get $get) {
                     $documentNumber = $get('document_number');
-
                     if (!$documentNumber) {
                         return [];
                     }
-
                     // Buscar el perfil usando el número de documento
                     $profile = \App\Models\Profile::where('document_number', $documentNumber)->first();
-
                     if (!$profile) {
                         return [];
                     }
-
                     $userLevel = $profile->level;
-
                     return \App\Models\Course::where('level', $userLevel)
                         ->pluck('course', 'id');
                 })
