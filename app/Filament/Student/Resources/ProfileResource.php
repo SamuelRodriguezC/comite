@@ -150,8 +150,8 @@ class ProfileResource extends Resource
                     TextEntry::make('level')
                         ->label('Nivel académico')
                         ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                    TextEntry::make('Course.course')
-                        ->label('Carrera universitaria'),
+                    //TextEntry::make('Course.course')
+                    //    ->label('Carrera universitaria'),
                     TextEntry::make('institutional_code')
                         ->label('Código institucional'),
                 ]),

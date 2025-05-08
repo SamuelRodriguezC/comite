@@ -55,25 +55,19 @@ class ProfilesRelationManager extends RelationManager
                 ->required()
                 ->maxLength(255)
                 ->visibleOn('create'),
-
             Select::make('courses_id')
                 ->label('Curso')
                 ->options(function (Get $get) {
                     $documentNumber = $get('document_number');
-
                     if (!$documentNumber) {
                         return [];
                     }
-
                     // Buscar el perfil usando el número de documento
                     $profile = \App\Models\Profile::where('document_number', $documentNumber)->first();
-
                     if (!$profile) {
                         return [];
                     }
-
                     $userLevel = $profile->level;
-
                     return \App\Models\Course::where('level', $userLevel)
                         ->pluck('course', 'id');
                 })
@@ -88,7 +82,8 @@ class ProfilesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('document_number') //Atributo de busqueda
             ->columns([
-                Tables\Columns\TextColumn::make('document_number')->label('Documento'),
+                Tables\Columns\TextColumn::make('document_number')
+                    ->label('Documento de identidad'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombres')
                     ->formatStateUsing(function ($state, $record) {
@@ -96,9 +91,12 @@ class ProfilesRelationManager extends RelationManager
                         // Mostrar en la columna nombre Tú en caso de que sea el perfil autenticado
                         return $state . ($record->profile_id === $userProfileId ? ' (Tú)' : '');
                     }),
-                Tables\Columns\TextColumn::make('last_name')->label('Apellidos'),
-                Tables\Columns\TextColumn::make('phone_number')->label('Telefono'),
-                Tables\Columns\TextColumn::make('pivot.courses_id')->label('Carrera')
+                Tables\Columns\TextColumn::make('last_name')
+                    ->label('Apellidos'),
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->label('Telefono'),
+                Tables\Columns\TextColumn::make('pivot.courses_id')
+                    ->label('Carrera')
                     ->words(3)
                     // Transformar el ID del curso a su nombre
                     ->formatStateUsing(function ($state) {
@@ -127,6 +125,18 @@ class ProfilesRelationManager extends RelationManager
                                 return [];
                             }
                             return getCoursesByProfileLevel($profile->level);
+                        })
+                        ->searchable()
+                        ->required(),
+                    Select::make('role_id')
+                        ->label('Función del integrante')
+                        ->options(function (Get $get) {
+                            $recordId = $get('recordId');
+                            if (!$recordId) return ["No hay perfil seleccionado"];
+                            $profile = \App\Models\Profile::find($recordId);
+                            if (!$profile || !$profile->user) return ["El perfil no existe o no tiene usuario asociado"];
+                            // Retorna los roles como array
+                            return $profile->user->roles->pluck('name', 'id');
                         })
                         ->searchable()
                         ->required(),
@@ -168,7 +178,6 @@ class ProfilesRelationManager extends RelationManager
                                     TextEntry::make('phone_number')->label('Número de Teléfono'),
                                 ]) ->columns(1),  // Esto asegura que cada sección ocupe una columna
 
-
                             Section::make('Información Institucional')
                                 ->schema([
                                     TextEntry::make('level')->label('Nivel Universitario')->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
@@ -176,7 +185,6 @@ class ProfilesRelationManager extends RelationManager
                             ])->columns(1),  // Esto asegura que cada sección ocupe una columna
                         ];
                     }),
-
 
                 // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
                 Tables\Actions\EditAction::make()

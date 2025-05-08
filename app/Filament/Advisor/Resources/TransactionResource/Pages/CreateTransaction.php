@@ -30,12 +30,26 @@ class CreateTransaction extends CreateRecord
         $transaction = $this->record;
         $data = $this->data;
 
+        if ($profile && !empty($data['courses_id'])) {
+            $courseId = null;
+            // Asigna el valor de courses_id según el nivel del perfil
+            if ($profile->level == 1) {
+                $courseId = 1;
+            } elseif ($profile->level == 2) {
+                $courseId = 7;
+            } else {
+                // Puedes manejar otros niveles aquí si es necesario
+                $courseId = $data['courses_id']; // valor por defecto o lanza error
+            }
+        }
+
         // Perfil del usuario autenticado
         if ($profile && !empty($data['courses_id'])) {
             DB::table('profile_transaction')->insert([
                 'profile_id' => $profile->id,
                 'transaction_id' => $transaction->id,
-                'courses_id' => $data['courses_id'],
+                'courses_id' => $courseId,
+                'role_id' => 2, // asesor
             ]);
         }
 
