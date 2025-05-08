@@ -8,49 +8,74 @@ use BezhanSalleh\PanelSwitch\PanelSwitch;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
             $user = Auth::user();
-        
-            // Verifica si hay un usuario autenticado
+
             if (! $user) {
                 return;
             }
-        
-            // Mapea roles a sus respectivos paneles
-            $roleToPanel = [
-                1 => 'student',
-                3 => 'evaluator',
-                2 => 'advisor',
-                4 => 'coordinator',
+
+            // Mapeo de paneles: id => label
+            $panelMap = [
+                'student'     => 'Estudiante',
+                'evaluator'   => 'Evaluador',
+                'advisor'     => 'Asesor',
+                'coordinator' => 'Coordinador',
             ];
-        
-            // Construye el array de paneles visibles basados en los roles del usuario
-            $availablePanels = [];
-            foreach ($roleToPanel as $role => $panel) {
-                if ($user->hasRole($role)) {
-                    $availablePanels[$panel] = $role; // panel => etiqueta
+
+            $visiblePanels = [];    // ['advisor' => 'Asesor', ...]
+            $panelIds = [];         // ['advisor', 'evaluator', ...]
+
+            foreach ($panelMap as $panelId => $roleName) {
+                if ($user->hasRole($roleName)) {
+                    $visiblePanels[$panelId] = $roleName;
+                    $panelIds[] = $panelId;
                 }
             }
-        
-            // Configura el panel switch solo con los paneles accesibles
+
+            // Caso 1: solo un rol → no mostrar switch
+            if (count($panelIds) <= 1) {
+                $panelSwitch
+                    ->visible(false);
+                return;
+            }
+
+            // Caso 2: exactamente dos roles → filtrar solo advisor/evaluator si están
+            if (count($panelIds) === 2) {
+                $limitedIds = [];
+                $limitedLabels = [];
+
+                foreach (['advisor', 'evaluator'] as $panelId) {
+                    if (in_array($panelId, $panelIds)) {
+                        $limitedIds[] = $panelId;
+                        $limitedLabels[$panelId] = $visiblePanels[$panelId];
+                    }
+                }
+
+                if (count($limitedIds) > 1) {
+                    $panelSwitch
+                        ->simple()
+                        ->panels($limitedIds)         // ✅ solo los IDs
+                        ->labels($limitedLabels)       // ✅ etiquetas visibles
+                        ->visible(true);
+                }
+
+                return;
+            }
+
+            // Caso 3: más de dos roles → mostrar todos
             $panelSwitch
                 ->simple()
-                ->labels($availablePanels)
-                ->visible(count($availablePanels) > 1); // Solo mostrar si hay más de un panel visible
+                ->panels($panelIds)
+                ->labels($visiblePanels)
+                ->visible(true);
         });
     }
 }

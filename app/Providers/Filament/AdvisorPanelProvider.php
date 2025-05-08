@@ -27,6 +27,8 @@ class AdvisorPanelProvider extends PanelProvider
         return $panel
             ->id('advisor')
             ->path('advisor')
+            ->brandName('Comite - Panel Asesor')
+            ->profile()
             ->colors([
                 'primary' => Color::Emerald,
             ])

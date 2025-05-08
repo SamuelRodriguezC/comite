@@ -27,6 +27,7 @@ class EvaluatorPanelProvider extends PanelProvider
         return $panel
             ->id('evaluator')
             ->path('evaluator')
+            ->brandName('Comite - Panel Evaluador')
             ->colors([
                 'primary' => Color::Purple,
             ])

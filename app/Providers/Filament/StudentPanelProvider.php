@@ -28,6 +28,7 @@ class StudentPanelProvider extends PanelProvider
             ->id('student')
             ->path('student')
             ->profile()
+            ->brandName('Comite - Panel Estudiante')
             ->colors([
                 'primary' => Color::Sky,
             ])
