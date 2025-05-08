@@ -153,7 +153,8 @@ class ProcessSubmitResource extends Resource
         return parent::getEloquentQuery()
             ->whereIn('stage_id', [2])
             ->whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
-                $query->where('profile_id', $profileId);
+                $query->where('profile_id', $profileId)
+                    ->where('role_id', 3);
             });
     }
 

@@ -181,7 +181,6 @@ class ProcessAplicationResource extends Resource
                         ->html(),
             ])
             ->columns(2)->columnSpan(1),
-
         ])->columns(2);
     }
 
@@ -192,7 +191,8 @@ class ProcessAplicationResource extends Resource
         return parent::getEloquentQuery()
             ->whereIn('stage_id', [1])
             ->whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
-                $query->where('profile_id', $profileId);
+                $query->where('profile_id', $profileId)
+                    ->where('role_id', 2);
             });
     }
 

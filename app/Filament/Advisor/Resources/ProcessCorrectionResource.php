@@ -155,7 +155,8 @@ class ProcessCorrectionResource extends Resource
         return parent::getEloquentQuery()
             ->whereIn('stage_id', [3, 4])
             ->whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
-                $query->where('profile_id', $profileId);
+                $query->where('profile_id', $profileId)
+                    ->where('role_id', 2);
             });
     }
 

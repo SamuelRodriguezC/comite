@@ -190,7 +190,8 @@ class ProcessResource extends Resource
     {
         $profileId = Auth::user()->profiles->id;
         return Process::whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
-            $query->where('profile_id', $profileId);
+            $query->where('profile_id', $profileId)
+                ->where('role_id', 1);
         });
     }
 
