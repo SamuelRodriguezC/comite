@@ -159,7 +159,6 @@ class ProfilesRelationManager extends RelationManager
                 // ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
             ])
             ->actions([
-
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->infolist(function ($record) {

@@ -38,33 +38,17 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
-     // Verificar datos del asesor
-    $user = Auth::user();
-    $profile = $user->profile;
-
-    logger('Usuario autenticado:', ['user_id' => $user->id]);
-    logger('Perfil autenticado:', ['profile' => $profile]);
-
-    if ($profile) {
-        $coursesId = $profile->level == 2 ? 7 : 1;
-        logger('Insertando asesor', [
-            'profile_id' => $profile->id,
-            'transaction_id' => $transaction->id,
-            'courses_id' => $coursesId,
-            'role_id' => 2,
-        ]);
-
-        try {
+        // Insertar asesor autenticado automáticamente
+        $user = Auth::user();
+        $profile = $user->profiles; // Asegúrate de tener esta relación definida en User
+        if ($profile) {
             DB::table('profile_transaction')->insert([
                 'profile_id' => $profile->id,
                 'transaction_id' => $transaction->id,
-                'courses_id' => $coursesId,
-                'role_id' => 2,
+                'courses_id' => $profile->level == 2 ? 7 : 1,
+                'role_id' => 2, // asesor
             ]);
-        } catch (\Exception $e) {
-            logger('Error al insertar asesor:', ['error' => $e->getMessage()]);
         }
-    }
 
         // Crear Procesos con 3 etapas (1=solicitud 2=entrega 3=1°corrección) relacionados con la transacción
         foreach ([1, 2, 3] as $stageId) {
