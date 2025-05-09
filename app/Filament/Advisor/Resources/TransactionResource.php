@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Option;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Enums\Component;
 use Filament\Forms\Form;
@@ -47,8 +48,98 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                FormSection::make('Ticket')
+                FormSection::make('Vincular integrante')
                     ->schema([
+                        Forms\Components\Select::make('profile_id')
+                            ->label('Número de documento del integrante')
+                            ->visibleOn('create')
+                            ->searchable()
+                            ->live() // Esto permite que al cambiar se activen otros campos
+                            ->required()
+                            // Consulta a los perfiles de acuerdo al número de documento
+                            ->getSearchResultsUsing(function (string $search) {
+                                return \App\Models\Profile::where('document_number', 'like', "%{$search}%")
+                                    //->orWhere('name', 'like', "%{$search}%")
+                                    //->orWhere('last_name', 'like', "%{$search}%")
+                                    ->limit(10)
+                                    ->get()
+                                    // A partir del id muestra número de documento y nombre completo
+                                    ->mapWithKeys(fn ($profile) => [$profile->id => "{$profile->document_number} - {$profile->name} {$profile->last_name}"]);
+                            })
+                            ->getOptionLabelUsing(fn ($value) =>
+                                optional(\App\Models\Profile::find($value))->document_number . ' - ' . optional(\App\Models\Profile::find($value))->name
+                            )
+                            // Al seleccionar un perfil actualiza la carrera, la opción de grado y guarda el nivel en un campo oculto
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $profile = \App\Models\Profile::find($state);
+                                if ($profile) {
+                                    $set('courses_id', null);
+                                    $set('option_id', null);
+                                    $set('role_id', null);
+                                    $set('level', $profile->level); // guardar temporalmente el nivel
+                                } else {
+                                    $set('courses_id', null);
+                                    $set('option_id', null);
+                                    $set('role_id', null);
+                                    $set('level', null);
+                                }
+                            }),
+                        // Agrega un campo oculto para guardar el nivel universitario del perfil seleccionado
+                        Forms\Components\Hidden::make('level')
+                            ->default(fn (?Transaction $record) => $record?->profile?->level),
+                        Forms\Components\Select::make('courses_id')
+                            ->label('Carrera universitaria de la persona vinculada')
+                            ->visibleOn('create')
+                            // La carrera se filtra con la información del perfil seleccionado
+                            ->options(function (callable $get) {
+                                $level = $get('level');
+                                if ($level !== null) {
+                                    return \App\Models\Course::where('level', $level)->pluck('course', 'id');
+                                }
+                                else {
+                                    return ["Aún no ha vinculado a un integrante"];
+                                }
+                            })
+                            ->searchable()
+                            ->required()
+                            ->live(),
+                        Forms\Components\Select::make('role_id')
+                            ->label('Función del integrante')
+                            ->options(function (Get $get) {
+                                $profileId = $get('profile_id');
+                                if (!$profileId) return ["No hay perfil seleccionado"];
+                                $profile = \App\Models\Profile::find($profileId);
+                                if (!$profile || !$profile->user) return ["El perfil no existe o no tiene usuario asociado"];
+                                // Retorna los roles como array
+                                return $profile->user->roles->pluck('name', 'id');
+                            })
+                            ->searchable()
+                            ->required()
+                            // Solo se muestra cuando se ha seleccionado un perfil
+                            //->visible(fn (Get $get) => !is_null($get('profile_id')))
+
+                    ])
+                    ->columnSpan(1)
+                    ->description('Ingresa el número de documento del primer integrante y su carrera. (Puedes agregar más integrantes en el modo de edición).')
+                    ->icon('heroicon-m-user-circle')
+                    ->visible(fn (string $context) => $context === 'create'), //Solo es visible al crear (Sección)
+
+                FormSection::make('Opción de grado')
+                    ->schema([
+                        //Forms\Components\TextInput::make('profile_id')
+                        //    ->label('Estudiante vinculado')
+                        //    ->default(fn (?Transaction $record) =>
+                        //        $record?->profile
+                        //        ? "{$record->profile->document_number} - {$record->profile->name} {$record->profile->last_name}"
+                        //        : 'No asignado')
+                        //    ->disabled()
+                        //    ->visibleOn('edit'),
+                        // calcula el level del modelo si esta en edición
+                        //Forms\Components\TextInput::make('level')
+                        //    ->label('Nivel')
+                        //    ->disabled()
+                        //    ->default(fn (?Profile $record) => $record?->profile?->level)
+                        //    ->visibleOn('edit'),
                         Forms\Components\TextInput::make('id')
                             ->label('Número de Ticket')
                             ->disabled()
@@ -58,53 +149,65 @@ class TransactionResource extends Resource
                             ->label("Componente de la opción de grado")
                             ->live()
                             ->preload()
+                            ->required()
                             ->enum(Component::class)
                             ->options(Component::class)
-                            ->disabledOn('edit')
-                            ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
+                            // Limpiar el campo de opción de grado luego de modificar el componente
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $set('option_id', null);
+                            }),
                         Forms\Components\Select::make('option_id')
-                            ->label("Opción de Grado")
-                            ->disabledOn('edit')
-                            ->relationship('option', 'option')
-                            ->required()
-                             // Función para filtrar la opción de grado por nivel universitario y componente
+                            ->label("Opción de grado")
                             ->options(function (callable $get) {
-                                $user = Auth::user();
-                                if (!$user || !$user->profiles) {
-                                    return ["Aún no tiene perfil"]; // Si el perfil no está disponible, no se muestran opciones
-                                }
-                                $userLevel = $user->profiles->level;
-                                $selectedComponent = $get('component');
-                                if (!$selectedComponent) {
-                                    return ["Aún no ha seleccionado componente"]; // Evita mostrar opciones si el componente aún no se ha seleccionado
-                                }
-                                return Option::where('level', $userLevel)
-                                    ->where('component', $selectedComponent)
-                                    ->pluck('option', 'id');
-                            }),
-                        // Campo para seleccionar curso
-                        Forms\Components\Select::make('courses_id')
-                            ->label('Carrera universitaria')
-                            ->visibleOn('create')
-                            // Mostrar los cursos de la tabla
-                            ->options(\App\Models\Course::all()->pluck('course', 'id'))
-                            //->searchable()
+                                // Toma el nivel guardado en el campo oculto level y el componente elegido
+                                $level = $get('level');
+                                $component = $get('component');
+                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
+                                $query = \App\Models\Option::query();
+                                    if ($level) {
+                                        $query->where('level', $level);
+                                    }
+                                    else {
+                                        return ["Aún no ha vinculado a un integrante"];
+                                    }
+                                    if ($component !== null) {
+                                        $query->where('component', $component);
+                                    }
+                                    else {
+                                        return ["Aún no ha seleccionado el componente"];
+                                    }
+                                // Muestra las opciones de grado de acuerdo a la información anterior
+                                return $query->pluck('option', 'id');
+                            })
                             ->required()
-                            ->options(function () {
-                                $user = Auth::user();
-                                if (!$user || !$user->profiles) {
-                                    return ["El perfil no tiene nivel universitario"]; // Retornamos un arreglo vacío si no hay usuario o perfil
-                                }
-                                // Obtenemos el nivel universitario del usuario autenticado (pregrado o posgrado)
-                                $userLevel = $user->profiles->level;
-                                // Filtramos las carreras que tengan el mismo nivel universitario
-                                return \App\Models\Course::where('level', $userLevel)
-                                    ->pluck('course', 'id');
-                            }),
+                            ->visibleOn('create')
+                            ->searchable()
+                            ->live(), // Para reaccionar a cambios del componente
+                        Forms\Components\Select::make('option_id')
+                            ->label("Opción de grado")
+                            ->visibleOn('edit')
+                            ->options(function (callable $get) {
+                                // Toma el nivel guardado en el campo oculto level y el componente elegido
+                                $component = $get('component');
+                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
+                                $query = \App\Models\Option::query();
+                                    if ($component !== null) {
+                                        $query->where('component', $component);
+                                    }
+                                    else {
+                                        return ["Aún no ha seleccionado el componente"];
+                                    }
+                                // Muestra las opciones de grado de acuerdo a la información anterior
+                                return $query->pluck('option', 'id');
+                            })
+                            ->required()
+                            ->searchable()
+                            ->live(), // Para reaccionar a cambios del componente
                     ])
                     ->columnSpan(1)
+                    ->description('Debes ingresar el componente y la opción de grado del integrante vinculado.')
                     ->icon('heroicon-m-ticket'),
-
+                    // ---------------- solamente es visible en edición --------------------
                     FormSection::make('Detalles')
                     ->schema([
                         FormGroup::make([
@@ -114,23 +217,6 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
-                            //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                            ToggleButtons::make('certification')
-                                ->disabled()
-                                ->columns(3)
-                                ->visibleOn('edit')
-                                ->label('Certificación')
-                                ->columns(2)
-                                ->options([
-                                    1 => 'No Certificado',
-                                    3 => 'Certificado',
-                                    2 => 'Por Certificar',
-                                ])
-                                ->colors([
-                                    1 => 'danger',
-                                    3 => 'success',
-                                    2 => 'warning',
-                                ]),
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
@@ -138,18 +224,23 @@ class TransactionResource extends Resource
                                 ->offColor('danger')
                                 ->onIcon(Enabled::HABILITADO->getIcon())
                                 ->offIcon(Enabled::DESHABILITADO->getIcon())
-                                ->disabled()
                                 ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
                                 ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                                 }),
+                            Forms\Components\Select::make('certification')
+                                ->label("Certificación")
+                                ->live()
+                                ->preload()
+                                ->enum(Certification::class)
+                                ->options(Certification::class),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-eye')
                     ->visible(fn (string $context) => $context === 'edit'), //Solo es visible al crear (Sección)
-            ]);
-        }
+            ])->Columns(2);
+    }
 
 
     public static function table(Table $table): Table

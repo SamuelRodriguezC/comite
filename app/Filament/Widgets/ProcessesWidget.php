@@ -28,11 +28,6 @@ class ProcessesWidget extends BaseWidget
                 ->description('Pendientes Por Revisión')
                 ->icon('heroicon-o-pencil-square')
                 ->color('warning'),
-            // Otros Procesos ()
-            Stat::make('Finalizados', Process::where('stage_id', 5)->where('state', 3)->count())
-                ->description('Pendientes')
-                ->icon('heroicon-o-check-badge')
-                ->color('warning'),
         ];
     }
 }

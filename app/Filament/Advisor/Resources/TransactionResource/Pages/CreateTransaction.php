@@ -25,33 +25,46 @@ class CreateTransaction extends CreateRecord
     // Hacer luego de Crear
     protected function afterCreate(): void
     {
-        $user = Auth::user();
-        $profile = Profile::where('user_id', $user->id)->first();
         $transaction = $this->record;
         $data = $this->data;
 
-        if ($profile && !empty($data['courses_id'])) {
-            $courseId = null;
-            // Asigna el valor de courses_id según el nivel del perfil
-            if ($profile->level == 1) {
-                $courseId = 1;
-            } elseif ($profile->level == 2) {
-                $courseId = 7;
-            } else {
-                // Puedes manejar otros niveles aquí si es necesario
-                $courseId = $data['courses_id']; // valor por defecto o lanza error
-            }
+        // Inserta al estudiante del formulario
+        if (!empty($data['courses_id']) && !empty($data['profile_id'])){
+            DB::table('profile_transaction')->insert([
+                'profile_id' =>  $data['profile_id'],
+                'transaction_id' => $transaction->id,
+                'courses_id' => $data['courses_id'],
+                'role_id' => $data['role_id'],
+            ]);
         }
 
-        // Perfil del usuario autenticado
-        if ($profile && !empty($data['courses_id'])) {
+     // Verificar datos del asesor
+    $user = Auth::user();
+    $profile = $user->profile;
+
+    logger('Usuario autenticado:', ['user_id' => $user->id]);
+    logger('Perfil autenticado:', ['profile' => $profile]);
+
+    if ($profile) {
+        $coursesId = $profile->level == 2 ? 7 : 1;
+        logger('Insertando asesor', [
+            'profile_id' => $profile->id,
+            'transaction_id' => $transaction->id,
+            'courses_id' => $coursesId,
+            'role_id' => 2,
+        ]);
+
+        try {
             DB::table('profile_transaction')->insert([
                 'profile_id' => $profile->id,
                 'transaction_id' => $transaction->id,
-                'courses_id' => $courseId,
-                'role_id' => 2, // asesor
+                'courses_id' => $coursesId,
+                'role_id' => 2,
             ]);
+        } catch (\Exception $e) {
+            logger('Error al insertar asesor:', ['error' => $e->getMessage()]);
         }
+    }
 
         // Crear Procesos con 3 etapas (1=solicitud 2=entrega 3=1°corrección) relacionados con la transacción
         foreach ([1, 2, 3] as $stageId) {
@@ -66,7 +79,7 @@ class CreateTransaction extends CreateRecord
 
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
-            ->body('Se han Creado los Procesos Correspondientes a la Transacción por Favor Completa el Fomulario de Solicitud')
+            ->body('Se han vinculado los perfiles y cursos correctamente.')
             ->icon('heroicon-o-ticket')
             ->success()
             ->send();

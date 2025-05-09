@@ -55,7 +55,7 @@ class CreateTransaction extends CreateRecord
             ->icon('heroicon-o-ticket')
             ->success()
             ->send();
-        }
+    }
 
         // Esto desactiva la notificación por defecto de Filament
         protected function getCreatedNotification(): ?Notification
