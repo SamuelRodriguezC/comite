@@ -76,7 +76,8 @@ class ProfilesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('document_number') //Atributo de busqueda
             ->columns([
-                Tables\Columns\TextColumn::make('document_number')->label('Documento'),
+                Tables\Columns\TextColumn::make('document_number')
+                    ->label('Documento'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombres')
                     ->formatStateUsing(function ($state, $record) {
@@ -84,14 +85,23 @@ class ProfilesRelationManager extends RelationManager
                         // Mostrar en la columna nombre Tú en caso de que sea el perfil autenticado
                         return $state . ($record->profile_id === $userProfileId ? ' (Tú)' : '');
                     }),
-                Tables\Columns\TextColumn::make('last_name')->label('Apellidos'),
-                Tables\Columns\TextColumn::make('phone_number')->label('Telefono'),
-                Tables\Columns\TextColumn::make('pivot.courses_id')->label('Carrera')
+                Tables\Columns\TextColumn::make('last_name')
+                    ->label('Apellidos'),
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->label('Telefono'),
+                Tables\Columns\TextColumn::make('pivot.courses_id')
+                    ->label('Carrera')
                     ->words(3)
                     // Transformar el ID del curso a su nombre
                     ->formatStateUsing(function ($state) {
                         return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';
                 }),
+                Tables\Columns\TextColumn::make('pivot.role_id')
+                    ->label('Rol')
+                    // Transformar el ID del curso a su nombre
+                    ->formatStateUsing(function ($state) {
+                        return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';
+                    }),
             ])
             ->filters([
                 //
@@ -128,18 +138,28 @@ class ProfilesRelationManager extends RelationManager
                     return [
                         Section::make('Información Personal')
                             ->schema([
-                                TextEntry::make('name')->label('Nombre'),
-                                TextEntry::make('last_name')->label('Apellido'),
-                                TextEntry::make('User.email')->label('Email'),
-                                TextEntry::make('phone_number')->label('Número de Teléfono'),
+                                TextEntry::make('name')
+                                    ->label('Nombre'),
+                                TextEntry::make('last_name')
+                                    ->label('Apellido'),
+                                TextEntry::make('User.email')
+                                    ->label('Email'),
+                                TextEntry::make('phone_number')
+                                    ->label('Número de Teléfono'),
                             ]) ->columns(1),  // Esto asegura que cada sección ocupe una columna
-
 
                         Section::make('Información Institucional')
                             ->schema([
-                                TextEntry::make('level')->label('Nivel Universitario')->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                                TextEntry::make('pivot.courses_id')->label('Carrera')->formatStateUsing(function ($state) {return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';}),
-                        ])->columns(1),  // Esto asegura que cada sección ocupe una columna
+                                TextEntry::make('level')
+                                    ->label('Nivel Universitario')
+                                    ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
+                                TextEntry::make('pivot.courses_id')
+                                    ->label('Carrera')
+                                    ->formatStateUsing(function ($state) {return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';}),
+                                TextEntry::make('pivot.role_id')
+                                    ->label('Rol')
+                                    ->formatStateUsing(function ($state) {return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';}),
+                        ])->columns(2),  // Esto asegura que cada sección ocupe una columna
                     ];
                 }),
 

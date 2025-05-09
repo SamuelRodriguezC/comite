@@ -50,7 +50,7 @@ class ProfilesRelationManager extends RelationManager
                 ->visibleOn('create'),
 
             Select::make('courses_id')
-                ->label('Curso')
+                ->label('Carrera universitaria')
                 ->options(function (Get $get) {
                     $documentNumber = $get('document_number');
                     if (!$documentNumber) {
@@ -95,7 +95,13 @@ class ProfilesRelationManager extends RelationManager
                     // Transformar el ID del curso a su nombre
                     ->formatStateUsing(function ($state) {
                         return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';
-                }),
+                    }),
+                Tables\Columns\TextColumn::make('pivot.role_id')
+                    ->label('Rol')
+                    // Transformar el ID del curso a su nombre
+                    ->formatStateUsing(function ($state) {
+                        return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';
+                    }),
             ])
             ->filters([
                 //
@@ -179,8 +185,12 @@ class ProfilesRelationManager extends RelationManager
                                 ->schema([
                                     TextEntry::make('level')->label('Nivel Universitario')
                                         ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                                    TextEntry::make('pivot.courses_id')->label('Carrera')
+                                    TextEntry::make('pivot.courses_id')
+                                        ->label('Carrera')
                                         ->formatStateUsing(function ($state) {return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';}),
+                                    TextEntry::make('pivot.role_id')
+                                        ->label('Rol')
+                                        ->formatStateUsing(function ($state) {return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';}),
                             ])->columns(1),  // Esto asegura que cada sección ocupe una columna
                         ];
                     }),
