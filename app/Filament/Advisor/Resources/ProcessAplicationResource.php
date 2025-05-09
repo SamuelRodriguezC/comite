@@ -39,8 +39,8 @@ class ProcessAplicationResource extends Resource
             ->schema([
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
-                    ->disk('public') // Indica que se usará el disco 'public'
-                    ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                    ->disk('local') // Indica que se usará el disco 'public'
+                    ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
                     ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
                     ->rules([
                         'required',
@@ -69,17 +69,34 @@ class ProcessAplicationResource extends Resource
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
-                    ->color(fn ($state) => State::from($state)->getColor())
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    )
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                        )
                     ->sortable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label("Finalizado")
-                    ->icon(fn ($state) => Completed::from($state)->getIcon())
-                    ->color(fn ($state) => Completed::from($state)->getColor())
+                    ->icon(
+                        fn ($state) => Completed::from($state)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Completed::from($state)
+                            ->getColor()
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->formatStateUsing(
+                        function ($state) {
+                            if (!$state) {return null;}
+                            return basename($state);
+                        }
+                    )
                     ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
@@ -89,13 +106,22 @@ class ProcessAplicationResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.component')
                     ->label("Componente")
-                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
+                    ->formatStateUsing(
+                        fn ($state) => Component::from($state)
+                            ->getLabel()
+                    )
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('transaction.enabled')
                     ->label('Habilitado')
-                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                    ->color(fn ($state) => Enabled::from($state)->getColor()),
+                    ->icon(
+                        fn ($state) => Enabled::from($state)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Enabled::from($state)
+                            ->getColor()
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -115,8 +141,8 @@ class ProcessAplicationResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
-                    ->visible(fn ($record) =>
-                        (!$record->requirement || trim($record->requirement) === '')
+                    ->visible(
+                        fn ($record) => (!$record->requirement || trim($record->requirement) === '')
                 ),
             ])
             ->bulkActions([
@@ -140,17 +166,34 @@ class ProcessAplicationResource extends Resource
                 TextEntry::make('state')
                     ->label("Estado")
                     ->badge()
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                    ->color(fn ($state) => State::from($state)->getColor()),
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                    )
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    ),
                 TextEntry::make('updated_at')
                         ->dateTime()
                         ->label('Actualizado en'),
                 IconEntry::make('completed')
                     ->label("Finalizado")
-                    ->icon(fn ($state) => Completed::from($state)->getIcon())
-                    ->color(fn ($state) => Completed::from($state)->getColor()),
+                    ->icon(
+                        fn ($state) => Completed::from($state)
+                        ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Completed::from($state)
+                            ->getColor()
+                    ),
                 TextEntry::make('requirement')
-                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->formatStateUsing(
+                        function ($state) {
+                            if (!$state) {return null;}
+                            return basename($state);
+                        }
+                    )
                     ->limit(20)
                     ->label("Requisitos"),
                 TextEntry::make('comment')
@@ -164,20 +207,33 @@ class ProcessAplicationResource extends Resource
                     ->label("Ticket"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
-                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+                        ->icon(
+                            fn ($state) => Enabled::from($state)
+                                ->getIcon()
+                            )
+                        ->color(
+                            fn ($state) => Enabled::from($state)
+                                ->getColor()
+                        ),
                 TextEntry::make('transaction.Option.option')
                         ->label('Opción de grado'),
                 TextEntry::make('transaction.component')
                         ->label('Componente')
-                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                        ->formatStateUsing(
+                            fn ($state) => Component::from($state)
+                                ->getLabel()
+                        ),
                 TextEntry::make('transaction.profiles.name')
                         ->label('Integrante(s)')
-                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->formatStateUsing(
+                            fn($state) => format_list_html($state)
+                        )
                         ->html(),
                 TextEntry::make('transaction.courses')
                         ->label('Carrera(s)')
-                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->formatStateUsing(
+                            fn($state) => format_list_html($state)
+                        )
                         ->html(),
             ])
             ->columns(2)->columnSpan(1),
@@ -199,7 +255,9 @@ class ProcessAplicationResource extends Resource
     // Filtra por solicitudes pendientes
     public static function getNavigationBadge(): ?string
     {
-        return static::getEloquentQuery()->where('state', '3')->count();
+        return static::getEloquentQuery()
+            ->where('state', '3')
+            ->count();
     }
 
     public static function getRelations(): array

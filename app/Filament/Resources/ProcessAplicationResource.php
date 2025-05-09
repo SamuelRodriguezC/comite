@@ -70,8 +70,8 @@ class ProcessAplicationResource extends Resource
                 ->label('Requisitos en PDF')
                 ->required()
                 ->columnSpanFull()
-                ->disk('public') // Indica que se usará el disco 'public'
-                ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                ->disk('local') // Indica que se usará el disco 'public'
+                ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
                 ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
                 ->rules([
                     'required',
@@ -226,7 +226,9 @@ class ProcessAplicationResource extends Resource
     // Filtra por solicitudes pendientes
     public static function getNavigationBadge(): ?string
     {
-        return static::getEloquentQuery()->where('state', '3')->count();
+        return static::getEloquentQuery()
+            ->where('state', '3')
+            ->count();
     }
 
     // Describe el getNavigationBadge

@@ -29,8 +29,8 @@ class ProcessesRelationManager extends RelationManager
             Forms\Components\FileUpload::make('requirement')
                 ->label('Requisitos en PDF')
                 ->required()
-                ->disk('public')
-                ->directory('processes/requirements')
+                ->disk('local')
+                ->directory('secure/requirements')
                 ->acceptedFileTypes(['application/pdf'])
                 ->rules([
                     'required',
@@ -60,8 +60,14 @@ class ProcessesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
-                    ->color(fn ($state) => State::from($state)->getColor())
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    )
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                    )
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
@@ -84,8 +90,14 @@ class ProcessesRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
-                    ->icon(fn ($record) => Completed::from($record->completed)->getIcon())
-                    ->color(fn ($record) => Completed::from($record->completed)->getColor()),
+                    ->icon(
+                        fn ($record) => Completed::from($record->completed)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($record) => Completed::from($record->completed)
+                            ->getColor()
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -109,16 +121,36 @@ class ProcessesRelationManager extends RelationManager
                         return [
                             Section::make('Información del Proceso')
                                 ->schema([
-                                    TextEntry::make('transaction.id')->label('# Ticket'),
-                                    TextEntry::make('id')->label('# Proceso'),
+                                    TextEntry::make('transaction.id')
+                                        ->label('# Ticket'),
+                                    TextEntry::make('id')
+                                        ->label('# Proceso'),
                                     TextEntry::make('state')
                                         ->label('Estado')
                                         ->badge()
-                                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                                        ->color(fn ($state) => State::from($state)->getColor()),
-                                    TextEntry::make('stage.stage')->label('Etapa'),
-                                    TextEntry::make('comment')->label('Comentario del Estudiante')->placeholder('No ha Comentado Aún')->markdown(),
-                                    TextEntry::make('requirement')->label('Requisitos')->placeholder('No se han Subido Requisitos Aún')->formatStateUsing(function ($state){if(!$state){return null;}return basename($state);}),
+                                        ->formatStateUsing(
+                                            fn ($state) => State::from($state)
+                                                ->getLabel()
+                                        )
+                                        ->color(
+                                            fn ($state) => State::from($state)
+                                                ->getColor()
+                                        ),
+                                    TextEntry::make('stage.stage')
+                                        ->label('Etapa'),
+                                    TextEntry::make('comment')
+                                        ->label('Comentario del Estudiante')
+                                        ->placeholder('No ha Comentado Aún')
+                                        ->markdown(),
+                                    TextEntry::make('requirement')
+                                        ->label('Requisitos')
+                                        ->placeholder('No se han Subido Requisitos Aún')
+                                        ->formatStateUsing(
+                                            function ($state){
+                                                if(!$state){return null;}
+                                                return basename($state);
+                                            }
+                                        ),
                                 ])
                                 ->columns(2),
 
@@ -139,25 +171,29 @@ class ProcessesRelationManager extends RelationManager
                                                     ->label('Concepto')
                                                     ->default(optional($comment->concept)->concept ?? 'Sin Concepto')
                                                     ->badge()
-                                                    ->color(fn () => match ($comment->concept->concept ?? null) {
-                                                        'Aprobado' => 'success',
-                                                        'No aprobado' => 'danger',
-                                                        default => 'gray',
-                                                    }),
+                                                    ->color(
+                                                        fn () => match ($comment->concept->concept ?? null) {
+                                                            'Aprobado' => 'success',
+                                                            'No aprobado' => 'danger',
+                                                            default => 'gray',
+                                                        }
+                                                    ),
                                             ])
                                             ->columns(3);
                                     })->toArray()
                                 )
-                                ->visible(fn ($record) => $record->comments->isNotEmpty()),
+                                ->visible(
+                                    fn ($record) => $record->comments->isNotEmpty()
+                                ),
                         ];
                     }),
 
                 Tables\Actions\EditAction::make()
                     ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
-                    ->visible(fn ($record) =>
-                        (!$record->requirement || trim($record->requirement) === '')
-                ),
+                    ->visible(
+                        fn ($record) => (!$record->requirement || trim($record->requirement) === '')
+                    ),
 
                 // --------------------------- GRUPO DE BOTONES ---------------------------
                 ActionGroup::make([
@@ -165,7 +201,9 @@ class ProcessesRelationManager extends RelationManager
                     Tables\Actions\Action::make('show')
                     ->label('Visualizar requerimiento')
                     ->icon('heroicon-o-eye') // Icono de ver
-                    ->url(fn ($record) => route('file.view', ['file' => basename($record->requirement)]))
+                    ->url(
+                        fn ($record) => route('file.view', ['file' => basename($record->requirement)])
+                    )
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => trim($record->requirement) !== ''), // Solo se muestra si hay un archivo
 
@@ -173,9 +211,13 @@ class ProcessesRelationManager extends RelationManager
                     Tables\Actions\Action::make('download')
                         ->icon('heroicon-o-folder-arrow-down') // Icono de descarga
                         ->label('Descargar requerimiento')
-                        ->url(fn ($record) => route('file.download', ['file' => basename($record->requirement)]))
+                        ->url(
+                            fn ($record) => route('file.download', ['file' => basename($record->requirement)])
+                        )
                         ->openUrlInNewTab()
-                        ->visible(fn ($record) => trim($record->requirement) !== '')
+                        ->visible(
+                            fn ($record) => trim($record->requirement) !== ''
+                        )
                 ])
             ])
             ->bulkActions([

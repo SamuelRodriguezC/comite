@@ -61,10 +61,21 @@ class ProcessCorrectionResource extends Resource
                     ->disabled()
                     ->relationship('transaction', 'id')
                     ->required(),
-                Forms\Components\TextInput::make('requirement')
-                    ->label("Requisitos en PDF")
+                Forms\Components\FileUpload::make('requirement')
+                    ->label('Requisitos en PDF')
                     ->required()
-                    ->maxLength(255),
+                    ->columnSpanFull()
+                    ->disabled()
+                    ->disk('local') // Indica que se usará el disco 'public'
+                    ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
+                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                    ->rules([
+                        'required',
+                        'mimes:pdf',
+                        'max:10240',
+                    ]) // Agrega validación: campo requerido y solo PDF
+                    ->maxSize(10240) // 10MB
+                    ->maxFiles(1),
             ]);
     }
 
@@ -81,12 +92,21 @@ class ProcessCorrectionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                    )
                     ->sortable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label("Finalizado")
-                    ->icon(fn ($state) => Completed::from($state)->getIcon())
-                    ->color(fn ($state) => Completed::from($state)->getColor())
+                    ->icon(
+                        fn ($state) => Completed::from($state)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Completed::from($state)
+                            ->getColor()
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
@@ -130,10 +150,16 @@ class ProcessCorrectionResource extends Resource
                         ->label("Etapa"),
                     TextEntry::make('state')
                         ->label("Estado")
-                        ->formatStateUsing(fn ($state) => State::from($state)->getLabel()),
+                        ->formatStateUsing(
+                            fn ($state) => State::from($state)
+                                ->getLabel()
+                        ),
                     TextEntry::make('completed')
                         ->label("Finalizado")
-                        ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
+                        ->formatStateUsing(
+                            fn ($state) => Completed::from($state)
+                                ->getLabel()
+                        ),
                     TextEntry::make('requirement')
                         ->label("Requisitos"),
                     TextEntry::make('created_at')
@@ -161,7 +187,9 @@ class ProcessCorrectionResource extends Resource
     // Filtra por solicitudes pendientes
     public static function getNavigationBadge(): ?string
     {
-        return static::getEloquentQuery()->where('state', '3')->count();
+        return static::getEloquentQuery()
+            ->where('state', '3')
+            ->count();
     }
 
     public static function getRelations(): array

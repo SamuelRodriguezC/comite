@@ -40,10 +40,12 @@ class ProcessResource extends Resource
             ->schema([
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
-                    ->disabled(fn (?Model $record) => filled($record?->requirement))
+                    ->disabled(
+                        fn (?Model $record) => filled($record?->requirement)
+                    )
                     ->required()
-                    ->disk('public') // Indica que se usará el disco 'public'
-                    ->directory('processes/requirements') // Define la ruta donde se almacenará el archivo
+                    ->disk('local')
+                    ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
                     ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
                     ->rules([
                         'required',
@@ -59,7 +61,15 @@ class ProcessResource extends Resource
                     ->label('Tu Comentario')
                     ->required()
                     ->disabled(fn (?Model $record) => filled($record?->requirement))
-                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                        'link',
+                        'strike',
+                        'codeBlock',
+                        'h2',
+                        'h3',
+                        'blockquote'
+                    ])
                     ->maxLength(255)
                     ->columnSpanFull(),
             ]);
@@ -80,13 +90,24 @@ class ProcessResource extends Resource
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
-                    ->color(fn ($state) => State::from($state)->getColor())
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    )
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
                     ->placeholder('Sin Archivos Aún')
-                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->formatStateUsing(
+                        function ($state) {
+                            if (!$state) {return null;}
+                            return basename($state);
+                        }
+                    )
                     ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
@@ -96,8 +117,14 @@ class ProcessResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('transaction.enabled')
                     ->label('Habilitado')
-                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                    ->color(fn ($state) => Enabled::from($state)->getColor()),
+                    ->icon(
+                        fn ($state) => Enabled::from($state)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Enabled::from($state)
+                            ->getColor()
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -144,8 +171,14 @@ class ProcessResource extends Resource
                 TextEntry::make('state')
                     ->label("Estado")
                     ->badge()
-                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
-                    ->color(fn ($state) => State::from($state)->getColor()),
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                    )
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    ),
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado en'),
@@ -155,7 +188,12 @@ class ProcessResource extends Resource
                     ->limit(25),
                 TextEntry::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);}),
+                    ->formatStateUsing(
+                        function ($state) {
+                            if (!$state) {return null;}
+                            return basename($state);
+                        }
+                    ),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')
@@ -163,22 +201,32 @@ class ProcessResource extends Resource
                 TextEntry::make('transaction.id')
                     ->label("Ticket"),
                 IconEntry::make('transaction.enabled')
-                        ->label('Habilitado')
-                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+                    ->label('Habilitado')
+                    ->icon(
+                        fn ($state) => Enabled::from($state)
+                            ->getIcon()
+                    )
+                    ->color(fn ($state) => Enabled::from($state)->getColor()),
                 TextEntry::make('transaction.Option.option')
-                        ->label('Opción de grado'),
+                    ->label('Opción de grado'),
                 TextEntry::make('transaction.component')
-                        ->label('Componente')
-                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                    ->label('Componente')
+                    ->formatStateUsing(
+                        fn ($state) => Component::from($state)
+                            ->getLabel()
+                    ),
                 TextEntry::make('transaction.profiles.name')
-                        ->label('Integrante(s)')
-                        ->formatStateUsing(fn($state) => format_list_html($state))
-                        ->html(),
+                    ->label('Integrante(s)')
+                    ->formatStateUsing(
+                        fn($state) => format_list_html($state)
+                    )
+                    ->html(),
                 TextEntry::make('transaction.courses')
-                        ->label('Carrera(s)')
-                        ->formatStateUsing(fn($state) => format_list_html($state))
-                        ->html(),
+                    ->label('Carrera(s)')
+                    ->formatStateUsing(
+                        fn($state) => format_list_html($state)
+                    )
+                    ->html(),
             ])
             ->columns(2)->columnSpan(1),
 
