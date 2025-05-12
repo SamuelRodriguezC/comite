@@ -44,7 +44,8 @@ class Transaction extends Model
      */
     public function profiles(): BelongsToMany
     {
-        return $this->belongsToMany(Profile::class)->withPivot('courses_id', 'role_id');
+        return $this->belongsToMany(Profile::class)
+            ->withPivot('courses_id', 'role_id');
     }
     public function option(): BelongsTo
     {
@@ -77,5 +78,4 @@ class Transaction extends Model
     {
         return $this->created_at->diffInHours(now()) < 12;
     }
-
 }

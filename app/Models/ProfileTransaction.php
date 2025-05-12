@@ -40,4 +40,9 @@ class ProfileTransaction extends Model
     {
         return $this->profile->user->roles;
     }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

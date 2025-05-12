@@ -1,9 +1,11 @@
 <?php
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\PdfActaController;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
@@ -42,7 +44,7 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
-//---------- ruta para ver archivos requerimientos -------------
+//---------- ruta para ver requerimientos -------------
 Route::get('/secure/view/{file}', function ($file) {
     $path = storage_path('app/private/secure/requirements/' . $file);
     // Verifica que el usuario esté autenticado y tenga permisos
@@ -57,7 +59,7 @@ Route::get('/secure/view/{file}', function ($file) {
     return Response::file($path); // Muestra el archivo en el navegador
 })->middleware(['auth'])->name('file.view');
 
-//--------- ruta para descargar archivos requerimientos ---------
+//--------- ruta para descargar requerimientos ---------
 Route::get('/secure/download/{file}', function ($file) {
     $path = storage_path('app/private/secure/requirements/' . $file);
     if (!Auth::check()) {
@@ -68,5 +70,9 @@ Route::get('/secure/download/{file}', function ($file) {
     }
     return Response::download($path); // Descarga el archivo
 })->middleware(['auth'])->name('file.download');
+
+//--------- ruta para ver actas ------------------------
+Route::get('/acta-pdf/{id}', [PdfActaController::class, 'generar'])
+    ->name('acta.pdf');
 
 require __DIR__.'/auth.php';
