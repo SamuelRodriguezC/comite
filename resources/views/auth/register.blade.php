@@ -5,14 +5,14 @@
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Nombre')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-text-input id="name" class="block w-full mt-1" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-text-input id="email" class="block w-full mt-1" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -20,7 +20,7 @@
         <div class="mt-4">
             <x-input-label for="password" :value="__('Contraseña')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
+            <x-text-input id="password" class="block w-full mt-1"
                             type="password"
                             name="password"
                             required autocomplete="new-password" />
@@ -32,7 +32,7 @@
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirmación de Contraseña')" />
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
+            <x-text-input id="password_confirmation" class="block w-full mt-1"
                             type="password"
                             name="password_confirmation" required autocomplete="new-password" />
 
@@ -58,7 +58,7 @@
         <!-- Document Type -->
         <div class="mt-4">
             <x-input-label for="document_id" :value="__('Tipo de Documento')" />
-            <select id="document_id" name="document_id" class="block w-full mt-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+            <select id="document_id" name="document_id" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 <option value="">Seleccione una opción</option>
                 @foreach ($documents as $document)
                     <option value="{{ $document->id }}" {{ old('document_id') == $document->id ? 'selected' : '' }}>
@@ -76,17 +76,17 @@
             <x-input-error :messages="$errors->get('document_number')" class="mt-2" />
         </div>
 
-         <!-- Phone Number -->
-         <div class="mt-4">
+        <!-- Phone Number -->
+        <div class="mt-4">
             <x-input-label for="phone_number" :value="__('Número de Telefono')" />
             <x-text-input id="phone_number" class="block w-full mt-1" type="text" name="phone_number" :value="old('phone_number')" required />
             <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
         </div>
 
-         <!-- Level -->
+        <!-- Level -->
         <div class="mt-4">
             <x-input-label for="level" :value="__('Nivel Universitario')" />
-            <select id="level" name="level" class="block w-full mt-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+            <select id="level" name="level" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 @foreach (\App\Enums\Level::cases() as $level)
                     <option value="{{ $level->value }}" {{ old('level') == $level->value ? 'selected' : '' }}>
                         {{ $level->getLabel() }}
@@ -96,14 +96,20 @@
             <x-input-error :messages="$errors->get('level')" class="mt-2" />
         </div>
 
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
+        <!-- incorporar inicio de sesion y recuperación de contraseña -->
+        <div class="flex justify-between my-5">
+            <a class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}" wire:navigate>
+                {{ __('Iniciar sesión') }}
             </a>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
+            <a class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}" wire:navigate>
+                {{ __('¿Olvidó su contraseña?') }}
+            </a>
+        </div>
+
+        <div class="flex items-center justify-center mt-4">
+            <x-primary-button class="justify-center w-full">
+                {{ __('Registrarse') }}
             </x-primary-button>
         </div>
     </form>
