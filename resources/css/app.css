@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+@layer components{
+  .primary-btn{
+    @apply inline-block bg-red-700 text-white font-semibold shadow-[0px_10px_8px_-7px_#bd0014] rounded-lg py-2 px-6 hover:bg-yellow-600 duration-300 hover:shadow-[0px_10px_8px_-7px_#cd8700];
+  }
+
+  .secondary-btn{
+    @apply inline-block bg-yellow-600 text-white font-semibold shadow-[0px_10px_8px_-7px_#cd8700] rounded-lg py-2 px-6 hover:bg-red-700 duration-300 hover:shadow-[0px_10px_8px_-7px_#bd0014];
+  }
+
+  .container-custom {
+    @apply w-full max-w-[1280px] mx-auto px-4 md:px-8;
+  }
+}
+html {
+  scroll-behavior: smooth;
+}
