@@ -71,8 +71,34 @@ Route::get('/secure/download/{file}', function ($file) {
     return Response::download($path); // Descarga el archivo
 })->middleware(['auth'])->name('file.download');
 
-//--------- ruta para ver actas ------------------------
-Route::get('/acta-pdf/{id}', [PdfActaController::class, 'generar'])
-    ->name('acta.pdf');
+//---------- ruta para ver actas -------------
+Route::get('/actas/view/{file}', function ($file) {
+    $path = storage_path('app/public/actas/' . $file);
+    // Verifica que el usuario esté autenticado y tenga permisos
+    if (!Auth::check()) {
+        abort(403, 'No autorizado.');
+    }
+    // Aquí puedes agregar lógica adicional de permisos con Gate o roles:
+    // if (!Auth::user()->hasRole('Coordinador')) abort(403);
+    if (!file_exists($path)) {
+        abort(404, 'No hay archivo');
+    }
+    return Response::file($path); // Muestra el archivo en el navegador
+})->middleware(['auth'])->name('certificate.view');
+
+//--------- ruta para descargar actas ---------
+Route::get('/actas/download/{file}', function ($file) {
+    $path = storage_path('app/public/actas/' . $file);
+    if (!Auth::check()) {
+        abort(403, 'No autorizado.');
+    }
+    if (!file_exists($path)) {
+        abort(404, 'No hay archivo');
+    }
+    return Response::download($path); // Descarga el archivo
+})->middleware(['auth'])->name('certificate.download');
+
+
+
 
 require __DIR__.'/auth.php';

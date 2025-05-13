@@ -21,20 +21,20 @@ class ViewTransaction extends ViewRecord
                 ->label('Visualizar acta')
                 ->icon('heroicon-o-eye')
                 ->url(function ($record) {
-                    $filename = basename($record->certificate?->actas);
-                    return $filename ? route('file.view', ['file' => $filename]) : null;
+                    $filename = basename($record->certificate?->acta);
+                    return $filename ? route('certificate.view', ['file' => $filename]) : null;
                 })
-                ->hidden(fn($record) => empty($record->certificate?->actas))
+                ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
 
             Actions\Action::make('download')
                 ->label('Descargar acta')
                 ->icon('heroicon-o-folder-arrow-down')
                 ->url(function ($record) {
-                    $filename = basename($record->certificate?->actas);
-                    return $filename ? route('file.download', ['file' => $filename]) : null;
+                    $filename = basename($record->certificate?->acta);
+                    return $filename ? route('certificate.download', ['file' => $filename]) : null;
                 })
-                ->hidden(fn($record) => empty($record->certificate?->actas))
+                ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
 
             Actions\EditAction::make(),
