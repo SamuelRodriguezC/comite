@@ -6,29 +6,49 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ProfileTransaction;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PdfActaController extends Controller
 {
     //
     public function generar($id)
     {
-        // Obtener la transacción
-        $transaction = Transaction::findOrFail($id);
-
-        // Obtener solo los perfiles con rol 'estudiante'
-        $detalles = ProfileTransaction::with('profile.user', 'course', 'role')
-            ->where('transaction_id', $id)
-            ->whereHas('role', function ($query) {
-                $query->where('name', 'Estudiante'); // asegúrate de que así se llama el rol
-            })
+        // Obtiene la transacción
+        $transaction = Transaction::with('option')->findOrFail($id);
+        // Busca estudiantes vinculados y genera vista
+        $estudiantes = ProfileTransaction::with(['profile', 'courses', 'role'])
+            ->where('transaction_id', $transaction->id)
+            ->whereHas('role', fn($q) => $q->where('name', 'Estudiante'))
             ->get();
-
-        // Generar el PDF
-        $pdf = Pdf::loadView('pdf.acta', [
-            'transaction' => $transaction,
-            'detalles' => $detalles,
+        $pdf = Pdf::loadView('pdf.acta', compact('transaction', 'estudiantes'));
+        // Forzar incrustación de fuentes
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'DejaVu Sans',
         ]);
+        // Guardar en storage/app/public/actas
+        $fileName = 'acta-' . $transaction->id . '-' . Str::random(5) . '.pdf';
+        $filePath = 'actas/' . $fileName;
+        Storage::disk('public')->put($filePath, $pdf->output());
+        // Registrar en la base de datos
+        $transaction->certificate()->updateOrCreate(
+            ['transaction_id' => $transaction->id],
+            ['acta' => $filePath]
+        );
+        // Redirige a una vista del documento
 
-        return $pdf->download('acta-'.$transaction->id.'.pdf');
+        return $pdf->stream($fileName);
+    }
+
+
+    public function view($file)
+    {
+        $path = storage_path("app/public/actas/{$file}");
+        if (!file_exists($path)) {
+            abort(404);
+        }
+        return response()->file($path, ['Content-Type' => 'application/pdf']);
     }
 }

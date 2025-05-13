@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Transaction extends Model
 {
@@ -51,9 +52,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Option::class);
     }
-    public function certificates(): HasMany
+    public function certificate(): HasOne
     {
-        return $this->hasMany(Certificate::class);
+        return $this->hasOne(Certificate::class);
     }
     public function processes(): HasMany
     {

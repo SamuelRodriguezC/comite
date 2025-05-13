@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
             $table->string('acta');
-            $table->longText('comment');
-            $table->tinyInteger('resolution');
+            //$table->longText('comment');
+            //$table->tinyInteger('resolution');
             $table->foreignId('transaction_id')
                 ->constrained()
                 ->onDelete('cascade')

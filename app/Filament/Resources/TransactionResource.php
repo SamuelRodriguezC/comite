@@ -362,6 +362,12 @@ class TransactionResource extends Resource
         return 'Tickets pendientes por generar actas';
     }
 
+    // carga la relación con certificados
+    public static function eagerLoadRelationships(): array
+    {
+        return ['certificate']; // Muy importante
+    }
+
     public static function getRelations(): array
     {
         return [

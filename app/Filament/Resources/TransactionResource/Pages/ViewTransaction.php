@@ -16,13 +16,41 @@ class ViewTransaction extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+
+            Actions\Action::make('view')
+                ->label('Visualizar acta')
+                ->icon('heroicon-o-eye')
+                ->url(function ($record) {
+                    $filename = basename($record->certificate?->actas);
+                    return $filename ? route('file.view', ['file' => $filename]) : null;
+                })
+                ->hidden(fn($record) => empty($record->certificate?->actas))
+                ->openUrlInNewTab(),
+
+            Actions\Action::make('download')
+                ->label('Descargar acta')
+                ->icon('heroicon-o-folder-arrow-down')
+                ->url(function ($record) {
+                    $filename = basename($record->certificate?->actas);
+                    return $filename ? route('file.download', ['file' => $filename]) : null;
+                })
+                ->hidden(fn($record) => empty($record->certificate?->actas))
+                ->openUrlInNewTab(),
+
             Actions\EditAction::make(),
 
             Action::make('Generar PDF')
-                ->label('Acta')
-                ->icon('heroicon-o-document-arrow-down')
-                ->url(fn ($record) => route('acta.pdf', $record->id))
-                ->openUrlInNewTab(),
+            ->color('success')
+            ->label('Certificar')
+            ->requiresConfirmation()
+            ->icon('heroicon-o-document-check')
+            ->url(function ($record) {
+                if ($record->certificate?->acta) {
+                    return route('file.view', ['file' => basename($record->certificate->acta)]);
+                }
+                return route('acta.pdf', $record->id);
+            })
+            ->openUrlInNewTab(),
         ];
     }
 }

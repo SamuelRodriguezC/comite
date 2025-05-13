@@ -20,6 +20,7 @@ class ViewProcess extends ViewRecord
                 ->url(
                     fn ($record) => route('file.view', ['file' => basename($record->requirement)])
                 )
+                ->hidden(fn($record) => empty($record->requirement))
                 ->openUrlInNewTab(), // Abre la vista en una nueva pestaña
 
             Actions\Action::make('download')
@@ -28,6 +29,7 @@ class ViewProcess extends ViewRecord
                 ->url(
                     fn ($record) => route('file.download', ['file' => basename($record->requirement)])
                 )
+                ->hidden(fn($record) => empty($record->requirement))
                 ->openUrlInNewTab(), // Abre en una nueva pestaña
 
             Actions\EditAction::make(),

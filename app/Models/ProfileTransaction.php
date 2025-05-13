@@ -30,7 +30,7 @@ class ProfileTransaction extends Model
         return $this->belongsTo(Transaction::class);
     }
 
-    public function course(): BelongsTo
+    public function courses(): BelongsTo
     {
         return $this->belongsTo(Course::class);
     }
