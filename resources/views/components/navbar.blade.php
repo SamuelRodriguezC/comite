@@ -70,8 +70,8 @@
                 {{ $menu['title'] }}
             </a>
             @endforeach
-            <a class="primary-btn">Iniciar Sesión</a>
-            <a class="primary-btn">Registro</a>
+                <a href="login" class="primary-btn">Iniciar Sesión</a>
+                <a href="register" class="secondary-btn">Registro</a>
         </div>
 
         {{-- Fondo oscuro --}}

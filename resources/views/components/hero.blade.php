@@ -41,7 +41,7 @@
 
         {{-- Imagen principal + decorativa --}}
         <div class="relative flex items-center justify-around">
-            <img src="{{ asset('images/LogoUniversidad.png') }}" alt="Logo" class="w-[250px] sm:w-[300px] md:w-[400px] xl:w-[400px]
+            <img src="{{ asset('images/logoUniversidad.png') }}" alt="Logo" class="w-[250px] sm:w-[300px] md:w-[400px] xl:w-[400px]
            relative z-10 drop-shadow
            ml-0 sm:ml-10 md:ml-20 lg:ml-28" />
             <img src="{{ asset('images/Blob.svg') }}" alt="Blob"
