@@ -98,7 +98,7 @@ Route::get('/actas/download/{file}', function ($file) {
     return Response::download($path); // Descarga el archivo
 })->middleware(['auth'])->name('certificate.download');
 
-
+Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generar'])->name('certificate.pdf');
 
 
 require __DIR__.'/auth.php';

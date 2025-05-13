@@ -46,9 +46,9 @@ class ViewTransaction extends ViewRecord
             ->icon('heroicon-o-document-check')
             ->url(function ($record) {
                 if ($record->certificate?->acta) {
-                    return route('file.view', ['file' => basename($record->certificate->acta)]);
+                    return route('certificate.view', ['file' => basename($record->certificate->acta)]);
                 }
-                return route('acta.pdf', $record->id);
+                return route('certificate.pdf', $record->id);
             })
             ->openUrlInNewTab(),
         ];

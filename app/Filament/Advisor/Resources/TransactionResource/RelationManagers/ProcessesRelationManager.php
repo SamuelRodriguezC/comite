@@ -155,7 +155,7 @@ class ProcessesRelationManager extends RelationManager
                                 ->columns(2),
 
                             Section::make('Comentarios de Evaluadores')
-                                ->description('Recuerda que ambos conceptos de los evaluadores deben ser "Aprobados" para que el Estado del proceso sea aprobado')
+                                ->description('Ambos conceptos de los evaluadores deben ser "Aprobados" para que el Estado del proceso sea aprobado')
                                 ->schema(
                                     $record->comments->map(function ($comment) {
                                         return Section::make()
