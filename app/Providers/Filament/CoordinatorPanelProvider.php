@@ -21,6 +21,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\Navigation\NavigationItem;
 
 class CoordinatorPanelProvider extends PanelProvider
 {
@@ -35,6 +36,7 @@ class CoordinatorPanelProvider extends PanelProvider
             // ->registration()
             // ->passwordReset()
             //->emailVerification()
+            //->databaseNotifications()
             ->profile()
             ->colors([
                 'primary' => Color::Gray,
@@ -64,9 +66,6 @@ class CoordinatorPanelProvider extends PanelProvider
                 PanelRoles::make()
                 ->roleToAssign('Coordinador')
                 ->restrictedRoles(['Coordinador', 'Super administrador']),
-            ])
-            ->authMiddleware([
-                Authenticate::class,
             ]);
     }
 }

@@ -32,6 +32,7 @@ class EvaluatorPanelProvider extends PanelProvider
                 'primary' => Color::Gray,
             ])
             ->profile()
+            ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Evaluator/Resources'), for: 'App\\Filament\\Evaluator\\Resources')
             ->discoverPages(in: app_path('Filament/Evaluator/Pages'), for: 'App\\Filament\\Evaluator\\Pages')
             ->pages([

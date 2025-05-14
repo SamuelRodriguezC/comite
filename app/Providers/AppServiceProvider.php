@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
+
             $user = Auth::user();
 
             if (! $user) {
@@ -76,6 +77,8 @@ class AppServiceProvider extends ServiceProvider
                 ->panels($panelIds)
                 ->labels($visiblePanels)
                 ->visible(true);
+
+            $panelSwitch->renderHook('panels::user-menu.start');
         });
     }
 }
