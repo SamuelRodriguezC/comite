@@ -20,7 +20,7 @@
     <div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0 dark:bg-white">
         <div>
             <a href="/">
-                <x-application-logo class="w-20 h-20 text-gray-500 fill-current" />
+                <x-application-logo class="w-40 h-40 text-gray-500 fill-current" />
             </a>
         </div>
 
@@ -126,18 +126,18 @@
                     <div class="mt-4">
                         <x-input-label for="phone_number" :value="__('Número de Telefono')" />
                         <x-text-input id="phone_number" class="block w-full mt-1" type="number" name="phone_number"
-                            :value="old('phone_number')" maxlength="10" pattern="\d{10}" step="100" min="3000000000"  inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required />
+                            :value="old('phone_number')" maxlength="10" pattern="\d{10}" step="100" min="3000000000" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required />
                         <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
                     </div>
                 </div>
 
                 <div class="flex justify-between my-5 md:col-span-2">
-                    <a class="text-sm text-gray-500 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700"
+                    <a class="text-sm text-gray-700 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700"
                         href="{{ route('login') }}" wire:navigate>
                         {{ __('Iniciar Sesión') }}
                     </a>
 
-                    <a class="text-sm text-gray-500 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700"
+                    <a class="text-sm text-gray-700 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700"
                         href="{{ route('password.request') }}" wire:navigate>
                         {{ __('¿Olvidó su Contraseña?') }}
                     </a>

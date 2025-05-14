@@ -18,10 +18,10 @@
 
         <!-- Incorporación de botón iniciar sesion y registrarse -->
         <div class="flex justify-between my-5">
-            <a class="text-sm text-gray-500 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('login') }}" wire:navigate>
+            <a class="text-sm underline rounded-md text-gray7500 hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('login') }}" wire:navigate>
                 {{ __('Iniciar Sesión') }}
             </a>
-            <a class="text-sm text-gray-500 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('register') }}" wire:navigate>
+            <a class="text-sm text-gray-700 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('register') }}" wire:navigate>
                 {{ __('Registrarse') }}
             </a>
         </div>

@@ -33,10 +33,10 @@
         </div>
 
         <div class="flex justify-between my-5">
-            <a class="text-sm text-gray-500 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('password.request') }}" wire:navigate>
+            <a class="text-sm text-gray-700 underline rounded-md hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('password.request') }}" wire:navigate>
                 {{ __('¿Olvidó su Contraseña?') }}
             </a>
-            <a class="text-sm text-gray-500 underline rounded-md 0 hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('register') }}" wire:navigate>
+            <a class="text-sm text-gray-700 underline rounded-md 0 hover:text-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-700" href="{{ route('register') }}" wire:navigate>
                 {{ __('Registrarse') }}
             </a>
         </div>
