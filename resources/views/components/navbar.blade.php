@@ -29,7 +29,7 @@
                     </li>
                     @endforeach
                     <a href="login" class="primary-btn">Iniciar Sesión</a>
-                    <a href="register" class="secondary-btn">Registro</a>
+                    <a href="register" class="primary-btn">Registro</a>
                 </ul>
             </div>
 
@@ -71,7 +71,7 @@
             </a>
             @endforeach
                 <a href="login" class="primary-btn">Iniciar Sesión</a>
-                <a href="register" class="secondary-btn">Registro</a>
+                <a href="register" class="primary-btn">Registro</a>
         </div>
 
         {{-- Fondo oscuro --}}
