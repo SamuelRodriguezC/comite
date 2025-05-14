@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
+use Filament\View\PanelsRenderHook;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -78,7 +80,7 @@ class AppServiceProvider extends ServiceProvider
                 ->labels($visiblePanels)
                 ->visible(true);
 
-            $panelSwitch->renderHook('panels::user-menu.start');
+            $panelSwitch->renderHook('panels::topbar.start');
         });
     }
 }
