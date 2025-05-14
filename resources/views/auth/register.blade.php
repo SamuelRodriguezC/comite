@@ -151,34 +151,34 @@
             </form>
             <script>
                 // Obtiene referencias al botón y al input de la confirmación de contraseña
-    const togglePasswordConfirmationButton = document.getElementById('togglePassword');
-    const passwordConfirmationInput = document.getElementById('password_confirmation');
-    const eyeIconConfirmation = document.getElementById('eyeIcon');
-    const eyeSlashIconConfirmation = document.getElementById('eyeSlashIcon');
+                const togglePasswordConfirmationButton = document.getElementById('togglePassword');
+                const passwordConfirmationInput = document.getElementById('password_confirmation');
+                const eyeIconConfirmation = document.getElementById('eyeIcon');
+                const eyeSlashIconConfirmation = document.getElementById('eyeSlashIcon');
 
-    // Obtiene referencias al botón y al input de la contraseña principal
-    const togglePasswordButtonMain = document.getElementById('togglePasswordMain');
-    const passwordInput = document.getElementById('password');
-    const eyeIconMain = document.getElementById('eyeIconMain');
-    const eyeSlashIconMain = document.getElementById('eyeSlashIconMain');
+                // Obtiene referencias al botón y al input de la contraseña principal
+                const togglePasswordButtonMain = document.getElementById('togglePasswordMain');
+                const passwordInput = document.getElementById('password');
+                const eyeIconMain = document.getElementById('eyeIconMain');
+                const eyeSlashIconMain = document.getElementById('eyeSlashIconMain');
 
-    // Función para mostrar/ocultar la contraseña
-    function togglePasswordVisibility(inputElement, eyeIconElement, eyeSlashIconElement) {
-        const type = inputElement.getAttribute('type') === 'password' ? 'text' : 'password';
-        inputElement.setAttribute('type', type);
-        eyeIconElement.classList.toggle('hidden');
-        eyeSlashIconElement.classList.toggle('hidden');
-    }
+                // Función para mostrar/ocultar la contraseña
+                function togglePasswordVisibility(inputElement, eyeIconElement, eyeSlashIconElement) {
+                    const type = inputElement.getAttribute('type') === 'password' ? 'text' : 'password';
+                    inputElement.setAttribute('type', type);
+                    eyeIconElement.classList.toggle('hidden');
+                    eyeSlashIconElement.classList.toggle('hidden');
+                }
 
-    // Agrega un "escuchador de eventos" al botón de la confirmación de contraseña
-    togglePasswordConfirmationButton.addEventListener('click', () => {
-        togglePasswordVisibility(passwordConfirmationInput, eyeIconConfirmation, eyeSlashIconConfirmation);
-    });
+                // Agrega un "escuchador de eventos" al botón de la confirmación de contraseña
+                togglePasswordConfirmationButton.addEventListener('click', () => {
+                    togglePasswordVisibility(passwordConfirmationInput, eyeIconConfirmation, eyeSlashIconConfirmation);
+                });
 
-    // Agrega un "escuchador de eventos" al botón de la contraseña principal
-    togglePasswordButtonMain.addEventListener('click', () => {
-        togglePasswordVisibility(passwordInput, eyeIconMain, eyeSlashIconMain);
-    });
+                // Agrega un "escuchador de eventos" al botón de la contraseña principal
+                togglePasswordButtonMain.addEventListener('click', () => {
+                    togglePasswordVisibility(passwordInput, eyeIconMain, eyeSlashIconMain);
+                });
             </script>
         </div>
     </div>
