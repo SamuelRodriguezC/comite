@@ -29,7 +29,7 @@ class EvaluatorPanelProvider extends PanelProvider
             ->path('evaluator')
             ->brandName('Comite - Panel Evaluador')
             ->colors([
-                'primary' => Color::Purple,
+                'primary' => Color::Gray,
             ])
             ->profile()
             ->discoverResources(in: app_path('Filament/Evaluator/Resources'), for: 'App\\Filament\\Evaluator\\Resources')

@@ -30,7 +30,7 @@ class AdvisorPanelProvider extends PanelProvider
             ->brandName('Comite - Panel Asesor')
             ->profile()
             ->colors([
-                'primary' => Color::Emerald,
+                'primary' => Color::Gray,
             ])
             ->profile()
             ->discoverResources(in: app_path('Filament/Advisor/Resources'), for: 'App\\Filament\\Advisor\\Resources')
