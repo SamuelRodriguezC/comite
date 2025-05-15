@@ -119,14 +119,14 @@
                     <div class="mt-4">
                         <x-input-label for="document_number" :value="__('Número de Documento')" />
                         <x-text-input id="document_number" class="block w-full mt-1" type="number"
-                            name="document_number" :value="old('document_number')" minlength="7"  maxlength="10" min="1000000" step="100" max="9999999999" pattern="\d{7,10}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required/>
+                            name="document_number" :value="old('document_number')" minlength="7"  maxlength="10" min="1000000" max="9999999999" pattern="\d{7,10}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required/>
                         <x-input-error :messages="$errors->get('document_number')" class="mt-2" />
                     </div>
 
                     <div class="mt-4">
                         <x-input-label for="phone_number" :value="__('Número de Telefono')" />
                         <x-text-input id="phone_number" class="block w-full mt-1" type="number" name="phone_number"
-                            :value="old('phone_number')" maxlength="10" pattern="\d{10}" step="100" min="3000000000" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required />
+                            :value="old('phone_number')" maxlength="10" pattern="\d{10}" min="3000000000" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required />
                         <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
                     </div>
                 </div>
