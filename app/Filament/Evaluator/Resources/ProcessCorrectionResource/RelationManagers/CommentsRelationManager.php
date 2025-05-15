@@ -39,6 +39,7 @@ protected static ?string $title = 'Comentarios';
     {
         return $table
             ->recordTitleAttribute('comment')
+            ->description('Para que el "Estado" del proceso sea aprobado todos los conceptos de los comentarios deben ser APROBADOS, si al menos uno de los conceptos es NO APROBADO el proceso será improbado.')
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('concept.concept')

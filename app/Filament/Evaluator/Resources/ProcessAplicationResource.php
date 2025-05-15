@@ -38,14 +38,17 @@ class ProcessAplicationResource extends Resource
     {
         return $form
         ->schema([
+            Forms\Components\Select::make('stage_id')
+                ->label("Etapa")
+                ->relationship('stage', 'stage')
+                ->disabled(),
             Forms\Components\Select::make('state')
                 ->label('Estado')
                 ->live()
-                ->preload()
                 ->disabled()
+                ->preload()
                 ->enum(state::class)
-                ->options(State::class)
-                ->required(),
+                ->options(State::class),
             Forms\Components\Toggle::make('completed')
                 ->label('Finalizado')
                 ->inline(false)
@@ -53,19 +56,14 @@ class ProcessAplicationResource extends Resource
                 ->offColor('danger')
                 ->onIcon(Completed::SI->getIcon())
                 ->offIcon(Completed::NO->getIcon())
-                ->dehydrateStateUsing(
-                    fn (bool $state) => $state ? 1 : 0
-                )
-                ->afterStateHydrated(
-                    function (Forms\Components\Toggle $component, $state) {
-                        $component->state($state === 1); // Al cargar: 1 => true, 2 => false
-                    }
-                ),
+                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 0)
+                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                }),
             Forms\Components\FileUpload::make('requirement')
                 ->label('Requisitos en PDF')
-                ->required()
-                ->columnSpanFull()
                 ->disabled()
+                ->columnSpanFull()
                 ->disk('local') // Indica que se usará el disco 'public'
                 ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
                 ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
@@ -78,20 +76,13 @@ class ProcessAplicationResource extends Resource
                 ->maxFiles(1),
             Forms\Components\RichEditor::make('comment')
                 ->label('Comentario del Estudiante')
-                ->required()
                 ->disabled()
-                ->disableToolbarButtons([
-                    'attachFiles',
-                    'link',
-                    'strike',
-                    'codeBlock',
-                    'h2',
-                    'h3',
-                    'blockquote'])
+                ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                 ->maxLength(255)
                 ->columnSpanFull(),
         ])->columns(2);
     }
+
 
     public static function table(Table $table): Table
     {

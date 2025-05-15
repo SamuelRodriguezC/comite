@@ -33,56 +33,55 @@ class ProcessCorrectionResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
     protected static ?int $navigationSort = 3;
 
+
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\Select::make('stage_id')
-                    ->label("Etapa")
-                    ->disabled()
-                    ->relationship('stage', 'stage')
-                    ->required(),
-                Forms\Components\Select::make('state')
-                    ->label('Estado')
-                    ->live()
-                    ->preload()
-                    ->enum(State::class)
-                    ->options(State::class)
-                    ->required(),
-                Forms\Components\Select::make('completed')
-                    ->label('Finalizado')
-                    ->live()
-                    ->preload()
-                    ->enum(Completed::class)
-                    ->options(Completed::class)
-                    ->required(),
-                Forms\Components\Textarea::make('comment')
-                    ->label("Comentario")
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('transaction_id')
-                    ->label("Ticket")
-                    ->disabled()
-                    ->relationship('transaction', 'id')
-                    ->required(),
-                Forms\Components\FileUpload::make('requirement')
-                    ->label('Requisitos en PDF')
-                    ->required()
-                    ->columnSpanFull()
-                    ->disabled()
-                    ->disk('local') // Indica que se usará el disco 'public'
-                    ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
-                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
-                    ->rules([
-                        'required',
-                        'mimes:pdf',
-                        'max:10240',
-                    ]) // Agrega validación: campo requerido y solo PDF
-                    ->maxSize(10240) // 10MB
-                    ->maxFiles(1),
-            ]);
+        ->schema([
+            Forms\Components\Select::make('stage_id')
+                ->label("Etapa")
+                ->relationship('stage', 'stage')
+                ->disabled(),
+            Forms\Components\Select::make('state')
+                ->label('Estado')
+                ->live()
+                ->disabled()
+                ->preload()
+                ->enum(state::class)
+                ->options(State::class),
+            Forms\Components\Toggle::make('completed')
+                ->label('Finalizado')
+                ->inline(false)
+                ->onColor('success')
+                ->offColor('danger')
+                ->onIcon(Completed::SI->getIcon())
+                ->offIcon(Completed::NO->getIcon())
+                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 0)
+                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                }),
+            Forms\Components\FileUpload::make('requirement')
+                ->label('Requisitos en PDF')
+                ->disabled()
+                ->columnSpanFull()
+                ->disk('local') // Indica que se usará el disco 'public'
+                ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
+                ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                ->rules([
+                    'required',
+                    'mimes:pdf',
+                    'max:10240',
+                ]) // Agrega validación: campo requerido y solo PDF
+                ->maxSize(10240) // 10MB
+                ->maxFiles(1),
+            Forms\Components\RichEditor::make('comment')
+                ->label('Comentario del Estudiante')
+                ->disabled()
+                ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                ->maxLength(255)
+                ->columnSpanFull(),
+        ])->columns(2);
     }
-
     public static function table(Table $table): Table
     {
         return $table
