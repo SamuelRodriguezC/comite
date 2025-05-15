@@ -26,7 +26,7 @@ class OptionResource extends Resource
     protected static ?string $model = Option::class;
     protected static ?string $modelLabel = "Opción de grado";
     protected static ?string $pluralModelLabel = "Opciones de grado";
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {
@@ -128,7 +128,7 @@ class OptionResource extends Resource
                 TextEntry::make('requirement')
                     ->label('Requerimientos')
                     ->formatStateUsing(fn($state) =>
-                        '<ul class="list-disc list-inside pl-8">' .
+                        '<ul class="pl-8 list-disc list-inside">' .
                             collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
                             ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
                             ->implode('') .

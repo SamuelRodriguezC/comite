@@ -2,18 +2,19 @@
 
 namespace App\Models;
 use Carbon\Carbon;
-use App\Models\Course;
 use App\Models\Role;
+use App\Models\Course;
 use App\Models\Option;
 use App\Models\Process;
 use App\Models\Profile;
 use App\Models\Certificate;
+use App\Models\ProfileTransaction;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Transaction extends Model
 {
@@ -43,6 +44,11 @@ class Transaction extends Model
     /**
      * Establishes the type of relationship it has with other models
      */
+    public function profileTransactions()
+    {
+        return $this->hasMany(ProfileTransaction::class);
+    }
+
     public function profiles(): BelongsToMany
     {
         return $this->belongsToMany(Profile::class)

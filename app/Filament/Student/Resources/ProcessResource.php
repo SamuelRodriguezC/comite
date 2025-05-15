@@ -31,7 +31,7 @@ class ProcessResource extends Resource
     protected static ?string $model = Process::class;
     protected static ?string $modelLabel = "Proceso";
     protected static ?string $pluralModelLabel = "Procesos";
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form

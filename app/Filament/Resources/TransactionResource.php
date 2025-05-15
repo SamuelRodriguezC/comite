@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Profile;
+use App\Models\Role;
 use Filament\Forms\Get;
 use App\Enums\Component;
 use Filament\Forms\Form;
@@ -262,9 +263,8 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->words(4),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('role_id')
-                    ->label('Rol local')
-                    //->formatStateUsing(fn ($state) => Profile::from($state)->getLabel())
+                Tables\Columns\TextColumn::make('profileTransactions.role.name')
+                    ->label('Roles locales')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('enabled')
