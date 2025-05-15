@@ -17,9 +17,11 @@ class EditProcessCorrection extends EditRecord
             //Actions\DeleteAction::make(),
         ];
     }
-    // prohibe editar registros desahilitados
+    // Evita la visualización del registro si está deshabilitado
     protected function authorizeAccess(): void
     {
-        abort_if($this->record->enabled === 2, 403);
+        if ($this->record->transaction?->enabled === 2) {
+            abort(403, 'Acceso denegado. Esta transacción está deshabilitada.');
+        }
     }
 }

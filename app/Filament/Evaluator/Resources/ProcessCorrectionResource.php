@@ -147,7 +147,7 @@ class ProcessCorrectionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => $record->enabled !== 2),
+                    ->visible(fn ($record) => $record->transaction?->enabled !== 2),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

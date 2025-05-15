@@ -149,8 +149,10 @@ class ProcessAplicationResource extends Resource
                     ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
                     ->visible(
-                        fn ($record) => (!$record->requirement || trim($record->requirement) === '')
-                ),
+                        fn ($record) =>
+                        $record->transaction?->enabled !== 2 &&
+                        (is_null($record->requirement) || trim($record->requirement) === '')
+                    ),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([

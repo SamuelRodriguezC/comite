@@ -17,4 +17,11 @@ class EditProcessAplication extends EditRecord
             //Actions\DeleteAction::make(),
         ];
     }
+    // Evita la visualización del registro si está deshabilitado
+    protected function authorizeAccess(): void
+    {
+        if ($this->record->transaction?->enabled === 2) {
+            abort(403, 'Acceso denegado. Esta transacción está deshabilitada.');
+        }
+    }
 }
