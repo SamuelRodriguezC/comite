@@ -18,27 +18,30 @@ use Filament\Resources\RelationManagers\RelationManager;
 class CommentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'comments';
-protected static ?string $title = 'Comentarios';
+
+    protected static ?string $title = 'Comentarios';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('comment')
-                    ->label('Comentario')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\Select::make('concept_id')
                     ->label('Concepto')
                     ->required()
                     ->relationship('concept', 'concept'),
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Tu Comentario')
+                    ->required()
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
+                    ->columnSpanFull(),
             ]);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('comment')
+            // ->recordTitleAttribute('comment')
             ->description('Para que el "Estado" del proceso sea aprobado todos los conceptos de los comentarios deben ser APROBADOS, si al menos uno de los conceptos es NO APROBADO el proceso será improbado.')
             ->defaultSort('created_at', 'desc')
             ->columns([
@@ -51,6 +54,7 @@ protected static ?string $title = 'Comentarios';
                     }),
                 Tables\Columns\TextColumn::make('comment')
                     ->label('Comentario')
+                    ->markdown()
                     ->formatStateUsing(function ($state){
                         return Str::limit($state, 20);
                     }),
@@ -113,18 +117,22 @@ protected static ?string $title = 'Comentarios';
                     // ->modalContentOnly() // Esta línea evita que Filament incluya los campos del formulario por defecto
                     ->modalHeading('Información Personal')
                     // Crear el modal con una infolista
-                    ->modalContent(fn ($record) => Infolist::make()
+                    ->infolist(fn ($record) => Infolist::make()
                         ->schema([
                             Section::make([
                                 TextEntry::make('profile.name')->label('Nombre(s)'),
                                 TextEntry::make('profile.last_name')->label('Apellido)(s)'),
                                 TextEntry::make('profile.User.email')->label('Email'),
                                 TextEntry::make('profile.phone_number')->label('Número de Teléfono'),
-                            ])->columns(2)->columnSpan(1),
+                            ])->columns(2)->columnSpan(3),
 
                             Section::make([
                                 TextEntry::make('comment')
-                                    ->label('Comentario'),
+                                    ->label('Comentario')
+                                    ->markdown(),
+                            ])->columnSpan(2),
+
+                            Section::make([
                                 TextEntry::make('concept.concept')
                                     ->label('Concepto')
                                     ->badge()
@@ -134,7 +142,9 @@ protected static ?string $title = 'Comentarios';
                                     }),
                             ])->columnSpan(1),
 
-                        ])->columns(2)
+
+
+                        ])->columns(3)
                         ->record($record)),// El $record aquí viene del modelo actual en la tabla
 
             ])

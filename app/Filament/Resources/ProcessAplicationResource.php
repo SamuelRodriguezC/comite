@@ -163,7 +163,7 @@ class ProcessAplicationResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make('Detalles del Proceso')
+            InfoSection::make('Detalles del Proceso #')
             ->schema([
                 TextEntry::make('stage.stage')
                     ->label("Etapa"),

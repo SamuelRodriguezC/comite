@@ -134,7 +134,7 @@ class ProcessAplicationResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
-                    ->words(5)
+                    ->limit(25)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.component')
