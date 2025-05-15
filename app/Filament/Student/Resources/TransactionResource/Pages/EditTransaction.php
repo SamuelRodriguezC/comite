@@ -17,4 +17,9 @@ class EditTransaction extends EditRecord
             //Actions\DeleteAction::make(),
         ];
     }
+
+    protected function authorizeAccess(): void
+    {
+        abort_if($this->record->enabled === 2, 403);
+    }
 }

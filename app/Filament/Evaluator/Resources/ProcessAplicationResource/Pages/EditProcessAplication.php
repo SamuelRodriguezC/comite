@@ -17,4 +17,9 @@ class EditProcessAplication extends EditRecord
             //Actions\DeleteAction::make(),
         ];
     }
+    // prohibe editar registros desahilitados
+    protected function authorizeAccess(): void
+    {
+        abort_if($this->record->enabled === 2, 403);
+    }
 }

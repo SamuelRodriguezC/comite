@@ -31,7 +31,7 @@ class ViewProcessSubmit extends ViewRecord
                 ->hidden(fn($record) => empty($record->requirement))
                 ->openUrlInNewTab(), // Abre en una nueva pestaña
 
-            Actions\EditAction::make(),
+            //Actions\EditAction::make(),
         ];
     }
 }

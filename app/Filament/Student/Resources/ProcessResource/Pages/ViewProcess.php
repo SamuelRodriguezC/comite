@@ -33,7 +33,7 @@ class ViewProcess extends ViewRecord
                 ->hidden(fn($record) => empty($record->requirement))
                 ->openUrlInNewTab(),
 
-            Actions\EditAction::make(),
+            //Actions\EditAction::make(),
         ];
     }
 }

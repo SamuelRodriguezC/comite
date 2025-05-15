@@ -33,7 +33,7 @@ class ViewTransaction extends ViewRecord
                 ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
 
-            Actions\EditAction::make(),
+            //Actions\EditAction::make(),
         ];
     }
 }
