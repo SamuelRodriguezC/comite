@@ -30,8 +30,6 @@ class ViewProcessAplication extends ViewRecord
                 )
                 ->hidden(fn($record) => empty($record->requirement))
                 ->openUrlInNewTab(), // Abre en una nueva pestaña
-
-            Actions\EditAction::make(),
         ];
     }
 }

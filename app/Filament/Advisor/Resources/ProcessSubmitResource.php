@@ -286,7 +286,7 @@ class ProcessSubmitResource extends Resource
             });
     }
 
-    // Filtra por solicitudes pendientes
+
     public static function getNavigationBadge(): ?string
     {
         return static::getEloquentQuery()
@@ -297,7 +297,7 @@ class ProcessSubmitResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CommentsRelationManager::class,
         ];
     }
 
