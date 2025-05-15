@@ -37,36 +37,12 @@ class ProcessCorrectionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('stage_id')
-                    ->disabled()
-                    ->label("Etapa")
-                    ->relationship('stage', 'stage')
-                    ->required(),
-                Forms\Components\Select::make('state')
-                    ->label('Estado')
-                    ->disabled()
-                    ->live()
-                    ->preload()
-                    ->enum(State::class)
-                    ->options(State::class)
-                    ->required(),
-                Forms\Components\Select::make('completed')
-                    ->label('Finalizado')
-                    ->disabled()
-                    ->live()
-                    ->preload()
-                    ->enum(Completed::class)
-                    ->options(Completed::class)
-                    ->required(),
-                Forms\Components\Textarea::make('comment')
-                    ->label("Comentario")
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Comentario del Estudiante')
                     ->required()
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
                     ->columnSpanFull(),
-                Forms\Components\Select::make('transaction_id')
-                    ->label("Ticket")
-                    ->disabled()
-                    ->relationship('transaction', 'id')
-                    ->required(),
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
                     ->disk('local') // Indica que se usará el disco 'public'
@@ -133,7 +109,7 @@ class ProcessCorrectionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
-                    ->words(5)
+                     ->limit(25)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.component')
@@ -297,7 +273,7 @@ class ProcessCorrectionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CommentsRelationManager::class,
         ];
     }
 

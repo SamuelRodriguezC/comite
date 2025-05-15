@@ -37,6 +37,12 @@ class ProcessAplicationResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Comentario del Estudiante')
+                    ->required()
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
                     ->disk('local') // Indica que se usará el disco 'public'
@@ -102,7 +108,7 @@ class ProcessAplicationResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
-                    ->words(5)
+                    ->limit(25)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction.component')
@@ -276,7 +282,7 @@ class ProcessAplicationResource extends Resource
             'index' => Pages\ListProcessAplications::route('/'),
             // 'create' => Pages\CreateProcessAplication::route('/create'),
             'view' => Pages\ViewProcessAplication::route('/{record}'),
-            'edit' => Pages\EditProcessAplication::route('/{record}/edit'),
+            // 'edit' => Pages\EditProcessAplication::route('/{record}/edit'),
         ];
     }
 }
