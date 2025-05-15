@@ -26,21 +26,25 @@ class ProcessesRelationManager extends RelationManager
     {
         return $form
         ->schema([
-            Forms\Components\FileUpload::make('requirement')
-                ->label('Requisitos en PDF')
-                ->required()
-                ->disk('local')
-                ->directory('secure/requirements')
-                ->acceptedFileTypes(['application/pdf'])
-                ->rules([
-                    'required',
-                    'mimes:pdf',
-                    'max:10240',
-                ])
-                ->maxSize(10240)
-                ->columnSpan(1)
-                ->columnSpanFull()
-                ->maxFiles(1),
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Comentario del Estudiante')
+                    ->required()
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
+                    ->columnSpanFull(),
+                Forms\Components\FileUpload::make('requirement')
+                    ->label('Requisitos en PDF')
+                    ->disk('local') // Indica que se usará el disco 'public'
+                    ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
+                    ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
+                    ->rules([
+                        'required',
+                        'mimes:pdf',
+                        'max:10240',
+                    ]) // Agrega validación: campo requerido y solo PDF
+                    ->maxSize(10240) // 10MB
+                    ->columnSpanFull()
+                    ->maxFiles(1) ,
             ]);
     }
 
