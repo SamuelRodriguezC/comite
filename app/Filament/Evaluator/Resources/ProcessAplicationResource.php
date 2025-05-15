@@ -38,10 +38,6 @@ class ProcessAplicationResource extends Resource
     {
         return $form
         ->schema([
-            Forms\Components\Select::make('stage_id')
-                ->label("Etapa")
-                ->relationship('stage', 'stage')
-                ->disabled(),
             Forms\Components\Select::make('state')
                 ->label('Estado')
                 ->live()
@@ -60,26 +56,6 @@ class ProcessAplicationResource extends Resource
                 ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                 }),
-            Forms\Components\FileUpload::make('requirement')
-                ->label('Requisitos en PDF')
-                ->disabled()
-                ->columnSpanFull()
-                ->disk('local') // Indica que se usará el disco 'public'
-                ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
-                ->acceptedFileTypes(['application/pdf']) // Limita los tipos de archivo a PDF
-                ->rules([
-                    'required',
-                    'mimes:pdf',
-                    'max:10240',
-                ]) // Agrega validación: campo requerido y solo PDF
-                ->maxSize(10240) // 10MB
-                ->maxFiles(1),
-            Forms\Components\RichEditor::make('comment')
-                ->label('Comentario del Estudiante')
-                ->disabled()
-                ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
-                ->maxLength(255)
-                ->columnSpanFull(),
         ])->columns(2);
     }
 
@@ -270,8 +246,6 @@ class ProcessAplicationResource extends Resource
         ])->columns(2);
     }
 
-
-    // Filtra por usuario autenticado y por solicitud
     public static function getEloquentQuery(): Builder
     {
         $profileId = Auth::user()->profiles->id;
@@ -283,7 +257,6 @@ class ProcessAplicationResource extends Resource
             });
     }
 
-    // Filtra por solicitudes pendientes
     public static function getNavigationBadge(): ?string
     {
         return static::getEloquentQuery()
