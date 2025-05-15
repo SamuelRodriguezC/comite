@@ -265,6 +265,7 @@ class TransactionResource extends Resource
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('profileTransactions.role.name')
                     ->label('Roles locales')
+                    ->limit(15)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('enabled')
