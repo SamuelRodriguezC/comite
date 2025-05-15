@@ -153,6 +153,10 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->words(4),
                     // ->searchable(),
+                Tables\Columns\TextColumn::make('profileTransactions.role.name')
+                    ->label('Roles locales')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\IconColumn::make('enabled')
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
