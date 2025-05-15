@@ -95,7 +95,9 @@ class ProcessResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.stage')
                     ->label("Etapa")
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(), //Seleccionada por defecto
+                    // ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
@@ -109,15 +111,20 @@ class ProcessResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    })
+                    ->placeholder('Sin requisitos aún')
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
-                    ->words(5)
+                    ->limit(20)
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('transaction.component')
+                    ->label("Componente")
+                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\IconColumn::make('transaction.enabled')
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
@@ -132,16 +139,9 @@ class ProcessResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
             ])
             ->filters([
-                SelectFilter::make('state')
-                    ->label('Estado')
-                    ->options([
-                        1 => 'Aprobado',
-                        2=> 'Improbado',
-                        3 => 'Pendiente',
-                    ])
+                //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -170,14 +170,22 @@ class ProcessResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
                     ->color(fn ($state) => State::from($state)->getColor()),
-                TextEntry::make('completed')
-                    ->label("Finalizado")
-                    ->formatStateUsing(fn ($state) => Completed::from($state)->getLabel()),
                 TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->label('Actualizado en'),
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                IconEntry::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
-                    ->label("requisitos"),
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->limit(20)
+                    ->default('Sin requisitos aún')
+                    ->label("Requisitos"),
+                TextEntry::make('comment')
+                    ->markdown()
+                    ->default('Sin comentario aún')
+                    ->label("Comentario del Estudiante"),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')
@@ -203,7 +211,6 @@ class ProcessResource extends Resource
                         ->html(),
             ])
             ->columns(2)->columnSpan(1),
-
         ])->columns(2);
     }
 

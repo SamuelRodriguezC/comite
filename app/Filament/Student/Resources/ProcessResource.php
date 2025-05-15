@@ -184,10 +184,12 @@ class ProcessResource extends Resource
                     ->label('Actualizado en'),
                 TextEntry::make('comment')
                     ->label("Tu Comentario")
+                    ->default('Sin requisitos aún')
                     ->markdown()
                     ->limit(25),
                 TextEntry::make('requirement')
                     ->label("Requisitos")
+                    ->default('Sin requisitos aún')
                     ->formatStateUsing(
                         function ($state) {
                             if (!$state) {return null;}

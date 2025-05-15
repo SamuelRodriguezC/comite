@@ -5,8 +5,10 @@ namespace App\Filament\Evaluator\Resources;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
+use App\Enums\Enabled;
 use App\Models\Process;
 use App\Enums\Completed;
+use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ProcessSubmit;
@@ -15,8 +17,10 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Evaluator\Resources\ProcessSubmitResource\Pages;
 use App\Filament\Evaluator\Resources\ProcessSubmitResource\RelationManagers;
 
@@ -86,12 +90,20 @@ class ProcessSubmitResource extends Resource
                 Tables\Columns\TextColumn::make('transaction.id')
                     ->label("Ticket")
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stage.stage')
                     ->label("Etapa")
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(), //Seleccionada por defecto
+                    // ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
+                    ->badge()
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    )
                     ->formatStateUsing(
                         fn ($state) => State::from($state)
                             ->getLabel()
@@ -110,7 +122,38 @@ class ProcessSubmitResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
+                    ->placeholder('Sin requisitos aún')
+                    ->formatStateUsing(
+                        function ($state) {
+                            if (!$state) {return null;}
+                            return basename($state);
+                        }
+                    )
+                    ->limit(10)
                     ->searchable(),
+                Tables\Columns\TextColumn::make('transaction.Option.option')
+                    ->label("Opción")
+                    ->words(5)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('transaction.component')
+                    ->label("Componente")
+                    ->formatStateUsing(
+                        fn ($state) => Component::from($state)
+                            ->getLabel()
+                    )
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\IconColumn::make('transaction.enabled')
+                    ->label('Habilitado')
+                    ->icon(
+                        fn ($state) => Enabled::from($state)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Enabled::from($state)
+                            ->getColor()
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -140,36 +183,90 @@ class ProcessSubmitResource extends Resource
     {
         return $infolist
         ->schema([
-            Section::make('')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('transaction.id')
-                        ->label("Ticket"),
-                    TextEntry::make('stage.stage')
-                        ->label("Etapa"),
-                    TextEntry::make('state')
-                        ->label("Estado")
-                        ->formatStateUsing(
-                            fn ($state) => State::from($state)
-                                ->getLabel()
-                        ),
-                    TextEntry::make('completed')
-                        ->label("Finalizado")
-                        ->formatStateUsing(
-                            fn ($state) => Completed::from($state)
-                                ->getLabel()
-                        ),
-                    TextEntry::make('requirement')
-                        ->label("Requisitos"),
-                    TextEntry::make('created_at')
-                        ->dateTime()
-                        ->label('Creado en'),
-                    TextEntry::make('update_at')
+            InfoSection::make('Detalles del Proceso')
+            ->schema([
+                TextEntry::make('stage.stage')
+                    ->label("Etapa"),
+                TextEntry::make('created_at')
+                    ->dateTime()
+                    ->label('Creado en'),
+                TextEntry::make('state')
+                    ->label("Estado")
+                    ->badge()
+                    ->formatStateUsing(
+                        fn ($state) => State::from($state)
+                            ->getLabel()
+                    )
+                    ->color(
+                        fn ($state) => State::from($state)
+                            ->getColor()
+                    ),
+                TextEntry::make('updated_at')
                         ->dateTime()
                         ->label('Actualizado en'),
-                ]),
-        ]);
+                IconEntry::make('completed')
+                    ->label("Finalizado")
+                    ->icon(
+                        fn ($state) => Completed::from($state)
+                            ->getIcon()
+                    )
+                    ->color(
+                        fn ($state) => Completed::from($state)
+                            ->getColor()
+                    ),
+                TextEntry::make('requirement')
+                    ->default('Sin requisitos aún')
+                    ->formatStateUsing(
+                        function ($state) {
+                            if (!$state) {return null;}
+                            return basename($state);
+                        }
+                    )
+                    ->limit(20)
+                    ->label("Requisitos"),
+                TextEntry::make('comment')
+                    ->default('Sin comentario aún')
+                    ->markdown()
+                    ->label("Comentario del Estudiante"),
+            ])->columns(2)->columnSpan(1),
+
+            InfoSection::make('Detalles del Ticket')
+            ->schema([
+                TextEntry::make('transaction.id')
+                    ->label("Ticket"),
+                IconEntry::make('transaction.enabled')
+                        ->label('Habilitado')
+                        ->icon(
+                            fn ($state) => Enabled::from($state)
+                                ->getIcon()
+                        )
+                        ->color(
+                            fn ($state) => Enabled::from($state)
+                                ->getColor()
+                        ),
+                TextEntry::make('transaction.Option.option')
+                        ->label('Opción de grado'),
+                TextEntry::make('transaction.component')
+                        ->label('Componente')
+                        ->formatStateUsing(
+                            fn ($state) => Component::from($state)
+                                ->getLabel()
+                        ),
+                TextEntry::make('transaction.profiles.name')
+                        ->label('Integrante(s)')
+                        ->formatStateUsing(
+                            fn($state) => format_list_html($state)
+                        )
+                        ->html(),
+                TextEntry::make('transaction.courses')
+                        ->label('Carrera(s)')
+                        ->formatStateUsing(
+                            fn($state) => format_list_html($state)
+                        )
+                        ->html(),
+            ])
+            ->columns(2)->columnSpan(1),
+        ])->columns(2);
     }
 
     // Filtra por usuario autenticado y por entregado

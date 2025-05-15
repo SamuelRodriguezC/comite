@@ -117,6 +117,7 @@ class ProcessCorrectionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
+                    ->placeholder('Sin requisitos aún')
                     ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
                     ->limit(10)
                     ->searchable(),
@@ -185,9 +186,11 @@ class ProcessCorrectionResource extends Resource
                 TextEntry::make('requirement')
                     ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
                     ->limit(20)
+                    ->default('Sin requisitos aún')
                     ->label("Requisitos"),
                 TextEntry::make('comment')
                     ->markdown()
+                    ->default('Sin comentario aún')
                     ->label("Comentario del Estudiante"),
             ])->columns(2)->columnSpan(1),
 
@@ -214,7 +217,6 @@ class ProcessCorrectionResource extends Resource
                         ->html(),
             ])
             ->columns(2)->columnSpan(1),
-
         ])->columns(2);
     }
 

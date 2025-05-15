@@ -132,6 +132,7 @@ class ProcessAplicationResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
+                    ->placeholder('Sin requisitos aún')
                     ->formatStateUsing(
                         function ($state) {
                             if (!$state) {return null;}
@@ -224,6 +225,7 @@ class ProcessAplicationResource extends Resource
                             ->getColor()
                     ),
                 TextEntry::make('requirement')
+                    ->default('Sin requisitos aún')
                     ->formatStateUsing(
                         function ($state) {
                             if (!$state) {return null;}
@@ -233,6 +235,7 @@ class ProcessAplicationResource extends Resource
                     ->limit(20)
                     ->label("Requisitos"),
                 TextEntry::make('comment')
+                    ->default('Sin comentario aún')
                     ->markdown()
                     ->label("Comentario del Estudiante"),
             ])->columns(2)->columnSpan(1),
@@ -273,7 +276,6 @@ class ProcessAplicationResource extends Resource
                         ->html(),
             ])
             ->columns(2)->columnSpan(1),
-
         ])->columns(2);
     }
 
