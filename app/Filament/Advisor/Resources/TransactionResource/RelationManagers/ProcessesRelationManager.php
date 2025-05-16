@@ -27,7 +27,7 @@ class ProcessesRelationManager extends RelationManager
         return $form
         ->schema([
                 Forms\Components\RichEditor::make('comment')
-                    ->label('Comentario del Estudiante')
+                    ->label('Comentario de Entrega')
                     ->required()
                     ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                     ->maxLength(255)
@@ -143,7 +143,7 @@ class ProcessesRelationManager extends RelationManager
                                     TextEntry::make('stage.stage')
                                         ->label('Etapa'),
                                     TextEntry::make('comment')
-                                        ->label('Comentario del Estudiante')
+                                        ->label('Comentario de Entrega')
                                         ->placeholder('No ha Comentado Aún')
                                         ->markdown(),
                                     TextEntry::make('requirement')

@@ -82,7 +82,7 @@ class ProcessCorrectionResource extends Resource
                 ->maxSize(10240) // 10MB
                 ->maxFiles(1),
             Forms\Components\RichEditor::make('comment')
-                ->label('Comentario del Estudiante')
+                ->label('Comentario de Entrega')
                 ->required()
                 ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                 ->maxLength(255)
@@ -191,7 +191,7 @@ class ProcessCorrectionResource extends Resource
                 TextEntry::make('comment')
                     ->markdown()
                     ->default('Sin comentario aún')
-                    ->label("Comentario del Estudiante"),
+                    ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')

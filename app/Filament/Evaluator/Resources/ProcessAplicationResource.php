@@ -205,7 +205,7 @@ class ProcessAplicationResource extends Resource
                 TextEntry::make('comment')
                     ->default('Sin comentario aún')
                     ->markdown()
-                    ->label("Comentario del Estudiante"),
+                    ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')

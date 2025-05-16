@@ -186,7 +186,7 @@ class ProcessesRelationManager extends RelationManager
                                     TextEntry::make('stage.stage')
                                         ->label('Etapa'),
                                     TextEntry::make('comment')
-                                        ->label('Comentario del Estudiante')
+                                        ->label('Comentario de Entrega')
                                         ->placeholder('No ha Comentado Aún')
                                         ->markdown(),
                                     TextEntry::make('requirement')

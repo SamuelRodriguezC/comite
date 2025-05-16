@@ -51,7 +51,7 @@ class ProcessesRelationManager extends RelationManager
                     )
                     ->maxFiles(1),
                 Forms\Components\RichEditor::make('comment')
-                    ->label('Comentario')
+                    ->label('Comentario de Entrega')
                     ->required()
                     ->columnSpanFull()
                     ->disableToolbarButtons([

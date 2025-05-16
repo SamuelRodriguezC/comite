@@ -38,7 +38,7 @@ class ProcessAplicationResource extends Resource
         return $form
             ->schema([
                 Forms\Components\RichEditor::make('comment')
-                    ->label('Comentario del Estudiante')
+                    ->label('Comentario de Entrega')
                     ->required()
                     ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                     ->maxLength(255)
@@ -209,7 +209,7 @@ class ProcessAplicationResource extends Resource
                 TextEntry::make('comment')
                     ->default('Sin comentarios aún')
                     ->markdown()
-                    ->label("Comentario del Estudiante"),
+                    ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles del Ticket')
