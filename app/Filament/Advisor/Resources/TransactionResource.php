@@ -149,6 +149,7 @@ class TransactionResource extends Resource
                             ->live()
                             ->preload()
                             ->required()
+                            ->disabledOn('edit')
                             ->enum(Component::class)
                             ->options(Component::class)
                             // Limpiar el campo de opción de grado luego de modificar el componente
@@ -200,6 +201,7 @@ class TransactionResource extends Resource
                                 return $query->pluck('option', 'id');
                             })
                             ->required()
+                            ->disabledOn('edit')
                             ->searchable()
                             ->live(), // Para reaccionar a cambios del componente
                     ])
@@ -219,6 +221,7 @@ class TransactionResource extends Resource
                             Forms\Components\Toggle::make('enabled')
                                 ->label('Habilitado')
                                 ->inline(false)
+                                ->disabledOn('edit')
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->onIcon(Enabled::HABILITADO->getIcon())
@@ -230,6 +233,7 @@ class TransactionResource extends Resource
                             Forms\Components\Select::make('certification')
                                 ->label("Certificación")
                                 ->live()
+                                ->disabledOn('edit')
                                 ->preload()
                                 ->enum(Certification::class)
                                 ->options(Certification::class),
