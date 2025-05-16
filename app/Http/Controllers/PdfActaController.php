@@ -38,10 +38,8 @@ class PdfActaController extends Controller
             ['acta' => $filePath]
         );
         // Redirige a una vista del documento
-
         return $pdf->stream($fileName);
     }
-
 
     public function view($file)
     {

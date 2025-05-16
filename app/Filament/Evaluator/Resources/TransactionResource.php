@@ -81,7 +81,6 @@ class TransactionResource extends Resource
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-ticket'),
-
                     FormSection::make('Detalles')
                     ->schema([
                         FormGroup::make([
@@ -127,7 +126,6 @@ class TransactionResource extends Resource
                     ->visible(fn (string $context) => $context === 'edit'),
             ]);
     }
-
 
     public static function table(Table $table): Table
     {
@@ -186,7 +184,6 @@ class TransactionResource extends Resource
                     '1' => 'Habilitado',
                     '2' => 'Deshabilitado',
                 ])->attribute('enabled')
-
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -222,7 +219,6 @@ class TransactionResource extends Resource
                         ->html(),
                 ])
                 ->columns(2)->columnSpan(2),
-
             InfoSection::make('Detalles')
                 ->icon('heroicon-m-eye')
                 ->schema([

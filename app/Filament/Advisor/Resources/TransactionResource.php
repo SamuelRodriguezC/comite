@@ -117,7 +117,6 @@ class TransactionResource extends Resource
                             ->required()
                             // Solo se muestra cuando se ha seleccionado un perfil
                             //->visible(fn (Get $get) => !is_null($get('profile_id')))
-
                     ])
                     ->columnSpan(1)
                     ->description('Ingresa el número de documento del primer integrante y su carrera. (Puedes agregar más integrantes en el modo de edición).')
@@ -242,7 +241,6 @@ class TransactionResource extends Resource
             ])->Columns(2);
     }
 
-
     public static function table(Table $table): Table
     {
         return $table
@@ -300,11 +298,11 @@ class TransactionResource extends Resource
                     '1' => 'Habilitado',
                     '2' => 'Deshabilitado',
                 ])->attribute('enabled')
-
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn ($record) => $record->enabled !== 2),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
