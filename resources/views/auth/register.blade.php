@@ -75,9 +75,9 @@
                         <x-input-label for="level" :value="__('Nivel Universitario')" />
                         <select id="level" name="level"
                             class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500">
-                            <option disabled selected>Seleccionar</option>
-                            <option value="1">Pregrado</option>
-                            <option value="2">Posgrado</option>
+                            <option disabled {{ old('level') ? '' : 'selected' }}>Seleccionar</option>
+                            <option value="1" {{ old('level') == '1' ? 'selected' : '' }}>Pregrado</option>
+                            <option value="2" {{ old('level') == '2' ? 'selected' : '' }}>Posgrado</option>
                         </select>
                         <x-input-error :messages="$errors->get('level')" class="mt-2" />
                     </div>
