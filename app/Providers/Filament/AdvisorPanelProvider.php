@@ -29,6 +29,7 @@ class AdvisorPanelProvider extends PanelProvider
             ->path('advisor')
             ->brandName('Comite - Panel Asesor')
             ->profile()
+            ->unsavedChangesAlerts()
             ->colors([
                 'primary' => Color::Gray,
             ])

@@ -38,6 +38,8 @@ class CoordinatorPanelProvider extends PanelProvider
             //->emailVerification()
             //->databaseNotifications()
             ->profile()
+            // ->spa() ----- Muestra una linea de carga en la parte superior
+            ->unsavedChangesAlerts()
             ->colors([
                 'primary' => Color::Gray,
             ])

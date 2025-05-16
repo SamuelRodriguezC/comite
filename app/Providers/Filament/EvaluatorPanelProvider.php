@@ -28,6 +28,7 @@ class EvaluatorPanelProvider extends PanelProvider
             ->id('evaluator')
             ->path('evaluator')
             ->brandName('Comite - Panel Evaluador')
+            ->unsavedChangesAlerts()
             ->colors([
                 'primary' => Color::Gray,
             ])
