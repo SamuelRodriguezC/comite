@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
         $coordinator = User::create([
             'name' => 'Coordinador',
             'email' => 'coo@gmail.com',
+            'email_verified_at' => now(),
             'password' => bcrypt('coordinador'),
         ]);
 
@@ -32,17 +33,13 @@ class UserSeeder extends Seeder
             'level' => 2,
             'document_id' => fake()->numberBetween(1, 3),
         ]);
-        //$coordinator->assignRole('Coordinador');
-        //$coordinator->assignRole('Estudiante');
-        //$coordinator->assignRole('Asesor');
-        //$coordinator->assignRole('Evaluador');
-        //$coordinator->assignRole('Super administrador');
         $coordinator->assignRole(['Coordinador', 'Estudiante', 'Asesor', 'Evaluador', 'Super administrador']);
 
         //--------------------- ADVISOR ----------------------
         $advisor = User::create([
             'name' => 'Asesor',
             'email' => 'ase@gmail.com',
+            'email_verified_at' => now(),
             'password' => bcrypt('asesor'),
         ]);
 
@@ -60,6 +57,7 @@ class UserSeeder extends Seeder
         $student = User::create([
             'name' => 'Estudiante',
             'email' => 'est@gmail.com',
+            'email_verified_at' => now(),
             'password' => bcrypt('estudiante'),
         ]);
 
@@ -77,6 +75,7 @@ class UserSeeder extends Seeder
         $evaluator = User::create([
             'name' => 'Evaluador',
             'email' => 'eva@gmail.com',
+            'email_verified_at' => now(),
             'password' => bcrypt('evaluador'),
         ]);
 
