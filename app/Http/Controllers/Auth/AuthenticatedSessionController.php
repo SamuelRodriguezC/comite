@@ -35,37 +35,42 @@ class AuthenticatedSessionController extends Controller
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ]);
-    
+
         if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return back()->withErrors([
                 'email' => trans('auth.failed'),
             ]);
         }
-    
+
         $request->session()->regenerate();
-    
+
         $user = Auth::user();
-    
+
+         // Si el usuario no está verificado, redirigir al dashboard
+        if (! $user->email_verified_at) {
+            return redirect()->route('dashboard');
+        }
+
         // Redirección personalizada según el rol
         if ($user->hasRole('Coordinador')) {
             return redirect('coordinator'); // Cambia 'admin' por el ID del panel de coordinador
         }
-    
+
         if ($user->hasRole('Asesor')) {
             return redirect('advisor'); // Cambia 'admin' por el ID del panel de asesor
         }
-    
+
         if ($user->hasRole('Evaluador')) {
             return redirect('evaluator'); // Cambia 'admin' por el ID del panel de evaluador
         }
-    
+
         if ($user->hasRole('Estudiante')) {
             return redirect('student'); // Cambia 'admin' por el ID del panel de estudiante
         }
-    
+
         // Redirección por defecto si no tiene roles válidos
-        return redirect('/'); 
-    }    
+        return redirect('/');
+    }
 
     /**
      * Destroy an authenticated session.

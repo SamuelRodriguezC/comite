@@ -104,10 +104,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Redirigir al crear
-        if ($user->hasRole('Estudiante')) {
-            return redirect('/student'); // Ajusta según tu panel de admin
-        }
+        // // Redirigir al crear
+        // if ($user->hasRole('Estudiante')) {
+        //     return redirect('/student'); // Ajusta según tu panel de admin
+        // }
 
         return redirect(route('dashboard', absolute: false));
     }
