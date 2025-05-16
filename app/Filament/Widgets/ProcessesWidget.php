@@ -9,6 +9,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ProcessesWidget extends BaseWidget
 {
+    protected static ?int $sort = 1;
     protected function getStats(): array
     {
         return [
