@@ -106,7 +106,7 @@ class ProcessesRelationManager extends RelationManager
                     ->limit(20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Tu Comentario")
+                    ->label("Comentario de Entrega")
                     ->placeholder('Sin Comentario Aún')
                     ->limit(30)
                     ->sortable()
@@ -162,7 +162,7 @@ class ProcessesRelationManager extends RelationManager
                                     TextEntry::make('stage.stage')
                                         ->label('Etapa'),
                                     TextEntry::make('comment')
-                                        ->label('Tu Comentario')
+                                        ->label('Comentario de Entrega')
                                         ->placeholder('No ha Comentado Aún')
                                         ->markdown(),
                                     TextEntry::make('requirement')

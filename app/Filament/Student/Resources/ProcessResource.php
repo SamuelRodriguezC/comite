@@ -58,7 +58,7 @@ class ProcessResource extends Resource
                 // Funcionalidad para evaluadores
                 //Forms\Components\Select::make('state')->label("Estado")->live()->preload()->enum(State::class)->options(State::class),
                 Forms\Components\RichEditor::make('comment')
-                    ->label('Tu Comentario')
+                    ->label('Comentario de Entrega')
                     ->required()
                     ->disabled(fn (?Model $record) => filled($record?->requirement))
                     ->disableToolbarButtons([
@@ -184,7 +184,7 @@ class ProcessResource extends Resource
                     ->dateTime()
                     ->label('Actualizado en'),
                 TextEntry::make('comment')
-                    ->label("Tu Comentario")
+                    ->label("Comentario de Entrega")
                     ->default('Sin requisitos aún')
                     ->markdown()
                     ->limit(25),
