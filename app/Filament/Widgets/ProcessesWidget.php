@@ -17,18 +17,20 @@ class ProcessesWidget extends BaseWidget
             Stat::make('Solicitudes', Process::where('stage_id', 1)->where('state', 3)->count())
                 ->description('Pendientes')
                 ->icon('heroicon-o-user-plus')
-                ->color('warning'),
-                // ->chart([40, 70, 40, 70, 40, 70]),
+                ->color('warning')
+                ->chart([10, 10, 50, 50, 60, 10]),
             // Procesos Pendientes en Etapa de Entrega
             Stat::make('Entregas', Process::where('stage_id', 2)->where('state', 3)->count())
                 ->description('Pendientes Por Revisión')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('warning'),
+                ->color('warning')
+                ->chart([10, 10, 50, 50, 60, 100]),
             // Procesos Pendientes en Etapas de Primera y Segunda Corrección
             Stat::make('Correcciones', Process::whereIn('stage_id', [3, 4])->where('state', 3)->count())
                 ->description('Pendientes Por Revisión')
                 ->icon('heroicon-o-pencil-square')
-                ->color('warning'),
+                ->color('warning')
+                 ->chart([100, 10, 50, 50, 60, 100]),
         ];
     }
 }
