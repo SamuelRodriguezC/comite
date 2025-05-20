@@ -63,6 +63,7 @@ class ProcessSubmitResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
                     ->label("Ticket")
@@ -264,6 +265,9 @@ class ProcessSubmitResource extends Resource
     {
         return static::getEloquentQuery()
             ->where('state', '3')
+            ->whereHas('transaction', function ($query) {
+                    $query->where('enabled', 1);
+            })
             ->count();
     }
 

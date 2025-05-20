@@ -41,8 +41,7 @@ class EvaluatorPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Evaluator/Widgets'), for: 'App\\Filament\\Evaluator\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
