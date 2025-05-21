@@ -190,7 +190,6 @@ class ProfileResource extends Resource
     {
         return [
             'index' => Pages\ListProfiles::route('/'),
-            'create' => Pages\CreateProfile::route('/create'),
             'view' => Pages\ViewProfile::route('/{record}'),
             'edit' => Pages\EditProfile::route('/{record}/edit'),
         ];
