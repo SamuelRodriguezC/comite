@@ -11,11 +11,13 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Enums\Certification;
+use Illuminate\Validation\Rule;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Infolists\Components\IconEntry;
@@ -42,25 +44,52 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
+                    ->maxLength(255)
+                    ->rules([
+                        fn ($get, $record) => Rule::unique('users', 'email')->ignore($record?->id),
+                    ]),
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->visibleOn('create')
                     ->required()
                     ->maxLength(255),
                 // Utiliza CheckboxList para asignarle roles a los usuarios
                 Forms\Components\CheckboxList::make('roles')
                     ->relationship('roles', 'name')
                     ->searchable()
+                    ->required()
                     ->columns(2),
-                ]);
+                Group::make([
+
+                TextInput::make('profiles_name')
+                    ->label('Nombre(s)')
+                    ->required(),
+                TextInput::make('profiles_last_name')
+                    ->label('Apellido(s)')
+                    ->required(),
+                Select::make('profiles_document_id')
+                    ->label('Tipo de documento')
+                    ->relationship('profiles.document', 'type')
+                    ->required(),
+                TextInput::make('profiles_document_number')
+                    ->label('Número de documento')
+                    ->numeric()
+                    ->required(),
+                TextInput::make('profiles_phone_number')
+                    ->label('Teléfono')
+                    ->numeric()
+                    ->required(),
+                Select::make('profiles_level')
+                    ->label("Nivel Universitario")
+                    ->live()
+                    ->preload()
+                    ->enum(Level::class)
+                    ->options(Level::class)
+                    ->required(),
+            ])->columns(2)->columnSpanFull()->visibleOn('create')
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -76,8 +105,7 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -98,6 +126,7 @@ class UserResource extends Resource
                     ->icon(fn ($record) => $record->email_verified_at ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->color(fn ($record) => $record->email_verified_at ? 'danger' : 'success')
                     ->requiresConfirmation()
+                    ->modalHeading(fn ($record) => $record->email_verified_at ? '¿Desverificar correo?' : '¿Verificar correo?')
                     ->action(function ($record) {
                         $record->email_verified_at = $record->email_verified_at ? null : now();
                         $record->save();
