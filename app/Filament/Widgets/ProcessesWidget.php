@@ -22,33 +22,30 @@ class ProcessesWidget extends BaseWidget
                     'tableFilters[certification][value]' => 2,
                 ])),
             // Procesos Pendientes y con archivos en Etapa de Solicitud
-            Stat::make('Solicitudes', Process::where('stage_id', 1)->where('state', 3)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
+            Stat::make('Solicitudes', Process::where('stage_id', 1)->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
                 ->description('Pendientes Revisión')
                 ->icon('heroicon-o-user-plus')
                 ->color('info')
                 ->url(route('filament.coordinator.resources.process-aplications.index', [
-                    'tableFilters[requirement][value]' => 'not_empty',
-                    'activeTab' => 'Pendiente',
+                    'activeTab' => 'Entregado',
                 ])),
 
             // Procesos Pendientes  y con archivos en Etapa de Entrega
-            Stat::make('Entregas', Process::where('stage_id', 2)->where('state', 3)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
+            Stat::make('Entregas', Process::where('stage_id', 2)->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
                 ->description('Pendientes Por Revisión')
                 ->icon('heroicon-o-document-arrow-up')
                 ->color('info')
                 ->url(route('filament.coordinator.resources.process-submits.index', [
-                    'tableFilters[requirement][value]' => 'not_empty',
-                    'activeTab' => 'Pendiente',
+                    'activeTab' => 'Entregado',
                 ])),
 
             // Procesos Pendientes  y con archivos en Etapas de Primera y Segunda Corrección
-            Stat::make('Correcciones', Process::whereIn('stage_id', [3, 4])->where('state', 3)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
+            Stat::make('Correcciones', Process::whereIn('stage_id', [3, 4])->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
                 ->description('Pendientes Por Revisión')
                 ->icon('heroicon-o-pencil-square')
                 ->color('info')
                  ->url(route('filament.coordinator.resources.process-corrections.index', [
-                    'tableFilters[requirement][value]' => 'not_empty',
-                    'activeTab' => 'Pendiente',
+                    'activeTab' => 'Entregado',
                 ])),
 
         ];
