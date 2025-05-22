@@ -160,6 +160,13 @@ class TransactionResource extends Resource
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
                     ->color(fn ($state) => Enabled::from($state)->getColor()),
+                Tables\Columns\TextColumn::make('certification')
+                    ->label("Certificación")
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
+                    ->color(fn ($state) => Certification::from($state)->getColor())
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -173,11 +180,17 @@ class TransactionResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('component')
-                ->label('Componente')
-                ->options([
+                    ->label('Componente')
+                    ->options([
                     '1' => 'Investigativo',
                     '2' => 'No Investigativo',
                 ])->attribute('component'),
+
+                SelectFilter::make('certification')
+                    ->label('Certificación')
+                    ->options(Certification::class)
+                    ->attribute('certification'),
+
                 SelectFilter::make('enabled')
                 ->label('Habilitado')
                 ->options([

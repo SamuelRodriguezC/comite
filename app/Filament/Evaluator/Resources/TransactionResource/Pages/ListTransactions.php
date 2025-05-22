@@ -7,6 +7,7 @@ use App\Enums\Enabled;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
 use App\Filament\Evaluator\Resources\TransactionResource;
+use Illuminate\Support\Facades\App;
 
 class ListTransactions extends ListRecords
 {
@@ -30,10 +31,10 @@ class ListTransactions extends ListRecords
         ];
     }
 
-    //protected function getHeaderActions(): array
-    //{
-    //    return [
-    //        Actions\CreateAction::make(),
-    //    ];
-    //}
+    protected function getHeaderWidgets(): array
+    {
+        return [
+             \App\Filament\Evaluator\Resources\TransactionResource\Widgets\TransactionStat::class,
+        ];
+    }
 }

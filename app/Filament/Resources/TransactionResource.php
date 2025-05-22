@@ -280,8 +280,10 @@ class TransactionResource extends Resource
                 ->filters([
                     SelectFilter::make('component')
                         ->label('Componente')
-                        ->options(Component::class)
-                        ->attribute('component'),
+                        ->options([
+                        '1' => 'Investigativo',
+                        '2' => 'No Investigativo',
+                    ])->attribute('component'),
 
                     SelectFilter::make('certification')
                         ->label('Certificación')

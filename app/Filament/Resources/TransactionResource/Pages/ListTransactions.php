@@ -12,7 +12,6 @@ use Filament\Pages\Concerns\ExposesTableToWidgets;
 class ListTransactions extends ListRecords
 {
     use ExposesTableToWidgets;
-
     protected static string $resource = TransactionResource::class;
 
     // Función para filtrar las opciones de grado por nivel universitario
@@ -33,7 +32,6 @@ class ListTransactions extends ListRecords
                 }),
         ];
     }
-    
     protected function getHeaderActions(): array
     {
         return [
