@@ -50,6 +50,7 @@ class ViewTransaction extends ViewRecord
                 }
                 return route('certificate.pdf', $record->id);
             })
+            ->hidden(fn($record) => !empty($record->certificate?->acta))
             ->openUrlInNewTab(),
         ];
     }
