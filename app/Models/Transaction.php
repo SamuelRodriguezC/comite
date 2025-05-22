@@ -29,6 +29,7 @@ class Transaction extends Model
         'option_id',
         'certification',
         'enabled',
+        'created_at'
     ];
 
     /**

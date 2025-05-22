@@ -9,7 +9,7 @@ use Filament\Widgets\LineChartWidget;
 
 class CreatedTransactions extends LineChartWidget
 {
-    protected static ?string $heading = 'Transacciones creadas por mes';
+    protected static ?string $heading = 'Tickets creados por mes';
     protected static ?int $sort = 3;
     protected function getData(): array
     {
@@ -29,7 +29,7 @@ class CreatedTransactions extends LineChartWidget
             'labels' => $months->map(fn($m) => Carbon::createFromFormat('Y-m', $m)->format('M Y'))->toArray(),
             'datasets' => [
                 [
-                    'label' => 'Transacciones',
+                    'label' => 'Tickets Creados',
                     'data' => $counts->toArray(),
                     'borderColor' => '#3b82f6',
                     'backgroundColor' => 'rgba(59, 130, 246, 0.2)',

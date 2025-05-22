@@ -23,7 +23,7 @@ class TransactionsWidgetEvaluator extends BaseWidget
                 )
                 ->description('Tickets asignados y habilitados')
                 ->icon('heroicon-o-ticket')
-                ->color('warning'),
+                ->color('info'),
                 // ->chart([40, 70, 40, 70, 40, 70]),
 
                 // ----------------------- SOLICITUDES HABILITADAS Y PENDIENTES DEL EVALUADOR -----------------------
@@ -42,7 +42,7 @@ class TransactionsWidgetEvaluator extends BaseWidget
                 )
                 ->description('Habilitadas y Pendientes')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('warning'),
+                ->color('info'),
 
                 // ----------------------- ENTREGAS HABILITADAS Y PENDIENTES DEL EVALUADOR -----------------------
                 Stat::make(
@@ -60,7 +60,7 @@ class TransactionsWidgetEvaluator extends BaseWidget
                 )
                 ->description('Habilitadas y Pendientes')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('warning'),
+                ->color('info'),
 
                 // ----------------------- CORRECCIONES (PRIMERA Y SEGUNDA) PENDIENTES DEL EVALUADOR -----------------------
                 Stat::make(
@@ -78,7 +78,7 @@ class TransactionsWidgetEvaluator extends BaseWidget
                 )
                 ->description('Habilitadas y Pendientes')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('warning'),
+                ->color('info'),
 
         ];
     }

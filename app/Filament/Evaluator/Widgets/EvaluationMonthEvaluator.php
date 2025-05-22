@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class EvaluationMonthEvaluator extends ChartWidget
 {
     protected static ?string $heading = 'Evaluaciones por Mes';
-    protected static string $color = 'success';
+    protected static string $color = 'info';
     protected static ?int $sort = 3;
     // Cantidad de meses hacia atrás
     protected int $monthsBack = 12;
@@ -41,7 +41,9 @@ class EvaluationMonthEvaluator extends ChartWidget
                 [
                     'label' => 'Evaluaciones',
                     'data' => $data,
-                    // 'backgroundColor' => '#3B82F6', // azul
+                    'borderColor' => '#3b82f6',
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.2)',
+                    'fill' => true,
                 ],
             ],
             'labels' => $labels,
