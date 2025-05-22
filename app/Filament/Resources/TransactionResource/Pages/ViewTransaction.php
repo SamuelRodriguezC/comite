@@ -40,18 +40,24 @@ class ViewTransaction extends ViewRecord
             Actions\EditAction::make(),
 
             Action::make('Generar PDF')
-            ->color('success')
-            ->label('Certificar')
-            ->requiresConfirmation()
-            ->icon('heroicon-o-document-check')
-            ->url(function ($record) {
-                if ($record->certificate?->acta) {
-                    return route('certificate.view', ['file' => basename($record->certificate->acta)]);
-                }
-                return route('certificate.pdf', $record->id);
-            })
-            ->hidden(fn($record) => !empty($record->certificate?->acta))
-            ->openUrlInNewTab(),
+                ->color('success')
+                ->label('Certificar')
+                ->requiresConfirmation()
+                ->icon('heroicon-o-document-check')
+                ->action(function ($record) {
+                    // Lógica para redirigir al backend
+                    return redirect()->route('certificate.pdf', $record->id);
+                })
+                 ->modalHeading('¿Certificar Estudiante/s)?')
+                ->modalDescription('¿Estas seguro de certificar a el/los estudiante/s? Esta acción no se puede revertir asegurate que se cumplan todos los requisitos de certificación.')
+                ->modalSubmitActionLabel('Si, Certificar')
+                // ->url(function ($record) {
+                //     if ($record->certificate?->acta) {
+                //         return route('certificate.view', ['file' => basename($record->certificate->acta)]);
+                //     }
+                //     return route('certificate.pdf', $record->id);
+                // }) )
+                ->hidden(fn($record) => !empty($record->certificate?->acta)),
         ];
     }
 }

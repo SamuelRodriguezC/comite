@@ -235,7 +235,7 @@ class ProcessesRelationManager extends RelationManager
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
                     ->disabled(
                         function ($record) {
-                            return !in_array($record->state, [3, 1, 2]);
+                            return !in_array($record->state, [3, 1, 2, 6]);
                         }
                     )
                     ->form(function ($record) {
@@ -355,7 +355,7 @@ class ProcessesRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }

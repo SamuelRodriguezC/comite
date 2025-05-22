@@ -197,7 +197,7 @@ class ProfilesRelationManager extends RelationManager
 
                 // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
                 Tables\Actions\EditAction::make()
-                        ->visible(fn ($record) =>
+                    ->visible(fn ($record) =>
                         $record->id === auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
@@ -214,7 +214,7 @@ class ProfilesRelationManager extends RelationManager
             ])
             ->bulkActions([
                     Tables\Actions\BulkActionGroup::make([
-                        
+
                                         ]),
                 ]);
     }

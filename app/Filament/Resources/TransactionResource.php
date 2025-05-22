@@ -133,6 +133,7 @@ class TransactionResource extends Resource
                             ->live()
                             ->preload()
                             ->required()
+                            ->disabled(fn ($record) => !$record->isEditable())
                             ->enum(Component::class)
                             ->options(Component::class)
                             // Limpiar el campo de opción de grado luego de modificar el componente
@@ -184,6 +185,7 @@ class TransactionResource extends Resource
                                 return $query->pluck('option', 'id');
                             })
                             ->required()
+                             ->disabled(fn ($record) => !$record->isEditable())
                             ->searchable()
                             ->live(), // Para reaccionar a cambios del componente
                     ])
