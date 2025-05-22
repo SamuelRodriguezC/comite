@@ -23,15 +23,16 @@ class TransactionsWidgetEvaluator extends BaseWidget
                 )
                 ->description('Tickets asignados y habilitados')
                 ->icon('heroicon-o-ticket')
-                ->color('info'),
-                // ->chart([40, 70, 40, 70, 40, 70]),
+                ->color('info')
+                 ->url(route('filament.evaluator.resources.transactions.index', [
+                    'activeTab' => 'habilitado',
+                ])),
 
                 // ----------------------- SOLICITUDES HABILITADAS Y PENDIENTES DEL EVALUADOR -----------------------
                 Stat::make(
                     'Solicitudes',
                     Process::where('stage_id', 1)
-                        ->where('state', 3)
-                        //->whereRaw("TRIM(requirement) != ''") Buscar procesos que sean pendientes y tengan archivos subidos
+                        ->where('state', 6)
                         ->whereHas('transaction', function ($query) {
                             $query->where('enabled', 1)
                                 ->whereHas('profileTransactions', function ($query) {
@@ -40,15 +41,18 @@ class TransactionsWidgetEvaluator extends BaseWidget
                                 });
                         })->count()
                 )
-                ->description('Habilitadas y Pendientes')
+                ->description('Habilitadas Entregadas')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('info'),
+                ->color('info')
+                ->url(route('filament.evaluator.resources.process-aplications.index', [
+                    'activeTab' => 'Entregado',
+                ])),
 
                 // ----------------------- ENTREGAS HABILITADAS Y PENDIENTES DEL EVALUADOR -----------------------
                 Stat::make(
                     'Entregas',
                     Process::where('stage_id', 2)
-                        ->where('state', 3)
+                        ->where('state', 6)
                         //->whereRaw("TRIM(requirement) != ''") Buscar procesos que sean pendientes y tengan archivos subidos
                         ->whereHas('transaction', function ($query) {
                             $query->where('enabled', 1)
@@ -58,15 +62,18 @@ class TransactionsWidgetEvaluator extends BaseWidget
                                 });
                         })->count()
                 )
-                ->description('Habilitadas y Pendientes')
+                ->description('Habilitadas y Entregadas')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('info'),
+                ->color('info')
+                 ->url(route('filament.evaluator.resources.process-submits.index', [
+                    'activeTab' => 'Entregado',
+                ])),
 
                 // ----------------------- CORRECCIONES (PRIMERA Y SEGUNDA) PENDIENTES DEL EVALUADOR -----------------------
                 Stat::make(
                     'Correcciones',
                     Process::whereIn('stage_id', [3, 4])
-                        ->where('state', 3)
+                        ->where('state', 6)
                       //->whereRaw("TRIM(requirement) != ''") Buscar procesos que sean pendientes y tengan archivos subidos
                         ->whereHas('transaction', function ($query) {
                             $query->where('enabled', 1)
@@ -76,9 +83,12 @@ class TransactionsWidgetEvaluator extends BaseWidget
                                 });
                         })->count()
                 )
-                ->description('Habilitadas y Pendientes')
+                ->description('Habilitadas y Entregadas')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color('info'),
+                ->color('info')
+                 ->url(route('filament.evaluator.resources.process-submits.index', [
+                    'activeTab' => 'Entregado',
+                ])),
 
         ];
     }

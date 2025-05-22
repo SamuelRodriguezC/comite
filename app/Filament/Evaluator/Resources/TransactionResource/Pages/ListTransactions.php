@@ -2,13 +2,33 @@
 
 namespace App\Filament\Evaluator\Resources\TransactionResource\Pages;
 
-use App\Filament\Evaluator\Resources\TransactionResource;
 use Filament\Actions;
+use App\Enums\Enabled;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ListRecords\Tab;
+use App\Filament\Evaluator\Resources\TransactionResource;
 
 class ListTransactions extends ListRecords
 {
     protected static string $resource = TransactionResource::class;
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All Options')
+                ->label('Todos los estados'),
+            'habilitado' => Tab::make('habilitado')
+                ->label('Habilitado')
+                ->modifyQueryUsing(function ($query) {
+                    return $query->where('enabled', Enabled::HABILITADO);
+                }),
+            'deshabilitado' => Tab::make('deshabilitado')
+                ->label('No habilitado')
+                ->modifyQueryUsing(function ($query) {
+                    return $query->where('enabled', Enabled::DESHABILITADO);
+                }),
+        ];
+    }
 
     //protected function getHeaderActions(): array
     //{

@@ -23,7 +23,7 @@ class ProcessesWidget extends BaseWidget
                 ])),
             // Procesos Pendientes y con archivos en Etapa de Solicitud
             Stat::make('Solicitudes', Process::where('stage_id', 1)->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
-                ->description('Pendientes Revisión')
+                ->description('Entregadas Pendiente Revisión')
                 ->icon('heroicon-o-user-plus')
                 ->color('info')
                 ->url(route('filament.coordinator.resources.process-aplications.index', [
@@ -32,7 +32,7 @@ class ProcessesWidget extends BaseWidget
 
             // Procesos Pendientes  y con archivos en Etapa de Entrega
             Stat::make('Entregas', Process::where('stage_id', 2)->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
-                ->description('Pendientes Por Revisión')
+                ->description('Entregadas Pendiente Revisión')
                 ->icon('heroicon-o-document-arrow-up')
                 ->color('info')
                 ->url(route('filament.coordinator.resources.process-submits.index', [
@@ -41,7 +41,7 @@ class ProcessesWidget extends BaseWidget
 
             // Procesos Pendientes  y con archivos en Etapas de Primera y Segunda Corrección
             Stat::make('Correcciones', Process::whereIn('stage_id', [3, 4])->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())
-                ->description('Pendientes Por Revisión')
+                ->description('Entregadas Pendiente Revisión')
                 ->icon('heroicon-o-pencil-square')
                 ->color('info')
                  ->url(route('filament.coordinator.resources.process-corrections.index', [
