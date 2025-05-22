@@ -3,10 +3,11 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\Role;
 use Filament\Tables;
 use App\Enums\Enabled;
+use App\Models\Option;
 use App\Models\Profile;
-use App\Models\Role;
 use Filament\Forms\Get;
 use App\Enums\Component;
 use Filament\Forms\Form;
@@ -122,20 +123,6 @@ class TransactionResource extends Resource
 
                 FormSection::make('Opción de grado')
                     ->schema([
-                        //Forms\Components\TextInput::make('profile_id')
-                        //    ->label('Estudiante vinculado')
-                        //    ->default(fn (?Transaction $record) =>
-                        //        $record?->profile
-                        //        ? "{$record->profile->document_number} - {$record->profile->name} {$record->profile->last_name}"
-                        //        : 'No asignado')
-                        //    ->disabled()
-                        //    ->visibleOn('edit'),
-                        // calcula el level del modelo si esta en edición
-                        //Forms\Components\TextInput::make('level')
-                        //    ->label('Nivel')
-                        //    ->disabled()
-                        //    ->default(fn (?Profile $record) => $record?->profile?->level)
-                        //    ->visibleOn('edit'),
                         Forms\Components\TextInput::make('id')
                             ->label('Número de Ticket')
                             ->disabled()
@@ -272,6 +259,13 @@ class TransactionResource extends Resource
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
                     ->color(fn ($state) => Enabled::from($state)->getColor()),
+                Tables\Columns\TextColumn::make('certification')
+                    ->label("Certificación")
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
+                    ->color(fn ($state) => Certification::from($state)->getColor())
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -283,14 +277,22 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                SelectFilter::make('component')
-                ->options([
-                    '1' => 'Investigativo',
-                    '2' => 'No Investigativo',
+                ->filters([
+                    SelectFilter::make('component')
+                        ->label('Componente')
+                        ->options(Component::class)
+                        ->attribute('component'),
+
+                    SelectFilter::make('certification')
+                        ->label('Certificación')
+                        ->options(Certification::class)
+                        ->attribute('certification'),
+
+                    SelectFilter::make('enabled')
+                        ->label('Habilitado')
+                        ->options(Enabled::class)
+                        ->attribute('enabled'),
                 ])
-                ->attribute('component')
-            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
