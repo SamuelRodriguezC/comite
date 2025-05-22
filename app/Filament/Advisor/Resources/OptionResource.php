@@ -111,7 +111,7 @@ class OptionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    
                 ]),
             ]);
     }
@@ -128,7 +128,7 @@ class OptionResource extends Resource
                 TextEntry::make('requirement')
                     ->label('Requerimientos')
                     ->formatStateUsing(fn($state) =>
-                        '<ul class="list-disc list-inside pl-8">' .
+                        '<ul class="pl-8 list-disc list-inside">' .
                             collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
                             ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
                             ->implode('') .
