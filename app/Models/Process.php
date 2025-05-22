@@ -54,18 +54,27 @@ class Process extends Model
         return $this->belongsTo(Stage::class);
     }
 
-    // Cuando el estado del proceso solicitud es aprobado se marca como finalizado
+
     protected static function booted(): void
     {
+        // Marcar como completado si la solicitud fue aprobada
         static::updating(function (Process $process) {
-            if (
-                $process->isDirty('state') &&
-                $process->state == 1 &&
-                $process->stage_id == 1
-            ) {
-                $process->completed = 1;
-            }
-        });
+        if (
+            $process->isDirty('state') &&
+            $process->state == 1 &&
+            $process->stage_id == 1
+        ) {
+            $process->completed = 1;
+        }
+
+        // Cambiar el estado a 6 si se sube un archivo en 'requirement'
+        if (
+            $process->isDirty('requirement') &&
+            !empty($process->requirement)
+        ) {
+            $process->state = 6;
+        }
+    });
     }
 
 

@@ -15,6 +15,7 @@ enum State: int implements HasLabel, HasColor
     case PENDIENTE = 3;
     case APLAZADO = 4;
     case CANCELADO = 5;
+    case ENTREGADO = 6;
     /**
      * Generates function to display a label
      */
@@ -26,6 +27,7 @@ enum State: int implements HasLabel, HasColor
             self::PENDIENTE => 'Pendiente',
             self::APLAZADO => 'Aplazado',
             self::CANCELADO => 'Cancelado',
+            self::ENTREGADO => 'Entregado',
         };
     }
     /**
@@ -39,6 +41,7 @@ enum State: int implements HasLabel, HasColor
             self::PENDIENTE => 'warning',
             self::APLAZADO => 'gray',
             self::CANCELADO => 'danger',
+            self::ENTREGADO => 'info',
         };
     }
 }

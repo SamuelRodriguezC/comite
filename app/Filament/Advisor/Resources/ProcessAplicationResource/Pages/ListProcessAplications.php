@@ -23,6 +23,11 @@ class ListProcessAplications extends ListRecords
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::PENDIENTE);
                     }),
+                'Entregado' => Tab::make('Entregado')
+                    ->label('Entregado')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::ENTREGADO);
+                    }),
                 'Aprobado' => Tab::make('Aprobado')
                     ->label('Aprobado')
                     ->modifyQueryUsing(function ($query) {

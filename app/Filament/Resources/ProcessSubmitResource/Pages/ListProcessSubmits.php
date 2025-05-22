@@ -16,34 +16,39 @@ class ListProcessSubmits extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('All Options')
-                ->label('Todos los estados'),
-            'Pendiente' => Tab::make('Pendiente')
+                'all' => Tab::make('All Options')
+                    ->label('Todos los estados'),
+                'Pendiente' => Tab::make('Pendiente')
                     ->label('Pendiente')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::PENDIENTE);
                     }),
-            'Aprobado' => Tab::make('Aprobado')
-                ->label('Aprobado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('state', State::APROBADO);
-                }),
-            'Improbado' => Tab::make('Improbado')
-                ->label('Improbado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('state', State::IMPROBADO);
-                }),
-            'Aplazado' => Tab::make('Aplazado')
-                ->label('Aplazado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('state', State::APLAZADO);
-                }),
-            'Cancelado' => Tab::make('Cancelado')
-                ->label('Cancelado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('state', State::CANCELADO);
-                }),
-        ];
+                'Entregado' => Tab::make('Entregado')
+                    ->label('Entregado')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::ENTREGADO);
+                    }),
+                'Aprobado' => Tab::make('Aprobado')
+                    ->label('Aprobado')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::APROBADO);
+                    }),
+                'Improbado' => Tab::make('Improbado')
+                    ->label('Improbado')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::IMPROBADO);
+                    }),
+                'Aplazado' => Tab::make('Aplazado')
+                    ->label('Aplazado')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::APLAZADO);
+                    }),
+                'Cancelado' => Tab::make('Cancelado')
+                    ->label('Cancelado')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::CANCELADO);
+                    }),
+            ];
     }
 
     //protected function getHeaderActions(): array
