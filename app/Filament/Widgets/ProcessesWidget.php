@@ -38,7 +38,7 @@ class ProcessesWidget extends BaseWidget
                 ->color('warning')
                  ->chart([100, 10, 50, 50, 60, 100]),
 
-                 
+
         ];
     }
 }

@@ -17,7 +17,8 @@
 </head>
 
 <body class="font-sans antialiased text-gray-900">
-    <div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0 dark:bg-white">
+   <div class="flex flex-col items-center min-h-screen pt-6 sm:justify-center sm:pt-0 dark:bg-white"
+     style="background-image: url('/images/fondoU.jpg'); background-size: cover; background-position: center;">
         <div>
             <a href="/">
                 <x-application-logo class="w-40 h-40 text-gray-500 fill-current" />

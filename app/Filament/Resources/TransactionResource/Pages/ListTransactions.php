@@ -7,9 +7,12 @@ use App\Enums\Enabled;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
 use App\Filament\Resources\TransactionResource;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 
 class ListTransactions extends ListRecords
 {
+    use ExposesTableToWidgets;
+
     protected static string $resource = TransactionResource::class;
 
     // Función para filtrar las opciones de grado por nivel universitario
@@ -30,11 +33,20 @@ class ListTransactions extends ListRecords
                 }),
         ];
     }
-
+    
     protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\TransactionResource\Widgets\TransactionStat::class,
+        ];
+    }
+
+
 }
