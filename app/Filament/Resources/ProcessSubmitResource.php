@@ -16,6 +16,7 @@ use App\Models\ProcessSubmit;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -146,7 +147,19 @@ class ProcessSubmitResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('requirement')
+                    ->label('Requisitos')
+                    ->options([
+                        'empty' => 'Sin requisitos',
+                        'not_empty' => 'Con requisitos',
+                    ])
+                    ->query(fn (Builder $query, array $data) => match ($data['value'] ?? null) {
+                        'empty' => $query->where(fn ($q) =>
+                            $q->whereNull('requirement')->orWhereIn('requirement', ['', ' '])
+                        ),
+                        'not_empty' => $query->whereNotNull('requirement')->whereNotIn('requirement', ['', ' ']),
+                        default => $query,
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
