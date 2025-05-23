@@ -2,16 +2,17 @@
 
 namespace App\Filament\Student\Resources\TransactionResource\Pages;
 
-use App\Filament\Student\Resources\TransactionResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Profile;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
-use App\Filament\Employer\Resources\TalkResource\Pages\CreateTalk as PagesCreateTalk;
+use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Student\Resources\TransactionResource;
 use App\Filament\Student\Resources\ProcessResource\Pages\CreateProcess;
+use App\Filament\Employer\Resources\TalkResource\Pages\CreateTalk as PagesCreateTalk;
 
 class CreateTransaction extends CreateRecord
 {
@@ -67,4 +68,15 @@ class CreateTransaction extends CreateRecord
     {
         return null;
     }
+
+    // Evita la visualización del registro si está deshabilitado
+    protected function authorizeAccess(): void
+    {
+        if (!Transaction::canCreate()) {
+            abort(403, 'Acceso denegado, usted tiene tickets activos no puede crear más.');
+        }
+    }
+
+
+
 }

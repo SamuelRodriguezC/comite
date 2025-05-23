@@ -9,7 +9,9 @@ use App\Models\Process;
 use App\Models\Profile;
 use App\Models\Certificate;
 use App\Models\ProfileTransaction;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -98,5 +100,27 @@ class Transaction extends Model
         }
 
         return round(($completed / $total) * 100, 2); // Porcentaje con dos decimales
+    }
+
+    // ---------- VALIDAR - EL ESTUDIANTE NO PUEDE CREAR TRANSACCIONES SI TIENE AL MENOS UNA HABILITADA  ----------
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->profiles) {
+            return false;
+        }
+
+        $profileId = $user->profiles->id;
+
+        // Verifica si existe al menos una transacción habilitada para este perfil
+        $hasEnabledTransaction = Transaction::whereHas('profiles', function (Builder $query) use ($profileId) {
+            $query->where('profile_id', $profileId)
+                ->where('role_id', 1); // Solo para rol estudiante
+        })
+        ->where('enabled', 1) // Habilitado
+        ->exists();
+
+        return !$hasEnabledTransaction;
     }
 }
