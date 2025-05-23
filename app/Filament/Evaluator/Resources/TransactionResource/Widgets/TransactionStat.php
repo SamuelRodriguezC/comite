@@ -21,7 +21,7 @@ class TransactionStat extends BaseWidget
     $baseQuery = $this->evaluadorTransactions($profile->id);
 
     return [
-        Stat::make('Total Opciónes Asignados', (clone $baseQuery)->count())
+        Stat::make('Total Opciones Asignados', (clone $baseQuery)->count())
             ->color('info')
             ->icon('heroicon-o-academic-cap')
             ->url(route('filament.evaluator.resources.transactions.index', [
@@ -40,22 +40,22 @@ class TransactionStat extends BaseWidget
             ->icon('heroicon-o-check-circle'),
 
         Stat::make('Opciones', (clone $baseQuery)
-                ->whereHas('transaction', fn($q) => $q->where('status', 3))
+                ->whereHas('transaction', fn($q) => $q->where('status', 4))
                 ->count())
             ->color('success')
             ->description('Certificados')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    'tableFilters[status][value]' => 3,
+                    'tableFilters[status][value]' => 4,
             ]))
             ->icon('heroicon-o-academic-cap'),
 
         Stat::make('Opciones', (clone $baseQuery)
-                ->whereHas('transaction', fn($q) => $q->where('status', 2))
+                ->whereHas('transaction', fn($q) => $q->where('status', 3))
                 ->count())
             ->color('warning')
             ->description('Pendientes por Certificar')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    'tableFilters[status][value]' => 2,
+                    'tableFilters[status][value]' => 3,
             ]))
             ->icon('heroicon-o-clock'),
     ];

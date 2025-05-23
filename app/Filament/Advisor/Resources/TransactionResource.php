@@ -254,6 +254,14 @@ class TransactionResource extends Resource
                     ->label("Opción")
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label("Estado")
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                    ->color(fn ($state) => Status::from($state)->getColor())
+                    ->sortable()
+                     ->tooltip(fn ($state) => Status::from($state)->getTooltip())
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())

@@ -123,6 +123,13 @@ class TransactionResource extends Resource
                     ->label("Opción")
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label("Estado")
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                    ->color(fn ($state) => Status::from($state)->getColor())
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
                     ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
@@ -142,13 +149,6 @@ class TransactionResource extends Resource
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
                     ->color(fn ($state) => Enabled::from($state)->getColor()),
-                Tables\Columns\TextColumn::make('status')
-                    ->label("Estado")
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
-                    ->color(fn ($state) => Status::from($state)->getColor())
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
