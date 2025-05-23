@@ -114,22 +114,8 @@ class ProcessesRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label('Finalizado')
-                    ->icon(
-                        fn ($record) => Completed::from($record->completed)
-                            ->getIcon()
-                    )
-                    ->color(
-                        fn ($record) => Completed::from($record->completed)
-                            ->getColor()
-                    )
-                    ->action(
-                        fn ($record) => $record->update([ // Cambiar el completado del proceso
-                            'completed' => $record->completed === Completed::SI->value
-                                ? Completed::NO->value
-                                : Completed::SI->value
-                        ])
-                    )
-                    ->tooltip('Haz clic para cambiar'),
+                    ->icon(fn ($record) => Completed::from($record->completed)->getIcon())
+                    ->color(fn ($record) => Completed::from($record->completed)->getColor()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -236,6 +222,25 @@ class ProcessesRelationManager extends RelationManager
                                 ->visible(fn ($record) => $record->comments->isNotEmpty()),
                         ];
                     }),
+
+
+                // --------------------------- Boton para FINALIZAR  ---------------------------
+                Tables\Actions\Action::make('toggleCompleted')
+                    ->label(fn ($record) => $record->completed === 1 ? 'No Finalizado' : 'Finalizado')
+                    ->icon(fn ($record) => $record->completed === 1 ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmar cambio')
+                    ->modalDescription('¿Quieres cambiar el estado de finalización de este proceso?')
+                    // ->modalConfirmButtonLabel('Sí, cambiar')
+                    // ->modalCancelButtonLabel('Cancelar')
+                    ->action(function ($record) {
+                        $record->update([
+                            'completed' => $record->completed === Completed::SI->value
+                                ? Completed::NO->value
+                                : Completed::SI->value,
+                        ]);
+                    }),
+
 
                 // --------------------------- GRUPO DE BOTONES ---------------------------
                 ActionGroup::make([
