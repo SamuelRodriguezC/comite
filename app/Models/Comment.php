@@ -55,6 +55,12 @@ class Comment extends Model
     // Función que actualiza el estado del proceso según los comentarios asociados
     public static function updateProcessState(Process $process): void
     {
+        // Solo actualiza el estado si hay al menos 2 comentarios ----------
+        // $commentCount = $process->comments()->count();
+        // if ($commentCount < 2) {
+        //     return;
+        // }
+
         // Verifica si todos los comentarios tienen el concepto aprobado (concept_id = 1)
         $allApproved = $process->comments()->where('concept_id', 1)->count() === $process->comments()->count();
 
