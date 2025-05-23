@@ -51,6 +51,7 @@ class ViewTransaction extends ViewRecord
                  ->modalHeading('¿Certificar Estudiante/s)?')
                 ->modalDescription('¿Estas seguro de certificar a el/los estudiante/s? Esta acción no se puede revertir asegurate que se cumplan todos los requisitos de certificación.')
                 ->modalSubmitActionLabel('Si, Certificar')
+                ->openUrlInNewTab()
                 // ->url(function ($record) {
                 //     if ($record->certificate?->acta) {
                 //         return route('certificate.view', ['file' => basename($record->certificate->acta)]);

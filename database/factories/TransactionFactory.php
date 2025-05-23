@@ -33,7 +33,7 @@ class TransactionFactory extends Factory
             'component' => $component,
             'enabled' => fake()->numberBetween(1, 2),
             'option_id' => $optionId,
-            'certification' => 1,
+            'status' => 1,
         ];
     }
 }

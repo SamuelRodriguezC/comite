@@ -17,17 +17,17 @@ class TransactionStat extends BaseWidget
                 ->icon('heroicon-o-ticket')
                 ->chart($this->getChartData('total')),
 
-            Stat::make('Pendientes por Certificar', Transaction::where('certification', 2)->count())
+            Stat::make('Pendientes por Certificar', Transaction::where('status', 2)->count())
                 ->color('warning')
                 ->icon('heroicon-o-clock')
                 ->chart($this->getChartData('pending')),
 
-            Stat::make('Certificados', Transaction::where('certification', 3)->count())
+            Stat::make('Certificados', Transaction::where('status', 3)->count())
                 ->color('info')
                 ->icon('heroicon-o-document-check')
                 ->chart($this->getChartData('certified')),
 
-            Stat::make('Tickets Habilitados', Transaction::where('enabled', 1)->count())
+            Stat::make('Tickets Habilitados', Transaction::where('status', 1)->count())
                 ->color('primary')
                 ->icon('heroicon-o-check-circle')
                 ->chart($this->getChartData('enabled')),
@@ -45,9 +45,9 @@ class TransactionStat extends BaseWidget
             $query = Transaction::whereDate('created_at', $day);
 
             if ($type === 'pending') {
-                $query->where('certification', 2);
+                $query->where('status', 2);
             } elseif ($type === 'certified') {
-                $query->where('certification', 3);
+                $query->where('status', 3);
             } elseif ($type === 'enabled') {
                 $query->where('enabled', 1);
             }

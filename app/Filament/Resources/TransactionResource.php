@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\Role;
 use Filament\Tables;
+use App\Enums\Status;
 use App\Enums\Enabled;
 use App\Models\Option;
 use App\Models\Profile;
@@ -13,7 +14,6 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
-use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\TextInput;
@@ -226,12 +226,12 @@ class TransactionResource extends Resource
                                 ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                                 }),
-                            Forms\Components\Select::make('certification')
-                                ->label("Certificación")
+                            Forms\Components\Select::make('status')
+                                ->label("Estado")
                                 ->live()
                                 ->preload()
-                                ->enum(Certification::class)
-                                ->options(Certification::class),
+                                ->enum(Status::class)
+                                ->options(Status::class),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
@@ -268,12 +268,13 @@ class TransactionResource extends Resource
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
                     ->color(fn ($state) => Enabled::from($state)->getColor()),
-                Tables\Columns\TextColumn::make('certification')
-                    ->label("Certificación")
+                Tables\Columns\TextColumn::make('status')
+                    ->label("Estado")
                     ->badge()
-                    ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                    ->color(fn ($state) => Certification::from($state)->getColor())
+                    ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                    ->color(fn ($state) => Status::from($state)->getColor())
                     ->sortable()
+                     ->tooltip(fn ($state) => Status::from($state)->getTooltip())
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -294,10 +295,10 @@ class TransactionResource extends Resource
                         '2' => 'No Investigativo',
                     ])->attribute('component'),
 
-                    SelectFilter::make('certification')
-                        ->label('Certificación')
-                        ->options(Certification::class)
-                        ->attribute('certification'),
+                    SelectFilter::make('status')
+                        ->label('Estado')
+                        ->options(Status::class)
+                        ->attribute('status'),
 
                     SelectFilter::make('enabled')
                         ->label('Habilitado')
@@ -354,11 +355,11 @@ class TransactionResource extends Resource
                             ->label('Habilitado')
                             ->icon(fn ($state) => Enabled::from($state)->getIcon())
                             ->color(fn ($state) => Enabled::from($state)->getColor()),
-                        TextEntry::make('certification')
-                            ->label('Certificación')
+                        TextEntry::make('status')
+                            ->label('Estado')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                            ->color(fn ($state) => Certification::from($state)->getColor()),
+                            ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                            ->color(fn ($state) => Status::from($state)->getColor()),
                     ])->columns(2),
                 ])->columnSpan(1),
         ])->columns(3);
@@ -367,7 +368,7 @@ class TransactionResource extends Resource
     // Filtra por solicitudes pendientes por certificar
     public static function getNavigationBadge(): ?string
     {
-        return static::getEloquentQuery()->where('certification', '2')->count();
+        return static::getEloquentQuery()->where('status', '3')->count();
     }
 
     // Describe el getNavigationBadge

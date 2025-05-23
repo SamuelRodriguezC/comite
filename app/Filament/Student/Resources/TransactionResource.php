@@ -4,6 +4,7 @@ namespace App\Filament\Student\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Enums\Status;
 use App\Enums\Enabled;
 use App\Models\Course;
 use App\Models\Option;
@@ -13,7 +14,6 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
-use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
@@ -114,7 +114,7 @@ class TransactionResource extends Resource
                                 ->label('Actualizado en')
                                 ->disabled(),
                             //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                            ToggleButtons::make('certification')
+                            ToggleButtons::make('status')
                                 ->disabled()
                                 ->columns(3)
                                 ->visibleOn('edit')
@@ -254,11 +254,11 @@ class TransactionResource extends Resource
                             ->label('Habilitado')
                             ->icon(fn ($state) => Enabled::from($state)->getIcon())
                             ->color(fn ($state) => Enabled::from($state)->getColor()),
-                        TextEntry::make('certification')
-                            ->label('Certificación')
+                        TextEntry::make('status')
+                            ->label('Estado')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                            ->color(fn ($state) => Certification::from($state)->getColor()),
+                            ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                            ->color(fn ($state) => Status::from($state)->getColor()),
                     ])->columns(2),
                 ])->columnSpan(1),
         ])->columns(3);

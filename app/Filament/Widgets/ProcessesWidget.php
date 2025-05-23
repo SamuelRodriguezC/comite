@@ -14,12 +14,12 @@ class ProcessesWidget extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Generar Acta', Transaction::where('certification', 2)->count())
+            Stat::make('Generar Acta', Transaction::where('status', 2)->count())
                 ->description('Pendientes')
                 ->icon('heroicon-o-academic-cap')
                 ->color('info')
                 ->url(route('filament.coordinator.resources.transactions.index', [
-                    'tableFilters[certification][value]' => 2,
+                    'tableFilters[status][value]' => 2,
                 ])),
             // Procesos Pendientes y con archivos en Etapa de Solicitud
             Stat::make('Solicitudes', Process::where('stage_id', 1)->where('state', 6)->whereNotNull('requirement')->where('requirement', '!=', '')->count())

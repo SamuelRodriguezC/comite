@@ -10,7 +10,6 @@ use App\Enums\Enabled;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Enums\Certification;
 use Illuminate\Validation\Rule;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -134,7 +133,7 @@ class UserResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }

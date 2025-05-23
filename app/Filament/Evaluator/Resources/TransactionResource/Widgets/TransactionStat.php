@@ -25,7 +25,7 @@ class TransactionStat extends BaseWidget
             ->color('info')
             ->icon('heroicon-o-ticket')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    
+
             ]))
             ->chart($this->getChartData('total')),
 
@@ -40,22 +40,22 @@ class TransactionStat extends BaseWidget
             ->icon('heroicon-o-check-circle'),
 
         Stat::make('Tickets', (clone $baseQuery)
-                ->whereHas('transaction', fn($q) => $q->where('certification', 3))
+                ->whereHas('transaction', fn($q) => $q->where('status', 3))
                 ->count())
             ->color('success')
             ->description('Certificados')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    'tableFilters[certification][value]' => 3,
+                    'tableFilters[status][value]' => 3,
             ]))
             ->icon('heroicon-o-academic-cap'),
 
         Stat::make('Tickets', (clone $baseQuery)
-                ->whereHas('transaction', fn($q) => $q->where('certification', 2))
+                ->whereHas('transaction', fn($q) => $q->where('status', 2))
                 ->count())
             ->color('warning')
             ->description('Pendientes por Certificar')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    'tableFilters[certification][value]' => 2,
+                    'tableFilters[status][value]' => 2,
             ]))
             ->icon('heroicon-o-clock'),
     ];
@@ -77,8 +77,8 @@ class TransactionStat extends BaseWidget
             $query = Transaction::whereDate('created_at', $day);
 
             return match ($type) {
-                'pending' => $query->where('certification', 2)->count(),
-                'certified' => $query->where('certification', 3)->count(),
+                'pending' => $query->where('status', 2)->count(),
+                'certified' => $query->where('status', 3)->count(),
                 'enabled' => $query->where('enabled', 1)->count(),
                 default => $query->count(),
             };

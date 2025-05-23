@@ -18,7 +18,7 @@ class CreateTransaction extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['enabled'] = 1;
-        $data['certification'] = 1;
+        $data['status'] = 1;
         return $data;
     }
 

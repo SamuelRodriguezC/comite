@@ -4,6 +4,7 @@ namespace App\Filament\Evaluator\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Enums\Status;
 use App\Enums\Enabled;
 use App\Models\Option;
 use Filament\Forms\Set;
@@ -11,7 +12,6 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
-use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
@@ -91,34 +91,21 @@ class TransactionResource extends Resource
                                 ->label('Actualizado en')
                                 ->disabled(),
                              //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                            ToggleButtons::make('certification')
-                                 ->disabled(fn ($get) => $get('certification') == 3) // Se deshabilitan si ya está certificado
-                                ->label('Certificación')
-                                ->columns(2)
-                                ->options([
-                                    1 => 'No Certificado',
-                                    2 => 'Por Certificar',
-                                ])
-                                ->colors([
-                                    1 => 'danger',
-                                    2 => 'warning',
-                                ]),
-                            Forms\Components\Placeholder::make('certification_notice')
-                                ->label('Información Importante')
-                                ->content('Debido a que estudiante ya esta CERTIFICADO no puede cambiar el campo de Certificación')
-                                ->visible(fn ($get) => $get('certification') == 3),
-                            Forms\Components\Toggle::make('enabled')
-                                ->label('Habilitado')
-                                ->inline(false)
-                                ->onColor('success')
-                                ->offColor('danger')
-                                ->onIcon(Enabled::HABILITADO->getIcon())
-                                ->offIcon(Enabled::DESHABILITADO->getIcon())
-                                ->disabled()
-                                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
-                                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
-                                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
-                                }),
+                    Forms\Components\Toggle::make('status')
+                        ->label('Enviar solicitud de certificación')
+                        ->inline(false)
+                        ->onColor('success')
+                        ->offColor('danger')
+                        ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                            $component->state($state == 3);
+                            $component->disabled($state == \App\Enums\Status::CERTIFICADO->value);
+
+                            if ($state == \App\Enums\Status::CERTIFICADO->value) {
+                                $component->helperText('El estudiante ya fue Certificado, No puedes editar este campo');
+                            }
+                        })
+                        ->dehydrateStateUsing(fn (bool $state) => $state ? 3 : null)
+                        ->dehydrated(fn (bool $state) => $state),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
@@ -155,11 +142,11 @@ class TransactionResource extends Resource
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
                     ->color(fn ($state) => Enabled::from($state)->getColor()),
-                Tables\Columns\TextColumn::make('certification')
-                    ->label("Certificación")
+                Tables\Columns\TextColumn::make('status')
+                    ->label("Estado")
                     ->badge()
-                    ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                    ->color(fn ($state) => Certification::from($state)->getColor())
+                    ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                    ->color(fn ($state) => Status::from($state)->getColor())
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
@@ -181,10 +168,10 @@ class TransactionResource extends Resource
                     '2' => 'No Investigativo',
                 ])->attribute('component'),
 
-                SelectFilter::make('certification')
-                    ->label('Certificación')
-                    ->options(Certification::class)
-                    ->attribute('certification'),
+                SelectFilter::make('status')
+                    ->label('Estado')
+                    ->options(Status::class)
+                    ->attribute('status'),
 
                 SelectFilter::make('enabled')
                 ->label('Habilitado')
@@ -243,11 +230,11 @@ class TransactionResource extends Resource
                             ->label('Habilitado')
                             ->icon(fn ($state) => Enabled::from($state)->getIcon())
                             ->color(fn ($state) => Enabled::from($state)->getColor()),
-                        TextEntry::make('certification')
-                            ->label('Certificación')
+                        TextEntry::make('status')
+                            ->label('Estado')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                            ->color(fn ($state) => Certification::from($state)->getColor()),
+                            ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                            ->color(fn ($state) => Status::from($state)->getColor()),
                     ])->columns(2),
                 ])->columnSpan(1),
         ])->columns(3);

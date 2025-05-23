@@ -49,6 +49,7 @@ class EditTransaction extends EditRecord
                  ->modalHeading('¿Certificar Estudiante/s)?')
                 ->modalDescription('¿Estas seguro de certificar a el/los estudiante/s? Esta acción no se puede revertir asegurate que se cumplan todos los requisitos de certificación.')
                 ->modalSubmitActionLabel('Si, Certificar')
+                ->openUrlInNewTab()
                 ->hidden(fn($record) => !empty($record->certificate?->acta)),
         ];
     }

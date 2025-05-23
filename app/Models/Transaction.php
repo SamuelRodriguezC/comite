@@ -29,7 +29,7 @@ class Transaction extends Model
     protected $fillable = [
         'component',
         'option_id',
-        'certification',
+        'status',
         'enabled',
         'created_at'
     ];

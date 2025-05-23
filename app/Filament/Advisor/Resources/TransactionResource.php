@@ -4,6 +4,7 @@ namespace App\Filament\Advisor\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Enums\Status;
 use App\Enums\Enabled;
 use App\Models\Option;
 use Filament\Forms\Get;
@@ -12,7 +13,6 @@ use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Transaction;
-use App\Enums\Certification;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
@@ -230,13 +230,13 @@ class TransactionResource extends Resource
                                 ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                                 }),
-                            Forms\Components\Select::make('certification')
-                                ->label("Certificación")
+                            Forms\Components\Select::make('status')
+                                ->label("Estado")
                                 ->live()
                                 ->disabledOn('edit')
                                 ->preload()
-                                ->enum(Certification::class)
-                                ->options(Certification::class),
+                                ->enum(Status::class)
+                                ->options(Status::class),
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
@@ -347,11 +347,11 @@ class TransactionResource extends Resource
                             ->label('Habilitado')
                             ->icon(fn ($state) => Enabled::from($state)->getIcon())
                             ->color(fn ($state) => Enabled::from($state)->getColor()),
-                        TextEntry::make('certification')
-                            ->label('Certificación')
+                        TextEntry::make('status')
+                            ->label('Estado')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => Certification::from($state)->getLabel())
-                            ->color(fn ($state) => Certification::from($state)->getColor()),
+                            ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
+                            ->color(fn ($state) => Status::from($state)->getColor()),
                     ])->columns(2),
                 ])->columnSpan(1),
         ])->columns(3);

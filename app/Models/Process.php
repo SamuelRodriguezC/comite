@@ -57,25 +57,40 @@ class Process extends Model
 
     protected static function booted(): void
     {
-        // Marcar como completado si la solicitud fue aprobada
         static::updating(function (Process $process) {
-        if (
-            $process->isDirty('state') &&
-            $process->state == 1 &&
-            $process->stage_id == 1
-        ) {
-            $process->completed = 1;
-        }
+            if (
+                $process->isDirty('state') &&
+                $process->state == 1 &&
+                $process->stage_id == 1
+            ) {
+                $process->completed = 1;
+            }
 
-        // Cambiar el estado a 6 si se sube un archivo en 'requirement'
-        if (
-            $process->isDirty('requirement') &&
-            !empty($process->requirement)
-        ) {
-            $process->state = 6;
-        }
-    });
+            if (
+                $process->isDirty('requirement') &&
+                !empty($process->requirement)
+            ) {
+                $process->state = 6;
+            }
+        });
+
+        // Al actualizar el proceso (después de guardar), validar si actualizar la transacción
+        static::updated(function (Process $process) {
+            $transaction = $process->transaction;
+
+            // Solo si la transacción está en progreso
+            if ($transaction && $transaction->status == \App\Enums\Status::ENPROGRESO->value) {
+                // Verificar si todos los procesos están completados
+                $allCompleted = $transaction->processes()->where('completed', 0)->count() === 0;
+
+                if ($allCompleted) {
+                    $transaction->status = \App\Enums\Status::COMPLETADO->value;
+                    $transaction->save();
+                }
+            }
+        });
     }
+
 
 
 }

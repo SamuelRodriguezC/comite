@@ -38,7 +38,7 @@ class PdfActaController extends Controller
             ['acta' => $filePath]
         );
         // Actualizar campo certification a 3
-        $transaction->certification = 3;
+        $transaction->status = 4;
         $transaction->save();
 
         // Redirige a una vista del documento
