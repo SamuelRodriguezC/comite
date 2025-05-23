@@ -31,7 +31,7 @@ enum Status: int implements HasLabel, HasColor
         return match ($this) {
             // self::PENDIENTE => 'warning',
             self::ENPROGRESO => 'info',
-            self::COMPLETADO => 'success',
+            self::COMPLETADO => 'teal',
             self::PORCERTIFICAR => 'warning',
             self::CERTIFICADO => 'success',
             self::CANCELADO => 'danger',

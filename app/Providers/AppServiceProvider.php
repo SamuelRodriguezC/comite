@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
-use Filament\View\PanelsRenderHook;
+use Filament\Support\Facades\FilamentColor;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -17,6 +18,17 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        FilamentColor::register([
+                'danger' => Color::Red,
+                'gray' => Color::Zinc,
+                'info' => Color::Blue,
+                'primary' => Color::Indigo,
+                'teal' => Color::Teal,
+                'success' => Color::Green,
+                'warning' => Color::Amber,
+        ]);
+
+
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
 
             $user = Auth::user();
@@ -81,6 +93,7 @@ class AppServiceProvider extends ServiceProvider
                 ->visible(true);
 
             $panelSwitch->renderHook('panels::topbar.start');
+
         });
     }
 }
