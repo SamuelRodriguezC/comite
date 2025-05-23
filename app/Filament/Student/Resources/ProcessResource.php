@@ -140,11 +140,7 @@ class ProcessResource extends Resource
             ->filters([
                 SelectFilter::make('state')
                     ->label('Estado')
-                    ->options([
-                        1 => 'Aprobado',
-                        2=> 'Improbado',
-                        3 => 'Pendiente',
-                    ])
+                    ->options(State::class),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
