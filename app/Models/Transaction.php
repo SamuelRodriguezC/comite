@@ -86,4 +86,17 @@ class Transaction extends Model
     {
         return $this->created_at->diffInHours(now()) < 12;
     }
+
+     // ---------- OBTENER EL PROGRESO DE LOS PROCEOS DE LA TRANSACCIÓN  ----------
+    public function getProgressAttribute(): float
+    {
+        $total = $this->processes()->count();
+        $completed = $this->processes()->where('completed', 1)->count();
+
+        if ($total === 0) {
+            return 0; // o podrías retornar null si no hay procesos definidos aún
+        }
+
+        return round(($completed / $total) * 100, 2); // Porcentaje con dos decimales
+    }
 }
