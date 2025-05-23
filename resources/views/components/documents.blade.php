@@ -3,14 +3,14 @@
         [
             'title' => 'Reglamento',
             'subtitle' => 'v4.0 Anterior',
-            'icon' => 'graduation-cap',
+            'icon' => 'academic-cap',
             'type' => 'fas',
             'link' => '#',
         ],
         [
             'title' => 'MANUAL DE OPCIONES DE GRADO FACULTAD DE INGENIERÍA',
             'subtitle' => '2022',
-            'icon' => 'graduation-cap',
+            'icon' => 'academic-cap',
             'type' => 'fas',
             'link' => '#',
         ],

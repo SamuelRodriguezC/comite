@@ -63,7 +63,7 @@ class ProcessAplicationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Ticket")
+                    ->label("Opciones")
                     ->numeric()
                     ->searchable()
                     ->sortable(),
@@ -212,10 +212,10 @@ class ProcessAplicationResource extends Resource
                     ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
-            InfoSection::make('Detalles del Ticket')
+            InfoSection::make('Detalles del Opción')
             ->schema([
                 TextEntry::make('transaction.id')
-                    ->label("Ticket"),
+                    ->label("Opción"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
                         ->icon(

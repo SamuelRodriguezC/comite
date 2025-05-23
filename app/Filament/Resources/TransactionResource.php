@@ -35,10 +35,10 @@ use App\Filament\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $modelLabel = "Ticket";
-    protected static ?string $pluralModelLabel = "Tickets";
+    protected static ?string $modelLabel = "Opción de Grado";
+    protected static ?string $pluralModelLabel = "Opciones de Grado";
     //protected static ?string $navigationGroup = "Etapas";
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -124,7 +124,7 @@ class TransactionResource extends Resource
                 FormSection::make('Opción de grado')
                     ->schema([
                         Forms\Components\TextInput::make('id')
-                            ->label('Número de Ticket')
+                            ->label('Número de Opción')
                             ->disabled()
                             ->numeric()
                             ->visibleOn('edit'),
@@ -204,7 +204,7 @@ class TransactionResource extends Resource
                     ])
                     ->columnSpan(1)
                     ->description('Debes ingresar el componente y la opción de grado del integrante vinculado.')
-                    ->icon('heroicon-m-ticket'),
+                    ->icon('heroicon-m-academic-cap'),
                     // ---------------- solamente es visible en edición --------------------
                     FormSection::make('Detalles')
                     ->schema([
@@ -246,7 +246,7 @@ class TransactionResource extends Resource
             ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('Ticket')
+                    ->label('Opción')
                     ->searchable()
                     ->numeric()
                     ->sortable(),
@@ -320,8 +320,8 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make(fn ($record) => 'Número de Ticket: ' . $record->id)
-                ->icon('heroicon-m-ticket')
+            InfoSection::make(fn ($record) => 'Número de Opción: ' . $record->id)
+                ->icon('heroicon-m-academic-cap')
                 ->schema([
                     TextEntry::make('component')
                         ->label('Componente')
@@ -374,7 +374,7 @@ class TransactionResource extends Resource
     // Describe el getNavigationBadge
     public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'Tickets pendientes por generar actas';
+        return 'Opciones pendientes por generar actas';
     }
 
     // carga la relación con certificados

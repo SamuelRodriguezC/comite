@@ -20,7 +20,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ProcessesRelationManager extends RelationManager
 {
     protected static string $relationship = 'processes';
-    protected static ?string $title = 'Procesos vinculados al Ticket';
+    protected static ?string $title = 'Procesos vinculados a la Opción';
 
     public function form(Form $form): Form
     {
@@ -126,7 +126,7 @@ class ProcessesRelationManager extends RelationManager
                             Section::make('Información del Proceso')
                                 ->schema([
                                     TextEntry::make('transaction.id')
-                                        ->label('# Ticket'),
+                                        ->label('# Opción'),
                                     TextEntry::make('id')
                                         ->label('# Proceso'),
                                     TextEntry::make('state')
@@ -226,7 +226,7 @@ class ProcessesRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }

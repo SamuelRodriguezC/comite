@@ -37,19 +37,19 @@ use App\Filament\Student\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $modelLabel = "Ticket";
-    protected static ?string $pluralModelLabel = "Tickets";
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static ?string $modelLabel = "Opción de Grado";
+    protected static ?string $pluralModelLabel = "Opciones de Grado";
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                FormSection::make('Ticket')
+                FormSection::make('Opción')
                     ->schema([
                         Forms\Components\TextInput::make('id')
-                            ->label('Número de Ticket')
+                            ->label('Número de Opción')
                             ->disabled()
                             ->numeric()
                             ->visibleOn('edit'),
@@ -102,7 +102,7 @@ class TransactionResource extends Resource
                             }),
                     ])
                     ->columnSpan(1)
-                    ->icon('heroicon-m-ticket'),
+                    ->icon('heroicon-m-academic-cap'),
 
                     FormSection::make('Detalles')
                     ->schema([
@@ -156,7 +156,7 @@ class TransactionResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label("Ticket")
+                    ->label("Opción")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('component')
@@ -219,8 +219,8 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make(fn ($record) => 'Ticket #' . $record->id)
-                ->icon('heroicon-m-ticket')
+            InfoSection::make(fn ($record) => 'Opción #' . $record->id)
+                ->icon('heroicon-m-academic-cap')
                 ->schema([
                     TextEntry::make('component')
                         ->label('Componente')

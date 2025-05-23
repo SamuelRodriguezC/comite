@@ -58,7 +58,7 @@ class CreateTransaction extends CreateRecord
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
             ->body('Se han Creado los Procesos Correspondientes a la Transacción por Favor Completa el Fomulario de Solicitud')
-            ->icon('heroicon-o-ticket')
+            ->icon('heroicon-o-academic-cap')
             ->success()
             ->send();
     }
@@ -73,7 +73,7 @@ class CreateTransaction extends CreateRecord
     protected function authorizeAccess(): void
     {
         if (!Transaction::canCreate()) {
-            abort(403, 'Acceso denegado, usted tiene tickets activos no puede crear más.');
+            abort(403, 'Acceso denegado, usted tiene Opciones activas no puede crear más.');
         }
     }
 

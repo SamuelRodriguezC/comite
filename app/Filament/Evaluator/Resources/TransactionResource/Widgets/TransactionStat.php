@@ -21,15 +21,15 @@ class TransactionStat extends BaseWidget
     $baseQuery = $this->evaluadorTransactions($profile->id);
 
     return [
-        Stat::make('Total Tickets Asignados', (clone $baseQuery)->count())
+        Stat::make('Total Opciónes Asignados', (clone $baseQuery)->count())
             ->color('info')
-            ->icon('heroicon-o-ticket')
+            ->icon('heroicon-o-academic-cap')
             ->url(route('filament.evaluator.resources.transactions.index', [
 
             ]))
             ->chart($this->getChartData('total')),
 
-        Stat::make('Tickets', (clone $baseQuery)
+        Stat::make('Opciones', (clone $baseQuery)
                 ->whereHas('transaction', fn($q) => $q->where('enabled', 1))
                 ->count())
             ->color('info')
@@ -39,7 +39,7 @@ class TransactionStat extends BaseWidget
             ]))
             ->icon('heroicon-o-check-circle'),
 
-        Stat::make('Tickets', (clone $baseQuery)
+        Stat::make('Opciones', (clone $baseQuery)
                 ->whereHas('transaction', fn($q) => $q->where('status', 3))
                 ->count())
             ->color('success')
@@ -49,7 +49,7 @@ class TransactionStat extends BaseWidget
             ]))
             ->icon('heroicon-o-academic-cap'),
 
-        Stat::make('Tickets', (clone $baseQuery)
+        Stat::make('Opciones', (clone $baseQuery)
                 ->whereHas('transaction', fn($q) => $q->where('status', 2))
                 ->count())
             ->color('warning')

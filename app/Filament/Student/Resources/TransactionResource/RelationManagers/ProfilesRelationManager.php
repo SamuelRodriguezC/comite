@@ -29,7 +29,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ProfilesRelationManager extends RelationManager
 {
     protected static string $relationship = 'profiles';
-    protected static ?string $title = 'Integrante(s) vinculados al Ticket';
+    protected static ?string $title = 'Integrante(s) vinculados a la Opción';
 
     // ---------- OPTENER LA TRANSACCIÓN A LA QUE PERTENECEN LOS PERFILES ----------
     protected function getTransaction(): \App\Models\Transaction
@@ -221,7 +221,7 @@ class ProfilesRelationManager extends RelationManager
             ])
             ->bulkActions([
                     Tables\Actions\BulkActionGroup::make([
-                       
+
                     ]),
                 ]);
     }

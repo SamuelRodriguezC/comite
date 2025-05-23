@@ -40,9 +40,9 @@ use App\Filament\Advisor\Resources\TransactionResource\RelationManagers;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
-    protected static ?string $modelLabel = "Ticket";
-    protected static ?string $pluralModelLabel = "Tickets";
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static ?string $modelLabel = "Opción de Grado";
+    protected static ?string $pluralModelLabel = "Opciones de Grado";
 
     public static function form(Form $form): Form
     {
@@ -140,7 +140,7 @@ class TransactionResource extends Resource
                         //    ->default(fn (?Profile $record) => $record?->profile?->level)
                         //    ->visibleOn('edit'),
                         Forms\Components\TextInput::make('id')
-                            ->label('Número de Ticket')
+                            ->label('Número de Opción')
                             ->disabled()
                             ->numeric()
                             ->visibleOn('edit'),
@@ -207,7 +207,7 @@ class TransactionResource extends Resource
                     ])
                     ->columnSpan(1)
                     ->description('Debes ingresar el componente y la opción de grado del integrante vinculado.')
-                    ->icon('heroicon-m-ticket'),
+                    ->icon('heroicon-m-academic-cap'),
                     // ---------------- solamente es visible en edición --------------------
                     FormSection::make('Detalles')
                     ->schema([
@@ -251,7 +251,7 @@ class TransactionResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label("Ticket")
+                    ->label("Opción")
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('component')
@@ -312,8 +312,8 @@ class TransactionResource extends Resource
     {
         return $infolist
         ->schema([
-            InfoSection::make(fn ($record) => 'Ticket #' . $record->id)
-                ->icon('heroicon-m-ticket')
+            InfoSection::make(fn ($record) => 'Opción #' . $record->id)
+                ->icon('heroicon-m-academic-cap')
                 ->schema([
                     TextEntry::make('component')
                         ->label('Componente')

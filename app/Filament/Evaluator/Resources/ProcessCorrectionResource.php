@@ -65,7 +65,7 @@ class ProcessCorrectionResource extends Resource
             ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Ticket")
+                    ->label("Opción")
                     ->numeric()
                     ->searchable()
                     ->sortable(),
@@ -152,7 +152,7 @@ class ProcessCorrectionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }
@@ -208,10 +208,10 @@ class ProcessCorrectionResource extends Resource
                     ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
-            InfoSection::make('Detalles del Ticket')
+            InfoSection::make('Detalles de la Opción')
             ->schema([
                 TextEntry::make('transaction.id')
-                    ->label("Ticket"),
+                    ->label("Opción"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
                         ->icon(

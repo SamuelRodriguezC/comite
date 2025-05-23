@@ -59,7 +59,7 @@ class ProcessResource extends Resource
                     ->disabledOn('edit')
                     ->required(),
                 Forms\Components\Select::make('transaction_id')
-                    ->label("Ticket")
+                    ->label("Opción")
                     ->relationship('transaction', 'id')
                     ->visibleOn('create')
                     ->required(),
@@ -89,7 +89,7 @@ class ProcessResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Ticket")
+                    ->label("Opción")
                     ->numeric()
                     ->searchable()
                     ->sortable(),
@@ -149,7 +149,7 @@ class ProcessResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }
@@ -188,10 +188,10 @@ class ProcessResource extends Resource
                     ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
-            InfoSection::make('Detalles del Ticket')
+            InfoSection::make('Detalles de la Opción')
             ->schema([
                 TextEntry::make('transaction.id')
-                    ->label("Ticket"),
+                    ->label("Opción"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
                         ->icon(fn ($state) => Enabled::from($state)->getIcon())

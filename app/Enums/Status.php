@@ -42,12 +42,12 @@ enum Status: int implements HasLabel, HasColor
     public function getTooltip(): ?string
     {
         return match ($this) {
-            // self::PENDIENTE => 'El ticket ha sido creado pero no tiene procesos iniciados',
-            self::ENPROGRESO => 'El ticket tiene procesos iniciados pero no han sido finalizados',
-            self::COMPLETADO => 'Todos los procesos del ticket han sido finalizados',
+            // self::PENDIENTE => 'La Opción ha sido creado pero no tiene procesos iniciados',
+            self::ENPROGRESO => 'La Opción tiene procesos iniciados pero no han sido finalizados',
+            self::COMPLETADO => 'Todos los procesos de la Opción han sido finalizados',
             self::PORCERTIFICAR => 'Se está gestionando la certificación',
             self::CERTIFICADO => 'El estudiante ha sido certificado',
-            self::CANCELADO => 'El se ha cancelado el ticket',
+            self::CANCELADO => 'El se ha cancelado la Opción',
         };
     }
 

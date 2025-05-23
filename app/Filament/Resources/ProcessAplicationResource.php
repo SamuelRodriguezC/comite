@@ -62,7 +62,7 @@ class ProcessAplicationResource extends Resource
                     $component->state($state === 1); // Al cargar: 1 => true, 2 => false
                 }),
             Forms\Components\Select::make('transaction_id')
-                ->label("Ticket")
+                ->label("Opción")
                 ->relationship('transaction', 'id')
                 ->visibleOn('create')
                 ->required(),
@@ -94,7 +94,7 @@ class ProcessAplicationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
-                    ->label("Ticket")
+                    ->label("Opción")
                     ->numeric()
                     ->searchable()
                     ->sortable(),
@@ -205,10 +205,10 @@ class ProcessAplicationResource extends Resource
                     ->label("Comentario de Entrega"),
             ])->columns(2)->columnSpan(1),
 
-            InfoSection::make('Detalles del Ticket')
+            InfoSection::make('Detalles de la Opción')
             ->schema([
                 TextEntry::make('transaction.id')
-                    ->label("Ticket"),
+                    ->label("Opción"),
                 IconEntry::make('transaction.enabled')
                         ->label('Habilitado')
                         ->icon(fn ($state) => Enabled::from($state)->getIcon())

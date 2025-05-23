@@ -15,14 +15,14 @@ class TransactionsWidgetEvaluator extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Tickets',
+            Stat::make('Opciones',
                 //----------------------- TRANSACCIONES HABILITADAS DEL EVALUADOR -----------------------
                 Transaction::whereHas('profileTransactions', function ($query) {
                         $query->where('profile_id', Auth::user()->profiles->id)->where('role_id', 3);
                     })->where('enabled', 1)->count()
                 )
-                ->description('Tickets asignados y habilitados')
-                ->icon('heroicon-o-ticket')
+                ->description('Opciones asignados y habilitados')
+                ->icon('heroicon-o-academic-cap')
                 ->color('info')
                  ->url(route('filament.evaluator.resources.transactions.index', [
                     'activeTab' => 'habilitado',

@@ -39,7 +39,7 @@ protected function getTableColumns(): array
 {
     return [
          TextColumn::make('id')
-                    ->label('Ticket')
+                    ->label('Opciones')
                     ->numeric(),
                 TextColumn::make('component')
                     ->label("Componente")

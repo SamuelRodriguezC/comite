@@ -13,13 +13,13 @@ class TransactionWidget extends BaseWidget
     protected function getStats(): array
     {
         return [
-                Stat::make('Tickets',
+                Stat::make('Opción',
                 Transaction::whereHas('profileTransactions', function ($query) {
                         $query->where('profile_id', Auth::user()->profiles->id)->where('role_id', 1);
                     })->count()
                 )
-                ->description('Tus Tickets')
-                ->icon('heroicon-o-ticket')
+                ->description('Tus Opciones')
+                ->icon('heroicon-o-academic-cap')
                 ->color('info')
                  ->url(route('filament.student.resources.transactions.index', [])),
 

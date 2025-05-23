@@ -9,7 +9,7 @@ use Filament\Widgets\TableWidget;
 class TransactionsExpiringWidget extends TableWidget
 {
     protected static ?int $sort = 4;
-    protected static null|string $heading = 'Tickets Próximos a No Ser Editables (No podrá vincular más personas ni cambiar el componente o la opción)';
+    protected static null|string $heading = 'Opción Próximas a No Ser Editables (No podrá vincular más personas ni cambiar el componente o la opción)';
 
     protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder
     {

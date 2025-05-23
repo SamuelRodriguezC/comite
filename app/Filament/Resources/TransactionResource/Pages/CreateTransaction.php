@@ -52,7 +52,7 @@ class CreateTransaction extends CreateRecord
         Notification::make()
             ->title("¡La Transacción ha sido creada exitosamente!")
             ->body('Se han vinculado los perfiles y cursos correctamente.')
-            ->icon('heroicon-o-ticket')
+            ->icon('heroicon-o-academic-cap')
             ->success()
             ->send();
     }

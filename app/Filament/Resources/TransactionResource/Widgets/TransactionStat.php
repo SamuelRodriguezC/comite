@@ -12,9 +12,9 @@ class TransactionStat extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Tickets', Transaction::count())
+            Stat::make('Total Opciones', Transaction::count())
                 ->color('success')
-                ->icon('heroicon-o-ticket')
+                ->icon('heroicon-o-academic-cap')
                 ->chart($this->getChartData('total')),
 
             Stat::make('Pendientes por Certificar', Transaction::where('status', 2)->count())
@@ -27,7 +27,7 @@ class TransactionStat extends BaseWidget
                 ->icon('heroicon-o-document-check')
                 ->chart($this->getChartData('certified')),
 
-            Stat::make('Tickets Habilitados', Transaction::where('status', 1)->count())
+            Stat::make('Opciones Habilitados', Transaction::where('status', 1)->count())
                 ->color('primary')
                 ->icon('heroicon-o-check-circle')
                 ->chart($this->getChartData('enabled')),
