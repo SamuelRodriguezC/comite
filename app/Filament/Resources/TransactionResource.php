@@ -286,25 +286,40 @@ class TransactionResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                 ])
                 ->filters([
                     SelectFilter::make('component')
-                        ->label('Componente')
-                        ->options([
+                    ->label('Componente')
+                    ->options([
                         '1' => 'Investigativo',
                         '2' => 'No Investigativo',
                     ])->attribute('component'),
 
-                    SelectFilter::make('status')
-                        ->label('Estado')
-                        ->options(Status::class)
-                        ->attribute('status'),
-
                     SelectFilter::make('enabled')
-                        ->label('Habilitado')
-                        ->options(Enabled::class)
-                        ->attribute('enabled'),
-                ])
+                    ->label('Habilitado')
+                    ->options([
+                        '1' => 'Habilitado',
+                        '2' => 'Deshabilitado',
+                    ])->attribute('enabled'),
+
+                    SelectFilter::make('status')
+                            ->label('Estado')
+                            ->options(Status::class)
+                            ->attribute('status'),
+
+                    SelectFilter::make('courses')
+                        ->label('Carreras')
+                        ->options(\App\Models\Course::pluck('course', 'id'))
+                        ->query(function (Builder $query, array $data): Builder {
+                            if (isset($data['value'])) {
+                                // Assuming a many-to-many relationship between transactions and courses
+                                $query->whereHas('courses', function (Builder $coursesQuery) use ($data) {
+                                    $coursesQuery->where('courses.id', $data['value']);
+                                });
+                            }
+                            return $query;
+                    }),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

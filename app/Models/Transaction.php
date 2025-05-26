@@ -44,9 +44,7 @@ class Transaction extends Model
         'option_id' => 'integer',
     ];
 
-    /**
-     * Establishes the type of relationship it has with other models
-     */
+    // ----------------------- RELACIONES -----------------------
     public function profileTransactions()
     {
         return $this->hasMany(ProfileTransaction::class);
@@ -69,6 +67,16 @@ class Transaction extends Model
     {
         return $this->hasMany(Process::class);
     }
+        public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'profile_transaction', 'transaction_id', 'courses_id')
+                    ->using(ProfileTransaction::class)
+                    ->withPivot('profile_id', 'role_id');
+    }
+
+
+
+    // ----------------------- MÉTODOS ------------------------
 
     public function getCoursesAttribute()
     {
