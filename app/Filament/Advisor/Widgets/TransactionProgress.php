@@ -32,7 +32,7 @@ class TransactionProgress extends BaseWidget
         }
 
         $transactionIds = ProfileTransaction::where('profile_id', $profileId)
-            ->where('role_id', 3) // asesor
+            ->where('role_id', 2)
             ->pluck('transaction_id');
 
         return Transaction::query()
