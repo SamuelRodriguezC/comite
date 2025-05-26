@@ -47,7 +47,13 @@ class ProcessesRelationManager extends RelationManager
                             );
                     })
                     ->columnSpanFull()
+                     ->visibleOn('create')
                     ->required(),
+
+                    Forms\Components\DateTimePicker::make('delivery_date')
+                        ->label('Fecha Límite de Entrega')
+                        ->columnSpanFull()
+                        ->required(),
             ]);
     }
 
@@ -87,10 +93,10 @@ class ProcessesRelationManager extends RelationManager
                         // Solo tomar el nombre del archivo, quitando el directorio
                         return basename($state);
                     })
-                    ->limit(20)
+                    ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Comentario Estudiante")
+                    ->label("Comentario Entrega")
                     ->markdown()
                     ->placeholder('Sin Comentario Aún')
                     ->limit(30)
@@ -99,7 +105,12 @@ class ProcessesRelationManager extends RelationManager
                     ->label('Finalizado')
                     ->icon(fn ($record) => Completed::from($record->completed)->getIcon())
                     ->color(fn ($record) => Completed::from($record->completed)->getColor()),
-
+                Tables\Columns\TextColumn::make('delivery_date')
+                    ->label("Limite de Entrega")
+                    ->placeholder('Sin fecha Establecida')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -124,13 +135,19 @@ class ProcessesRelationManager extends RelationManager
                                 'stage_id' => $data['stage_id'],
                                 'state' => 3,
                                 'completed' => false,
+                                'delivery_date' => $data['delivery_date'],
                                 'requirement' => ' ',
                                 'comment' => ' ',
                             ]);
                     }),
             ])
             ->actions([
-                // --------------------------- VER PROCESO ---------------------------
+
+                // --------------------------- GRUPO DE BOTONES ---------------------------
+                ActionGroup::make([
+
+
+                    // --------------------------- VER PROCESO ---------------------------
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->infolist(function ($record) {
@@ -167,6 +184,10 @@ class ProcessesRelationManager extends RelationManager
                                                 return basename($state);
                                             }
                                         ),
+                                    TextEntry::make('delivery_date')
+                                        ->label('Limite de Entrega')
+                                        ->placeholder('No se ha establecido fecha limite de entrega aún')
+                                        ->dateTime(),
                                 ])
                                 ->columns(2),
 
@@ -224,9 +245,6 @@ class ProcessesRelationManager extends RelationManager
                         ]);
                     }),
 
-
-                // --------------------------- GRUPO DE BOTONES ---------------------------
-                ActionGroup::make([
                     // --------------------------- COMENTAR ---------------------------
                     Tables\Actions\Action::make('comentar')
                     ->label(function ($record) {
@@ -356,7 +374,12 @@ class ProcessesRelationManager extends RelationManager
                         ->openUrlInNewTab()
                         ->visible(
                             fn ($record) => trim($record->requirement) !== ''
-                        )
+                        ),
+
+                    Tables\Actions\EditAction::make()
+                        ->label('Editar Proceso')
+                        ->requiresConfirmation() // Esto activa el modal de confirmación
+                        ->modalHeading('Editar Proceso')
                 ])
             ])
             ->bulkActions([

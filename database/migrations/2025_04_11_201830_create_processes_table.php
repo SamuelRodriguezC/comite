@@ -27,6 +27,7 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->boolean('completed');
+            $table->dateTime('delivery_date')->nullable();
             $table->timestamps();
         });
 

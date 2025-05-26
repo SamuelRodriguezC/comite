@@ -24,6 +24,7 @@ class Process extends Model
         'comment',
         'transaction_id',
         'completed',
+        'delivery_date',
         'stage_id',
     ];
 
@@ -35,6 +36,8 @@ class Process extends Model
         'id' => 'integer',
         'state' => 'integer',
         'transaction_id' => 'integer',
+        'completed' => 'boolean',
+        'delivery_date' => 'datetime',
         'stage_id' => 'integer',
     ];
 

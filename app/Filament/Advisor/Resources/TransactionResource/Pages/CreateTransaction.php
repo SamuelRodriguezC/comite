@@ -50,8 +50,7 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
-        // Crear Procesos con 3 etapas (1=solicitud 2=entrega 3=1°corrección) relacionados con la transacción
-        foreach ([1, 2, 3] as $stageId) {
+        foreach ([1, 2] as $stageId) {
             $transaction->processes()->create([
                 'state' => 3,
                 'stage_id' => $stageId,

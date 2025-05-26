@@ -2,6 +2,7 @@
 
 namespace App\Filament\Student\Resources\TransactionResource\RelationManagers;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
@@ -122,6 +123,12 @@ class ProcessesRelationManager extends RelationManager
                         fn ($state) => Completed::from($state)
                             ->getColor()
                     ),
+                Tables\Columns\TextColumn::make('delivery_date')
+                    ->label("Limite de Entrega")
+                    ->placeholder('Sin fecha Establecida')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -173,6 +180,10 @@ class ProcessesRelationManager extends RelationManager
                                                 if(!$state){return null;}
                                                 return basename($state);
                                             }),
+                                    TextEntry::make('delivery_date')
+                                        ->label('Limite de Entrega')
+                                        ->placeholder('No se ha establecido fecha limite de entrega aún')
+                                        ->dateTime(),
                                 ])
                                 ->columns(2),
 
@@ -217,10 +228,12 @@ class ProcessesRelationManager extends RelationManager
                     Tables\Actions\EditAction::make()
                         ->label('Completar')
                         ->icon('heroicon-o-document-arrow-up')
-                        ->visible(fn ($record) =>
-                            (!$record->requirement || trim($record->requirement) === '') ||
-                            (!$record->comment || trim($record->comment) === '')
-                        ),
+                        ->visible(function ($record) {
+                            $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
+                            $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
+
+                            return $hasNoRequirement && $stillInTime;
+                        }),
 
                     ActionGroup::make([
                         // --------------------------- VER REQUERIMIENTOS ---------------------------

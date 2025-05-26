@@ -18,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -61,7 +62,11 @@ class ProcessesRelationManager extends RelationManager
                         ->columnSpanFull()
                         ->visibleOn('edit')
                         ->enum(state::class)
-                        ->options(State::class)
+                        ->options(State::class),
+
+                    Forms\Components\DateTimePicker::make('delivery_date')
+                        ->label('Fecha Límite de Entrega')
+                        ->columnSpanFull()
                         ->required(),
             ]);
     }
@@ -104,10 +109,10 @@ class ProcessesRelationManager extends RelationManager
                             return basename($state);
                         }
                     )
-                    ->limit(20)
+                    ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Comentario Estudiante")
+                    ->label("Comentario Entrega")
                     ->markdown()
                     ->placeholder('Sin Comentario Aún')
                     ->limit(30)
@@ -116,6 +121,12 @@ class ProcessesRelationManager extends RelationManager
                     ->label('Finalizado')
                     ->icon(fn ($record) => Completed::from($record->completed)->getIcon())
                     ->color(fn ($record) => Completed::from($record->completed)->getColor()),
+            Tables\Columns\TextColumn::make('delivery_date')
+                    ->label("Limite de Entrega")
+                    ->placeholder('Sin fecha Establecida')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -141,12 +152,16 @@ class ProcessesRelationManager extends RelationManager
                                 'stage_id' => $data['stage_id'],
                                 'state' => 3,
                                 'completed' => false,
+                                'delivery_date' => $data['delivery_date'],
                                 'requirement' => ' ',
                                 'comment' => ' ',
                             ]);
                     }),
             ])
             ->actions([
+
+                // --------------------------- GRUPO DE BOTONES ---------------------------
+                ActionGroup::make([
                 // --------------------------- VER PROCESO ---------------------------
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
@@ -184,6 +199,10 @@ class ProcessesRelationManager extends RelationManager
                                                 return basename($state);
                                             }
                                         ),
+                                    TextEntry::make('delivery_date')
+                                        ->label('Limite de Entrega')
+                                        ->placeholder('No se ha establecido fecha limite de entrega aún')
+                                        ->dateTime(),
                                 ])
                                 ->columns(2),
 
@@ -241,9 +260,6 @@ class ProcessesRelationManager extends RelationManager
                         ]);
                     }),
 
-
-                // --------------------------- GRUPO DE BOTONES ---------------------------
-                ActionGroup::make([
                     // --------------------------- COMENTAR ---------------------------
                     Tables\Actions\Action::make('comentar')
                     ->label(function ($record) {
@@ -372,11 +388,11 @@ class ProcessesRelationManager extends RelationManager
                         ), // Solo se muestra si hay un archivo
 
                     Tables\Actions\EditAction::make()
-                    ->label('Editar Estado')
-                    ->requiresConfirmation() // Esto activa el modal de confirmación
-                    ->modalHeading('¿Estás seguro de cambiar el estado?')
-                    ->modalSubheading('Si cambias el estado a Aplazado o Cancelado tu o los evaluadores no podrán realizar comenarios en el proceso')
-                    ->modalButton('Sí, cambiar estado')
+                        ->label('Editar Proceso')
+                        ->requiresConfirmation() // Esto activa el modal de confirmación
+                        ->modalHeading('¿Estás seguro de editar este proceso?')
+                        ->modalSubheading('Si cambias el estado a Aplazado o Cancelado tu o los evaluadores no podrán realizar comenarios en el proceso')
+                        ->modalButton('si, Editar Proceso')
                 ])
             ])
             ->bulkActions([

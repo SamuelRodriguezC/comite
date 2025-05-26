@@ -9,6 +9,7 @@ use App\Models\Concept;
 use App\Enums\Completed;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
@@ -84,10 +85,10 @@ class ProcessesRelationManager extends RelationManager
                         // Solo tomar el nombre del archivo, quitando el directorio
                         return basename($state);
                     })
-                    ->limit(20)
+                    ->limit(10)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
-                    ->label("Comentario Estudiante")
+                    ->label("Comentario Entrega")
                     ->markdown()
                     ->placeholder('Sin Comentario Aún')
                     ->limit(30)
@@ -102,6 +103,12 @@ class ProcessesRelationManager extends RelationManager
                         fn ($record) => Completed::from($record->completed)
                             ->getColor()
                     ),
+                Tables\Columns\TextColumn::make('delivery_date')
+                    ->label("Limite de Entrega")
+                    ->placeholder('Sin fecha Establecida')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -155,6 +162,10 @@ class ProcessesRelationManager extends RelationManager
                                                 return basename($state);
                                             }
                                         ),
+                                    TextEntry::make('delivery_date')
+                                            ->label('Limite de Entrega')
+                                            ->placeholder('No se ha establecido fecha limite de entrega aún')
+                                            ->dateTime(),
                                 ])
                                 ->columns(2),
 
@@ -195,9 +206,13 @@ class ProcessesRelationManager extends RelationManager
                 Tables\Actions\EditAction::make()
                     ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
-                    ->visible(
-                        fn ($record) => (!$record->requirement || trim($record->requirement) === '')
-                    ),
+                    ->visible(function ($record) {
+                    $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
+                    $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
+
+                    return $hasNoRequirement && $stillInTime;
+                }),
+
 
                 // --------------------------- GRUPO DE BOTONES ---------------------------
                 ActionGroup::make([
