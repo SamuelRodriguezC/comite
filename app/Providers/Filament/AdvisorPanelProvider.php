@@ -42,8 +42,7 @@ class AdvisorPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Advisor/Widgets'), for: 'App\\Filament\\Advisor\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\TransactionProgress::class, // Removed because the class does not exist
             ])
             ->middleware([
                 EncryptCookies::class,

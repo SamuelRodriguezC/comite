@@ -32,7 +32,7 @@ class TransacionStatus extends BaseWidget
                 ->url(route('filament.coordinator.resources.transactions.index', [
                     'activeTab' => 'En+Progreso',
             ])),
-         Stat::make('Opciones de Grado', Transaction::where('status', 2)->count())
+             Stat::make('Opciones de Grado', Transaction::where('status', 2)->count())
                 ->description('Completadas')
                 ->descriptionIcon('heroicon-o-clipboard-document-check', IconPosition::Before)
                 ->color('info')
