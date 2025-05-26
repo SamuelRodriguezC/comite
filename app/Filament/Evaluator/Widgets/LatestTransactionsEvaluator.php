@@ -21,45 +21,53 @@ class LatestTransactionsEvaluator extends TableWidget
     protected int|string|array $columnSpan = 'full';
 
 
-protected function getTableQuery(): Builder
-{
-    $user = Auth::user();
+    protected function getTableQuery(): Builder
+    {
+        $user = Auth::user();
 
-    return Transaction::query()
-        ->whereHas('profileTransactions', function ($query) use ($user) {
-            $query->where('profile_id', $user->profiles->id ?? null)
-                  ->where('role_id', 3); // Evaluador
-        })
-        ->orderByDesc('created_at')
-        ->orderByDesc('id')
-        ->take(10);
-}
+        return Transaction::query()
+            ->whereHas('profileTransactions', function ($query) use ($user) {
+                $query->where('profile_id', $user->profiles->id ?? null)
+                    ->where('role_id', 3); // Evaluador
+            })
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->limit(5);
+    }
 
-protected function getTableColumns(): array
-{
-    return [
-         TextColumn::make('id')
-                    ->label('Opciones')
-                    ->numeric(),
-                TextColumn::make('component')
-                    ->label("Componente")
-                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                TextColumn::make('option.option')
-                    ->label("Opción de grado")
-                    ->words(3),
-                TextColumn::make('courses')
-                    ->label('Carreras')
-                    ->words(4),
-                    // ->searchable(),
-                IconColumn::make('enabled')
-                    ->label('Habilitado')
-                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                    ->color(fn ($state) => Enabled::from($state)->getColor()),
-                TextColumn::make('created_at')
-                    ->label("Creado en")
-                    ->dateTime(),
-    ];
-}
+    protected function getTableColumns(): array
+    {
+        return [
+            TextColumn::make('id')
+                        ->label('Opciones')
+                        ->numeric(),
+                    TextColumn::make('component')
+                        ->label("Componente")
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
+                    TextColumn::make('option.option')
+                        ->label("Opción de grado")
+                        ->words(3),
+                    TextColumn::make('courses')
+                        ->label('Carreras')
+                        ->words(4),
+                        // ->searchable(),
+                    IconColumn::make('enabled')
+                        ->label('Habilitado')
+                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                        ->color(fn ($state) => Enabled::from($state)->getColor()),
+                    TextColumn::make('created_at')
+                        ->label("Creado en")
+                        ->dateTime(),
+        ];
+    }
+
+
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
+
+
 }
 
 

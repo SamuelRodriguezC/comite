@@ -21,7 +21,7 @@ class TransactionsWidgetEvaluator extends BaseWidget
                         $query->where('profile_id', Auth::user()->profiles->id)->where('role_id', 3);
                     })->where('enabled', 1)->count()
                 )
-                ->description('Opciones asignados y habilitados')
+                ->description('Opciones asignadas y habilitadas')
                 ->icon('heroicon-o-academic-cap')
                 ->color('info')
                  ->url(route('filament.evaluator.resources.transactions.index', [

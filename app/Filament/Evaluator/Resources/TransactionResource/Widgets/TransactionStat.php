@@ -21,7 +21,7 @@ class TransactionStat extends BaseWidget
     $baseQuery = $this->evaluadorTransactions($profile->id);
 
     return [
-        Stat::make('Total Opciones Asignados', (clone $baseQuery)->count())
+        Stat::make('Total Opciones Asignadas', (clone $baseQuery)->count())
             ->color('info')
             ->icon('heroicon-o-academic-cap')
             ->url(route('filament.evaluator.resources.transactions.index', [
@@ -33,31 +33,31 @@ class TransactionStat extends BaseWidget
                 ->whereHas('transaction', fn($q) => $q->where('enabled', 1))
                 ->count())
             ->color('info')
-            ->description('Habilitados')
+            ->description('Habilitadas')
             ->url(route('filament.evaluator.resources.transactions.index', [
                     'tableFilters[enabled][value]' => 1,
             ]))
             ->icon('heroicon-o-check-circle'),
 
         Stat::make('Opciones', (clone $baseQuery)
-                ->whereHas('transaction', fn($q) => $q->where('status', 4))
+                ->whereHas('transaction', fn($q) => $q->where('component', 1))
                 ->count())
             ->color('success')
-            ->description('Certificados')
+            ->description('Investigativas')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    'tableFilters[status][value]' => 4,
+                    'tableFilters[component][value]' => 1,
             ]))
-            ->icon('heroicon-o-academic-cap'),
+            ->icon('heroicon-o-document-magnifying-glass'),
 
         Stat::make('Opciones', (clone $baseQuery)
-                ->whereHas('transaction', fn($q) => $q->where('status', 3))
+                ->whereHas('transaction', fn($q) => $q->where('component', 2))
                 ->count())
             ->color('warning')
-            ->description('Pendientes por Certificar')
+            ->description('No Investigativas')
             ->url(route('filament.evaluator.resources.transactions.index', [
-                    'tableFilters[status][value]' => 3,
+                    'tableFilters[component][value]' => 2,
             ]))
-            ->icon('heroicon-o-clock'),
+            ->icon('heroicon-o-document-text'),
     ];
 }
 
