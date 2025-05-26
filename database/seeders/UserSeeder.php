@@ -17,6 +17,24 @@ class UserSeeder extends Seeder
             Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
         }
 
+        // --------------------- SUPER ADMINISTRADOR ----------------------
+        $coordinator = User::create([
+            'name' => 'superadmin',
+            'email' => 'superadmin@gmail.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('superadmin'),
+        ]);
+
+        $coordinator->profiles()->create([
+            'name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'document_number' => fake()->numberBetween(10000000, 99999999),
+            'phone_number' => fake()->numerify('3#########'),
+            'level' => 2,
+            'document_id' => fake()->numberBetween(1, 3),
+        ]);
+        $coordinator->assignRole(['coordinador', 'Super administrador']);
+
         // --------------------- COORDINATOR ----------------------
         $coordinator = User::create([
             'name' => 'Coordinador',
@@ -33,7 +51,7 @@ class UserSeeder extends Seeder
             'level' => 2,
             'document_id' => fake()->numberBetween(1, 3),
         ]);
-        $coordinator->assignRole(['Coordinador', 'Estudiante', 'Asesor', 'Evaluador', 'Super administrador']);
+        $coordinator->assignRole(['Coordinador', 'Estudiante', 'Asesor', 'Evaluador']);
 
         //--------------------- ADVISOR ----------------------
         $advisor = User::create([
