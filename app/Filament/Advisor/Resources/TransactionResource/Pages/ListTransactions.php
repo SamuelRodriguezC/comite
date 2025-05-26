@@ -4,6 +4,7 @@ namespace App\Filament\Advisor\Resources\TransactionResource\Pages;
 
 use App\Enums\Status;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
 use App\Filament\Advisor\Resources\TransactionResource;
@@ -12,37 +13,39 @@ class ListTransactions extends ListRecords
 {
     protected static string $resource = TransactionResource::class;
 
-    public function getTabs(): array
+  public function getTabs(): array
     {
-       return [
-            'all' => Tab::make('All Options')
-                ->label('Todos los Estados'),
-            'En Progreso' => Tab::make('En Progreso')
-                ->label('En Progreso')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('status', Status::ENPROGRESO);
-            })->badge(\App\Models\Transaction::where('status', Status::ENPROGRESO)->count()),
-            'Completado' => Tab::make('Completado')
-                ->label('Completado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('status', Status::COMPLETADO);
-            })->badge(\App\Models\Transaction::where('status', Status::COMPLETADO)->count()),
-            'Por Certificar' => Tab::make('Por Certificar')
-                ->label('Por Certificar')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('status', Status::PORCERTIFICAR);
-            })->badge(\App\Models\Transaction::where('status', Status::PORCERTIFICAR)->count()),
-            'Certificado' => Tab::make('Certificado')
-                ->label('Certificado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('status', Status::CERTIFICADO);
-            })->badge(\App\Models\Transaction::where('status', Status::CERTIFICADO)->count()),
-            'Cancelado' => Tab::make('Cancelado')
-                ->label('Cancelado')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('status', Status::CANCELADO);
-            })->badge(\App\Models\Transaction::where('status', Status::CANCELADO)->count()),
+        $profileId = Auth::user()->profiles->id;
+
+        // Define estados con su etiqueta
+        $states = [
+            'En Progreso' => \App\Enums\Status::ENPROGRESO,
+            'Completado' => \App\Enums\Status::COMPLETADO,
+            'Por Certificar' => \App\Enums\Status::PORCERTIFICAR,
+            'Certificado' => \App\Enums\Status::CERTIFICADO,
+            'Cancelado' => \App\Enums\Status::CANCELADO,
         ];
+
+        $tabs = [];
+
+        // Tab general para todos los estados
+        $tabs['all'] = Tab::make('All Options')
+            ->label('Todos los Estados');
+
+        // Generar tabs dinámicamente para cada estado
+        foreach ($states as $label => $status) {
+            $tabs[$label] = Tab::make($label)
+                ->label($label)
+                ->modifyQueryUsing(fn($query) => $query->where('status', $status))
+                ->badge(function () use ($profileId, $status) {
+                    return \App\Models\ProfileTransaction::where('profile_id', $profileId)
+                        ->whereHas('role', fn($q) => $q->where('id', 2)) 
+                        ->whereHas('transaction', fn($q) => $q->where('status', $status))
+                        ->count();
+                });
+        }
+
+        return $tabs;
     }
 
 
