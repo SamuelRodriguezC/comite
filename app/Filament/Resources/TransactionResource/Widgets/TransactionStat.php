@@ -17,17 +17,17 @@ class TransactionStat extends BaseWidget
                 ->icon('heroicon-o-academic-cap')
                 ->chart($this->getChartData('total')),
 
-            Stat::make('Pendientes por Certificar', Transaction::where('status', 2)->count())
+            Stat::make('Componente Investigativo', Transaction::where('component', 1)->count())
                 ->color('warning')
-                ->icon('heroicon-o-clock')
-                ->chart($this->getChartData('pending')),
+                ->icon('heroicon-o-document-magnifying-glass')
+                ->chart([50, 50 , 30, 20, 80, 5, 20]),
 
-            Stat::make('Certificados', Transaction::where('status', 3)->count())
+            Stat::make('Componente No Investigativo', Transaction::where('component', 2)->count())
                 ->color('info')
-                ->icon('heroicon-o-document-check')
-                ->chart($this->getChartData('certified')),
+                ->icon('heroicon-o-document-text')
+                ->chart([80, 60 , 5, 90, 40, 10, 90]),
 
-            Stat::make('Opciones Habilitados', Transaction::where('status', 1)->count())
+            Stat::make('Opciones Habilitadas', Transaction::where('status', 1)->count())
                 ->color('primary')
                 ->icon('heroicon-o-check-circle')
                 ->chart($this->getChartData('enabled')),
