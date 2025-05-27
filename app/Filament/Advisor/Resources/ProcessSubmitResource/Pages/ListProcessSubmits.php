@@ -14,8 +14,7 @@ class ListProcessSubmits extends ListRecords
 
     // Función para filtrar las opciones de grado por nivel universitario
     public function getTabs(): array
-    {
-         return [
+    { return [
                 'all' => Tab::make('All Options')
                     ->label('Todos los estados'),
                 'Pendiente' => Tab::make('Pendiente')
@@ -47,6 +46,11 @@ class ListProcessSubmits extends ListRecords
                     ->label('Cancelado')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::CANCELADO);
+                    }),
+                'Vencido' => Tab::make('Vencido')
+                    ->label('Vencido')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::VENCIDO);
                     }),
             ];
     }
