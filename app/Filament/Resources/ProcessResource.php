@@ -40,19 +40,20 @@ class ProcessResource extends Resource
                 Forms\Components\Select::make('state')
                     ->label('Estado')
                     ->live()
-                    ->disabled()
                     ->enum(state::class)
                     ->options(State::class)
-                    ->disabledOn('edit')
                     ->required(),
-                Forms\Components\Select::make('completed')
+                Forms\Components\Toggle::make('completed')
                     ->label('Finalizado')
-                    ->live()
-                    ->disabled()
-                    ->enum(Completed::class)
-                    ->options(Completed::class)
-                    ->disabledOn('edit')
-                    ->required(),
+                    ->inline(false)
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon(Completed::SI->getIcon())
+                    ->offIcon(Completed::NO->getIcon())
+                    ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 0)
+                    ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
+                        $component->state($state === 1); // Al cargar: 1 => true, 2 => false
+                    }),
                 Forms\Components\Select::make('stage_id')
                     ->label("Etapa")
                     ->relationship('stage', 'stage')
@@ -63,9 +64,12 @@ class ProcessResource extends Resource
                     ->relationship('transaction', 'id')
                     ->visibleOn('create')
                     ->required(),
+                Forms\Components\DateTimePicker::make('delivery_date')
+                    ->label('Fecha Límite de Entrega')
+                    ->columnSpanFull()
+                    ->required(),
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
-                    ->disabledOn('edit')
                     ->required()
                     ->disk('local') // Indica que se usará el disco 'public'
                     ->directory('secure/requirements') // Define la ruta donde se almacenará el archivo
@@ -77,10 +81,12 @@ class ProcessResource extends Resource
                     ]) // Agrega validación: campo requerido y solo PDF
                     ->maxSize(10240) // 10MB
                     ->maxFiles(1) ,
-                Forms\Components\Textarea::make('comment')
-                    ->label("Comentario de Entrega")
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Comentario de Entrega')
                     ->required()
-                    // ->columnSpanFull(),
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
+                    ->columnSpanFull(),
             ])->columns(2);
     }
 
@@ -179,13 +185,18 @@ class ProcessResource extends Resource
                     ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
                     ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
-                    ->limit(20)
-                    ->default('Sin requisitos aún')
+                    ->limit(15)
+                    ->placeholder('Sin requisitos aún')
                     ->label("Requisitos"),
                 TextEntry::make('comment')
                     ->markdown()
-                    ->default('Sin comentario aún')
+                    ->columnSpanFull()
+                    ->placeholder('Sin comentario aún')
                     ->label("Comentario de Entrega"),
+                TextEntry::make('delivery_date')
+                    ->label('Limite de Entrega')
+                    ->placeholder('No se ha establecido fecha limite de entrega aún')
+                    ->dateTime(),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles de la Opción')

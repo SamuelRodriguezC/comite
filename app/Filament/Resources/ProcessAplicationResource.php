@@ -216,11 +216,12 @@ class ProcessAplicationResource extends Resource
                     ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
                     ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
-                    ->limit(18)
+                    ->limit(10)
                     ->placeholder('Sin requisitos aún')
                     ->label("Requisitos"),
                 TextEntry::make('comment')
                     ->markdown()
+                    ->columnSpanFull()
                     ->placeholder('Sin comentario aún')
                     ->label("Comentario de Entrega"),
                 TextEntry::make('delivery_date')
