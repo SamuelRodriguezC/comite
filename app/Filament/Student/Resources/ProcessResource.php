@@ -2,11 +2,13 @@
 
 namespace App\Filament\Student\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Enums\State;
 use Filament\Tables;
 use App\Enums\Enabled;
 use App\Models\Process;
+use App\Enums\Completed;
 use App\Enums\Component;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -112,7 +114,7 @@ class ProcessResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction.Option.option')
                     ->label("Opción")
-                    ->limit(25)
+                    ->limit(15)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('transaction.enabled')
@@ -125,6 +127,12 @@ class ProcessResource extends Resource
                         fn ($state) => Enabled::from($state)
                             ->getColor()
                     ),
+                Tables\Columns\TextColumn::make('delivery_date')
+                    ->label("Limite de Entrega")
+                    ->placeholder('Sin fecha Establecida')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -145,7 +153,15 @@ class ProcessResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => $record->transaction?->enabled !== 2),
+                    ->label('Completar')
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->visible(function ($record) {
+                        $isEnabled = $record->transaction?->enabled === 1;
+                        $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
+                        $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
+
+                        return $isEnabled && $hasNoRequirement && $stillInTime;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -154,11 +170,12 @@ class ProcessResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+
+   public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
         ->schema([
-            InfoSection::make('Detalles del Proceso')
+            InfoSection::make('Detalles del Proceso #')
             ->schema([
                 TextEntry::make('stage.stage')
                     ->label("Etapa"),
@@ -168,31 +185,29 @@ class ProcessResource extends Resource
                 TextEntry::make('state')
                     ->label("Estado")
                     ->badge()
-                    ->formatStateUsing(
-                        fn ($state) => State::from($state)
-                            ->getLabel()
-                    )
-                    ->color(
-                        fn ($state) => State::from($state)
-                            ->getColor()
-                    ),
+                    ->formatStateUsing(fn ($state) => State::from($state)->getLabel())
+                    ->color(fn ($state) => State::from($state)->getColor()),
                 TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->label('Actualizado en'),
-                TextEntry::make('comment')
-                    ->label("Comentario de Entrega")
-                    ->default('Sin requisitos aún')
-                    ->markdown()
-                    ->limit(25),
+                        ->dateTime()
+                        ->label('Actualizado en'),
+                IconEntry::make('completed')
+                    ->label("Finalizado")
+                    ->icon(fn ($state) => Completed::from($state)->getIcon())
+                    ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
-                    ->label("Requisitos")
-                    ->default('Sin requisitos aún')
-                    ->formatStateUsing(
-                        function ($state) {
-                            if (!$state) {return null;}
-                            return basename($state);
-                        }
-                    ),
+                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->limit(10)
+                    ->placeholder('Sin requisitos aún')
+                    ->label("Requisitos"),
+                TextEntry::make('comment')
+                    ->markdown()
+                    ->columnSpanFull()
+                    ->placeholder('Sin comentario aún')
+                    ->label("Comentario de Entrega"),
+                TextEntry::make('delivery_date')
+                    ->label('Limite de Entrega')
+                    ->placeholder('No se ha establecido fecha limite de entrega aún')
+                    ->dateTime(),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles de la Opción')
@@ -200,35 +215,24 @@ class ProcessResource extends Resource
                 TextEntry::make('transaction.id')
                     ->label("Opción"),
                 IconEntry::make('transaction.enabled')
-                    ->label('Habilitado')
-                    ->icon(
-                        fn ($state) => Enabled::from($state)
-                            ->getIcon()
-                    )
-                    ->color(fn ($state) => Enabled::from($state)->getColor()),
+                        ->label('Habilitado')
+                        ->icon(fn ($state) => Enabled::from($state)->getIcon())
+                        ->color(fn ($state) => Enabled::from($state)->getColor()),
                 TextEntry::make('transaction.Option.option')
-                    ->label('Opción de grado'),
+                        ->label('Opción de grado'),
                 TextEntry::make('transaction.component')
-                    ->label('Componente')
-                    ->formatStateUsing(
-                        fn ($state) => Component::from($state)
-                            ->getLabel()
-                    ),
+                        ->label('Componente')
+                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
                 TextEntry::make('transaction.profiles.name')
-                    ->label('Integrante(s)')
-                    ->formatStateUsing(
-                        fn($state) => format_list_html($state)
-                    )
-                    ->html(),
+                        ->label('Integrante(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
                 TextEntry::make('transaction.courses')
-                    ->label('Carrera(s)')
-                    ->formatStateUsing(
-                        fn($state) => format_list_html($state)
-                    )
-                    ->html(),
+                        ->label('Carrera(s)')
+                        ->formatStateUsing(fn($state) => format_list_html($state))
+                        ->html(),
             ])
             ->columns(2)->columnSpan(1),
-
         ])->columns(2);
     }
 
