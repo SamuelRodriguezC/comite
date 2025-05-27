@@ -16,6 +16,7 @@ enum State: int implements HasLabel, HasColor
     case APLAZADO = 4;
     case CANCELADO = 5;
     case ENTREGADO = 6;
+    case VENCIDO = 7;
     /**
      * Generates function to display a label
      */
@@ -28,6 +29,7 @@ enum State: int implements HasLabel, HasColor
             self::APLAZADO => 'Aplazado',
             self::CANCELADO => 'Cancelado',
             self::ENTREGADO => 'Entregado',
+            self::VENCIDO => 'Vencido',
         };
     }
     /**
@@ -42,6 +44,7 @@ enum State: int implements HasLabel, HasColor
             self::APLAZADO => 'gray',
             self::CANCELADO => 'danger',
             self::ENTREGADO => 'info',
+            self::VENCIDO => 'danger',
         };
     }
 }

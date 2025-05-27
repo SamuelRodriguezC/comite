@@ -66,6 +66,10 @@ class ProcessAplicationResource extends Resource
                 ->relationship('transaction', 'id')
                 ->visibleOn('create')
                 ->required(),
+            Forms\Components\DateTimePicker::make('delivery_date')
+                ->label('Fecha Límite de Entrega')
+                ->columnSpanFull()
+                ->required(),
             Forms\Components\FileUpload::make('requirement')
                 ->label('Requisitos en PDF')
                 ->required()
@@ -101,8 +105,7 @@ class ProcessAplicationResource extends Resource
                 Tables\Columns\TextColumn::make('stage.stage')
                     ->label("Etapa")
                     ->sortable()
-                    ->toggleable(), //Seleccionada por defecto
-                    // ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
@@ -134,6 +137,12 @@ class ProcessAplicationResource extends Resource
                     ->label('Habilitado')
                     ->icon(fn ($state) => Enabled::from($state)->getIcon())
                     ->color(fn ($state) => Enabled::from($state)->getColor()),
+                Tables\Columns\TextColumn::make('delivery_date')
+                    ->label("Limite de Entrega")
+                    ->placeholder('Sin fecha Establecida')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -159,6 +168,17 @@ class ProcessAplicationResource extends Resource
                         'not_empty' => $query->whereNotNull('requirement')->whereNotIn('requirement', ['', ' ']),
                         default => $query,
                     }),
+                SelectFilter::make('enabled')
+                    ->label('Habilitado')
+                    ->options([
+                        '1' => 'Habilitado',
+                        '2' => 'Deshabilitado',
+                    ])
+                    ->query(fn (Builder $query, array $data) =>
+                        isset($data['value'])
+                            ? $query->whereHas('transaction', fn ($q) => $q->where('enabled', $data['value']))
+                            : $query
+                    ),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -196,13 +216,17 @@ class ProcessAplicationResource extends Resource
                     ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
                     ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
-                    ->limit(20)
-                    ->default('Sin requisitos aún')
+                    ->limit(18)
+                    ->placeholder('Sin requisitos aún')
                     ->label("Requisitos"),
                 TextEntry::make('comment')
                     ->markdown()
-                    ->default('Sin comentario aún')
+                    ->placeholder('Sin comentario aún')
                     ->label("Comentario de Entrega"),
+                TextEntry::make('delivery_date')
+                    ->label('Limite de Entrega')
+                    ->placeholder('No se ha establecido fecha limite de entrega aún')
+                    ->dateTime(),
             ])->columns(2)->columnSpan(1),
 
             InfoSection::make('Detalles de la Opción')
