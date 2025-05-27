@@ -22,32 +22,37 @@ class ListProcessAplications extends ListRecords
                     ->label('Pendiente')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::PENDIENTE);
-                    }),
+                    })->badge(\App\Models\Process::where('state', State::PENDIENTE)->where('stage_id', 1)->count()),
                 'Entregado' => Tab::make('Entregado')
                     ->label('Entregado')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::ENTREGADO);
-                    }),
+                    })->badge(\App\Models\Process::where('state', State::ENTREGADO)->where('stage_id', 1)->count()),
                 'Aprobado' => Tab::make('Aprobado')
                     ->label('Aprobado')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::APROBADO);
-                    }),
+                    })->badge(\App\Models\Process::where('state', State::APROBADO)->where('stage_id', 1)->count()),
                 'Improbado' => Tab::make('Improbado')
                     ->label('Improbado')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::IMPROBADO);
-                    }),
+                    })->badge(\App\Models\Process::where('state', State::IMPROBADO)->where('stage_id', 1)->count()),
                 'Aplazado' => Tab::make('Aplazado')
                     ->label('Aplazado')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::APLAZADO);
-                    }),
+                    })->badge(\App\Models\Process::where('state', State::APLAZADO)->where('stage_id', 1)->count()),
                 'Cancelado' => Tab::make('Cancelado')
                     ->label('Cancelado')
                     ->modifyQueryUsing(function ($query) {
                         return $query->where('state', State::CANCELADO);
-                    }),
+                    })->badge(\App\Models\Process::where('state', State::CANCELADO)->where('stage_id', 1)->count()),
+                'Vencido' => Tab::make('Vencido')
+                    ->label('Vencido')
+                    ->modifyQueryUsing(function ($query) {
+                        return $query->where('state', State::VENCIDO);
+                    })->badge(\App\Models\Process::where('state', State::VENCIDO)->where('stage_id', 1)->count()),
             ];
     }
 
