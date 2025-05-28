@@ -39,7 +39,7 @@ class ListTransactions extends ListRecords
                 ->modifyQueryUsing(fn($query) => $query->where('status', $status))
                 ->badge(function () use ($profileId, $status) {
                     return \App\Models\ProfileTransaction::where('profile_id', $profileId)
-                        ->whereHas('role', fn($q) => $q->where('id', 2)) 
+                        ->whereHas('role', fn($q) => $q->where('id', 2))
                         ->whereHas('transaction', fn($q) => $q->where('status', $status))
                         ->count();
                 });
@@ -54,5 +54,12 @@ class ListTransactions extends ListRecords
        return [
            Actions\CreateAction::make(),
        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+             \App\Filament\Advisor\Resources\TransactionResource\Widgets\TransactionStat::class,
+        ];
     }
 }

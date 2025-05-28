@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Evaluator\Resources\TransactionResource\Widgets;
+namespace App\Filament\Advisor\Resources\TransactionResource\Widgets;
 
 use App\Models\Transaction;
 use App\Models\ProfileTransaction;
@@ -18,7 +18,7 @@ class TransactionStat extends BaseWidget
         return [];
     }
 
-    $baseQuery = $this->evaluadorTransactions($profile->id);
+    $baseQuery = $this->advisorTransactions($profile->id);
 
     return [
         Stat::make('Total Opciones Asignadas', (clone $baseQuery)->count())
@@ -62,11 +62,11 @@ class TransactionStat extends BaseWidget
 }
 
 
-    private function evaluadorTransactions(int $profileId)
+    private function advisorTransactions(int $profileId)
     {
         return ProfileTransaction::query()
             ->where('profile_id', $profileId)
-            ->whereHas('role', fn($q) => $q->where('id', 3));
+            ->whereHas('role', fn($q) => $q->where('id', 2));
     }
 
     protected function getChartData(string $type): array
