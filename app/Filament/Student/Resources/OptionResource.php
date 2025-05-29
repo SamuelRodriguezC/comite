@@ -24,8 +24,8 @@ use App\Filament\Student\Resources\OptionResource\RelationManagers;
 class OptionResource extends Resource
 {
     protected static ?string $model = Option::class;
-    protected static ?string $modelLabel = "Opción de grado";
-    protected static ?string $pluralModelLabel = "Opciones de grado";
+    protected static ?string $modelLabel = "Descripción Opción de grado";
+    protected static ?string $pluralModelLabel = "Descripción Opciones de grado";
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
@@ -111,7 +111,7 @@ class OptionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }
