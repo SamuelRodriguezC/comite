@@ -10,6 +10,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class TransactionWidget extends BaseWidget
 {
+    protected static ?int $Sort = 1;
     protected function getStats(): array
     {
         return [
