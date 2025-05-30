@@ -6,8 +6,9 @@ use Filament\Actions;
 use App\Models\Profile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use App\Notifications\TransactionNotifications;
 use App\Filament\Advisor\Resources\TransactionResource;
 
 class CreateTransaction extends CreateRecord
@@ -40,7 +41,7 @@ class CreateTransaction extends CreateRecord
 
         // Insertar asesor autenticado automáticamente
         $user = Auth::user();
-        $profile = $user->profiles; // Asegúrate de tener esta relación definida en User
+        $profile = $user->profiles;
         if ($profile) {
             DB::table('profile_transaction')->insert([
                 'profile_id' => $profile->id,
@@ -60,8 +61,15 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
+
+        // Enviar notificación al usuario del perfil
+        $studentProfile = Profile::find($data['profile_id']);
+        if ($studentProfile && $studentProfile->user) {
+            TransactionNotifications::sendTransactionAssigned($studentProfile->user, $transaction);
+        }
+
         Notification::make()
-            ->title("¡La Transacción ha sido creada exitosamente!")
+            ->title("¡La Opción ha sido creada exitosamente!")
             ->body('Se han vinculado los perfiles y cursos correctamente.')
             ->icon('heroicon-o-academic-cap')
             ->success()

@@ -50,14 +50,20 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
-
-
         // Enviar notificación al usuario del perfil
         $profile = Profile::find($data['profile_id']);
         if ($profile && $profile->user) {
             // Llamar funcion de la clase para enviar una notificación al usuario asignado
             TransactionNotifications::sendTransactionAssigned($profile->user, $transaction);
         }
+
+        Notification::make()
+            ->title("¡La Opción ha sido creada exitosamente!")
+            ->body('Se han vinculado el perfil y cursos correctamente.')
+            ->icon('heroicon-o-academic-cap')
+            ->success()
+            ->send();
+
     }
 
         // Esto desactiva la notificación por defecto de Filament

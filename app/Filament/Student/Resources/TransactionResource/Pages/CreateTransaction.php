@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use App\Notifications\TransactionNotifications;
 use App\Filament\Student\Resources\TransactionResource;
 use App\Filament\Student\Resources\ProcessResource\Pages\CreateProcess;
 use App\Filament\Employer\Resources\TalkResource\Pages\CreateTalk as PagesCreateTalk;
@@ -55,7 +56,7 @@ class CreateTransaction extends CreateRecord
         }
 
         Notification::make()
-            ->title("¡La Transacción ha sido creada exitosamente!")
+            ->title("¡La Opción ha sido creada exitosamente!")
             ->body('Se han Creado los Procesos Correspondientes a la Transacción por Favor Completa el Fomulario de Solicitud')
             ->icon('heroicon-o-academic-cap')
             ->success()
