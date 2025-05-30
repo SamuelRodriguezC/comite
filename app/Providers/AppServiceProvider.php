@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Transaction;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
+use App\Observers\TransactionObserver;
 use Illuminate\Support\ServiceProvider;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Support\Facades\FilamentColor;
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+
         FilamentColor::register([
                 'danger' => Color::Red,
                 'gray' => Color::Zinc,
@@ -77,8 +80,8 @@ class AppServiceProvider extends ServiceProvider
                 if (count($limitedIds) > 1) {
                     $panelSwitch
                         ->simple()
-                        ->panels($limitedIds)         // ✅ solo los IDs
-                        ->labels($limitedLabels)       // ✅ etiquetas visibles
+                        ->panels($limitedIds)
+                        ->labels($limitedLabels)
                         ->visible(true);
                 }
 

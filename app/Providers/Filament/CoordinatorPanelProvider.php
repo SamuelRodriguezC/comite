@@ -32,6 +32,7 @@ class CoordinatorPanelProvider extends PanelProvider
             ->id('coordinator')
             ->path('coordinator')
             ->brandName('Comite - Panel Coordinador')
+            ->databaseNotifications()
             // ->login()
             // ->registration()
             // ->passwordReset()
@@ -50,7 +51,7 @@ class CoordinatorPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                // 
+                //
             ])
             ->middleware([
                 EncryptCookies::class,

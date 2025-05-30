@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource;
 use Filament\Actions;
 use App\Models\Profile;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -49,12 +50,14 @@ class CreateTransaction extends CreateRecord
             ]);
         }
 
-        Notification::make()
-            ->title("¡La Transacción ha sido creada exitosamente!")
-            ->body('Se han vinculado los perfiles y cursos correctamente.')
-            ->icon('heroicon-o-academic-cap')
-            ->success()
-            ->send();
+
+
+        // Enviar notificación al usuario del perfil
+        $profile = Profile::find($data['profile_id']);
+        if ($profile && $profile->user) {
+            // Llamar funcion de la clase para enviar una notificación al usuario asignado
+            TransactionNotifications::sendTransactionAssigned($profile->user, $transaction);
+        }
     }
 
         // Esto desactiva la notificación por defecto de Filament

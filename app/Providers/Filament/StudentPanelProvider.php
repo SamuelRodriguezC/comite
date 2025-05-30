@@ -28,7 +28,7 @@ class StudentPanelProvider extends PanelProvider
             ->id('student')
             ->path('student')
             ->profile()
-            //->databaseNotifications()
+            ->databaseNotifications()
             ->unsavedChangesAlerts()
             ->brandName('Comite - Panel Estudiante')
             ->colors([
