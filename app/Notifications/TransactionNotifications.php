@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\User;
+use App\Enums\Status;
 use App\Models\Transaction;
 use Illuminate\Bus\Queueable;
 use Filament\Notifications\Notification;
@@ -62,5 +63,32 @@ class TransactionNotifications extends Notification
             ->danger()
             ->sendToDatabase($user);
     }
+
+        /**
+     * Notifica a todos los usuarios asociados cuando cambia el estado de la transacción.
+     */
+   public static function sendStatusChanged(Transaction $transaction): void
+    {
+        $statusEnum = Status::tryFrom($transaction->status); // Convierte el número a enum
+        $estado = $statusEnum?->getLabel(); // Obtiene el nombre legible
+
+        $icon = 'heroicon-o-information-circle';
+        $color = 'info';
+
+
+        foreach ($transaction->profileTransactions as $profileTransaction) {
+            $user = $profileTransaction->profile->user;
+
+            if ($user) {
+                Notification::make()
+                    ->title("Estado actualizado")
+                    ->body("La Opción de Grado #{$transaction->id} ha cambiado su estado a *{$estado}*.")
+                    ->icon($icon)
+                    ->{$color}()
+                    ->sendToDatabase($user);
+            }
+        }
+    }
+
 
 }

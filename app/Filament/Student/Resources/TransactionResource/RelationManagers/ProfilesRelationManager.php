@@ -97,7 +97,7 @@ class ProfilesRelationManager extends RelationManager
                     ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
                     ->modalDescription('Solo podrá vincular integrantes dentro de las 12 horas siguientes a la creación de la Opción. Durante este periodo, únicamente será posible agregar un estudiante adicional y un asesor. Los perfiles vinculados serán posteriormente revisados por el coordinador y se asignará comité evaluador si la opción lo requiere.')
                     ->after(function ($record, $data) {
-                        // Obtener el usuario del perfil vinculado
+                        // Obtener el usuario del perfil vinculado y enviar notificación
                         if ($record->user) {
                             TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction());
                         }

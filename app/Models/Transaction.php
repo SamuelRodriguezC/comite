@@ -3,6 +3,7 @@
 namespace App\Models;
 use Carbon\Carbon;
 use App\Models\Role;
+use App\Enums\Status;
 use App\Models\Course;
 use App\Models\Option;
 use App\Models\Process;
@@ -12,6 +13,7 @@ use App\Models\ProfileTransaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +44,7 @@ class Transaction extends Model
         'id' => 'integer',
         'component' => 'integer',
         // 'enabled' => \App\Enums\Enabled::class,
+        'status' => 'integer',
         'option_id' => 'integer',
     ];
 
@@ -118,5 +121,14 @@ class Transaction extends Model
         ->exists();
 
         return !$hasEnabledTransaction;
+    }
+
+    protected static function booted()
+    {
+        static::updated(function (Transaction $transaction) {
+            if ($transaction->isDirty('status')) {
+                TransactionNotifications::sendStatusChanged($transaction);
+            }
+        });
     }
 }

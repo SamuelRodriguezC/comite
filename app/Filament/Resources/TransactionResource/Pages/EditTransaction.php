@@ -16,6 +16,11 @@ class EditTransaction extends EditRecord
 
     protected function afterSave(): void
     {
+        // Solo continuar si el campo "enabled" ha cambiado
+        if (!$this->record->wasChanged('enabled')) {
+            return;
+        }
+
         $currentUserId = Auth::user()->id;
 
         foreach ($this->record->load('profiles.user')->profiles as $profile) {
@@ -51,8 +56,6 @@ class EditTransaction extends EditRecord
                 })
                 ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
-
-            Actions\EditAction::make(),
 
             Action::make('Generar PDF')
                 ->color('success')

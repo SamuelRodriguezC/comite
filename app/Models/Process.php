@@ -6,6 +6,7 @@ use App\Models\Stage;
 use App\Models\Comment;
 use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Model;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -88,6 +89,7 @@ class Process extends Model
 
                 if ($allCompleted) {
                     $transaction->status = \App\Enums\Status::COMPLETADO->value;
+                    TransactionNotifications::sendStatusChanged($transaction);
                     $transaction->save();
                 }
             }

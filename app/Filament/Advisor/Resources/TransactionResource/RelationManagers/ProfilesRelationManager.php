@@ -12,11 +12,12 @@ use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\AttachAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\AttachAction;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class ProfilesRelationManager extends RelationManager
@@ -144,6 +145,12 @@ class ProfilesRelationManager extends RelationManager
                 // -------------------------- FUNCIONALIDAD PARA VINCULAR PERSONAS DESHABILITADA ----------------------------
                 // Tables\Actions\AttachAction::make()
                 // ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
+                // ->after(function ($record, $data) {
+                //     // Obtener el usuario del perfil vinculado y enviar notificación
+                //     if ($record->user) {
+                //         TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction());
+                //     }
+                // })
                 // ->form(fn (AttachAction $action): array => [
                 //     $action->getRecordSelect()
                 //         ->reactive(), // Necesario para que al seleccionar cambien las carreras
