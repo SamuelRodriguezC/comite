@@ -64,7 +64,9 @@ class ProfileResource extends Resource
                     ->options(Level::class)
                     ->required(),
                 Forms\Components\Select::make('user_id')
+                    ->label('Usuario')
                     ->relationship('user', 'name')
+                    ->disabled()
                     ->required(),
             ]);
     }

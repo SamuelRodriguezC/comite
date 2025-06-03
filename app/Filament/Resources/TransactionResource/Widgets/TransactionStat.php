@@ -27,7 +27,7 @@ class TransactionStat extends BaseWidget
                 ->icon('heroicon-o-document-text')
                 ->chart([80, 60 , 5, 90, 40, 10, 90]),
 
-            Stat::make('Opciones Habilitadas', Transaction::where('status', 1)->count())
+            Stat::make('Opciones Habilitadas', Transaction::where('enabled', 1)->count())
                 ->color('primary')
                 ->icon('heroicon-o-check-circle')
                 ->chart($this->getChartData('enabled')),
