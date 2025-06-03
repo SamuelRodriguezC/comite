@@ -104,12 +104,38 @@ class ProfilesRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                 ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
-                    ->after(function ($record, $data) {
-                        // Obtener el usuario del perfil vinculado y enviar notificación
-                        if ($record->user) {
-                            TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction());
+                ->after(function ($record, $data) {
+                    $transaction = $this->getTransaction();
+
+                    // Notificación al usuario asignado
+                    if ($record->user) {
+                        TransactionNotifications::sendTransactionAssigned($record->user, $transaction);
+                    }
+
+                    // Si es un evaluador o asesor, notificar al estudiante
+                    $role = \App\Models\Role::find($data['role_id']);
+                    $roleName = strtolower($role?->name ?? '');
+
+                    if (in_array($roleName, ['evaluador', 'asesor'])) {
+                        // Obtener todos los estudiantes relacionados a la transacción
+                        $students = $transaction->profiles()
+                            ->whereHas('user.roles', fn ($q) => $q->where('name', 'estudiante'))
+                            ->with('user')
+                            ->get();
+
+                        foreach ($students as $studentProfile) {
+                            if ($studentProfile->user) {
+                                TransactionNotifications::sendRoleAssigned(
+                                    $studentProfile->user,
+                                    $record->user,
+                                    ucfirst($roleName),
+                                    $transaction
+                                );
+                            }
                         }
-                    })
+                    }
+                })
+
                 ->form(fn (AttachAction $action): array => [
                     $action->getRecordSelect()
                         ->reactive(), // Necesario para que al seleccionar cambien las carreras

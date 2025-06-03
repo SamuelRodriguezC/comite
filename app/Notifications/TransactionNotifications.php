@@ -36,6 +36,19 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($user);
     }
 
+    /**
+     * Notifica al estudiante cuando se le asigna un evaluador o asesor.
+     */
+    public static function sendRoleAssigned(User $studentUser, User $assignedUser, string $roleName, Transaction $transaction): void
+    {
+        Notification::make()
+            ->title("Nuevo {$roleName} asignado")
+            ->body("Se ha asignado el {$roleName} {$assignedUser->name} {$assignedUser->last_name} para tu opción de grado #{$transaction->id}.")
+            ->icon('heroicon-o-user-plus')
+            ->success()
+            ->sendToDatabase($studentUser);
+    }
+
 
     /**
      * Notifica cuando cambia el estado de habilitación (enabled).
@@ -64,10 +77,10 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($user);
     }
 
-        /**
+    /**
      * Notifica a todos los usuarios asociados cuando cambia el estado de la transacción.
      */
-   public static function sendStatusChanged(Transaction $transaction): void
+    public static function sendStatusChanged(Transaction $transaction): void
     {
         $statusEnum = Status::tryFrom($transaction->status); // Convierte el número a enum
         $estado = $statusEnum?->getLabel(); // Obtiene el nombre legible
