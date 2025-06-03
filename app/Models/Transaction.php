@@ -41,6 +41,7 @@ class Transaction extends Model
     protected $casts = [
         'id' => 'integer',
         'component' => 'integer',
+        // 'enabled' => \App\Enums\Enabled::class,
         'option_id' => 'integer',
     ];
 

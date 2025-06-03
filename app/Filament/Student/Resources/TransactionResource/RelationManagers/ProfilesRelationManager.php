@@ -23,6 +23,7 @@ use Filament\Tables\Actions\AttachAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -95,6 +96,12 @@ class ProfilesRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
                     ->modalDescription('Solo podrá vincular integrantes dentro de las 12 horas siguientes a la creación de la Opción. Durante este periodo, únicamente será posible agregar un estudiante adicional y un asesor. Los perfiles vinculados serán posteriormente revisados por el coordinador y se asignará comité evaluador si la opción lo requiere.')
+                    ->after(function ($record, $data) {
+                        // Obtener el usuario del perfil vinculado
+                        if ($record->user) {
+                            TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction());
+                        }
+                    })
                     ->form(fn(AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->label('Perfil')

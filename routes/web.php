@@ -13,7 +13,7 @@ Route::get('/', function () {
 });
 
 // ------- Asigna un panel a cada rol -------
-Route::get('/dashboard', function () {
+Route::get('/login', function () {
     $user = Auth::user();
     if ($user->hasRole('Coordinador')) {
         return redirect('coordinator');
@@ -33,7 +33,7 @@ Route::get('/dashboard', function () {
     // En caso de no tener rol asignado
     abort(403, 'No tienes un rol asignado');
     return redirect('/');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('login');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])

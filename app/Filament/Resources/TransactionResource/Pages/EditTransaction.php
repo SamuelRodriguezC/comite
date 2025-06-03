@@ -4,12 +4,29 @@ namespace App\Filament\Resources\TransactionResource\Pages;
 
 use Filament\Actions;
 use Filament\Actions\Action;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\TransactionResource;
+use App\Notifications\TransactionNotifications;
 
 class EditTransaction extends EditRecord
 {
     protected static string $resource = TransactionResource::class;
+
+    protected function afterSave(): void
+    {
+        $currentUserId = Auth::user()->id;
+
+        foreach ($this->record->load('profiles.user')->profiles as $profile) {
+            //Enviar notificación a todos los perfiles menos al usuario en sesión = Coordinador
+            if ($profile->user && $profile->user->id !== $currentUserId) {
+                $this->record->enabled === 1 // Habilitada
+                    ? TransactionNotifications::sendTransactionEnabled($profile->user, $this->record)
+                    : TransactionNotifications::sendTransactionDisabled($profile->user, $this->record);
+            }
+        }
+    }
 
     protected function getHeaderActions(): array
     {
