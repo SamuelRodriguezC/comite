@@ -82,6 +82,22 @@ class Process extends Model
         static::updated(function (Process $process) {
             $transaction = $process->transaction;
 
+            // Notificar al estudiante si el estado cambia
+            if ($process->isDirty('state') && $transaction) {
+                $studentProfiles = $transaction->profileTransactions()
+                    ->where('role_id', 1)
+                    ->with('profile.user')
+                    ->get();
+
+                foreach ($studentProfiles as $profileTransaction) {
+                    $user = $profileTransaction->profile->user;
+
+                    if ($user) {
+                        \App\Notifications\ProcessNotification::stateUpdated($transaction, $user, $process);
+                    }
+                }
+            }
+
             // Solo si la transacción está en progreso
             if ($transaction && $transaction->status == \App\Enums\Status::ENPROGRESO->value) {
                 // Verificar si todos los procesos están completados
