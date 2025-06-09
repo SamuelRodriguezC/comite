@@ -69,6 +69,9 @@ class CoordinatorPanelProvider extends PanelProvider
                 PanelRoles::make()
                 ->roleToAssign('Coordinador')
                 ->restrictedRoles(['Coordinador', 'Super administrador']),
-            ]);
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ]);;
     }
 }
