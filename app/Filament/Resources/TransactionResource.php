@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Group;
 use Filament\Tables\Filters\SelectFilter;
@@ -324,9 +325,22 @@ class TransactionResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+           ->bulkActions([
+                // Habilitar o Deshabilitar varias transacciones
                 Tables\Actions\BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('toggleEnabled')
+                        ->label('Habilitar/Deshabilitar')
+                        ->icon('heroicon-m-adjustments-vertical')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records) {
+                            foreach ($records as $record) {
+                                $record->enabled = $record->enabled === 1 ? 2 : 1;
+                                $record->save();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->color('gray')
+                        ->successNotificationTitle('Estado actualizado correctamente'),
                 ]),
             ]);
     }
