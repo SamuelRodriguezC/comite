@@ -245,18 +245,14 @@ class ProcessesRelationManager extends RelationManager
 
                 // --------------------------- Boton para FINALIZAR  ---------------------------
                 Tables\Actions\Action::make('toggleCompleted')
-                    ->label(fn ($record) => $record->completed === 1 ? 'No Finalizado' : 'Finalizado')
-                    ->icon(fn ($record) => $record->completed === 1 ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->label(fn ($record) => $record->completed ? 'No Finalizado' : 'Finalizado')
+                    ->icon(fn ($record) => $record->completed ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->requiresConfirmation()
                     ->modalHeading('Confirmar cambio')
                     ->modalDescription('¿Quieres cambiar el estado de finalización de este proceso?')
-                    // ->modalConfirmButtonLabel('Sí, cambiar')
-                    // ->modalCancelButtonLabel('Cancelar')
                     ->action(function ($record) {
                         $record->update([
-                            'completed' => $record->completed === Completed::SI->value
-                                ? Completed::NO->value
-                                : Completed::SI->value,
+                            'completed' => !$record->completed,  // simplemente invierte el booleano
                         ]);
                     }),
 
