@@ -109,6 +109,6 @@ class RegisteredUserController extends Controller
         //     return redirect('/student'); // Ajusta según tu panel de admin
         // }
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('login', absolute: false));
     }
 }

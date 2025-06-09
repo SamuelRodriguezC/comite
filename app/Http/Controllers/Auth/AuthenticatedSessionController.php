@@ -48,7 +48,7 @@ class AuthenticatedSessionController extends Controller
 
          // Si el usuario no está verificado, redirigir al dashboard
         if (! $user->email_verified_at) {
-            return redirect()->route('dashboard');
+            return redirect()->route('login');
         }
 
         // Redirección personalizada según el rol

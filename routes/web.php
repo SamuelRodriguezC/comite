@@ -13,7 +13,7 @@ Route::get('/', function () {
 });
 
 // ------- Asigna un panel a cada rol -------
-Route::get('/login', function () {
+Route::get('/dashboard', function () {
     $user = Auth::user();
     if ($user->hasRole('Coordinador')) {
         return redirect('coordinator');
