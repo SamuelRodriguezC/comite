@@ -125,10 +125,10 @@
     </section>
 
     <section class="observaciones">
-        <p><strong>Observaciones:</strong></p>
-        <p style="border: 1px solid #000; height: 80px; padding: 10px;">
-            {{-- Puedes incluir dinámicamente observaciones aquí si las tienes --}}
-        </p>
+    <p><strong>Observaciones:</strong></p>
+    <p style="border: 1px solid #000; height: 80px; padding: 10px;">
+        {{ $observacion ?? $transaction->certificate?->observation ?? 'Ninguna.' }}
+    </p>
     </section>
 
     <section class="firmas">

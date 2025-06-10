@@ -14,6 +14,10 @@ class PdfActaController extends Controller
     //
     public function generar($id)
     {
+
+        // Captura la observación enviada por el modal
+        $observacion = session('certificate_observation');
+
         // Obtiene la transacción
         $transaction = Transaction::with('option')->findOrFail($id);
         // Busca estudiantes vinculados y genera vista
@@ -21,7 +25,7 @@ class PdfActaController extends Controller
             ->where('transaction_id', $transaction->id)
             ->whereHas('role', fn($q) => $q->where('name', 'Estudiante'))
             ->get();
-        $pdf = Pdf::loadView('pdf.acta', compact('transaction', 'estudiantes'));
+        $pdf = Pdf::loadView('pdf.acta', compact('transaction', 'estudiantes', 'observacion'));
         // Forzar incrustación de fuentes
         $pdf->setOptions([
             'isHtml5ParserEnabled' => true,
