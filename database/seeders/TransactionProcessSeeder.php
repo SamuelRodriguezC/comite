@@ -12,13 +12,13 @@ class TransactionProcessSeeder extends Seeder
     public function run(): void
     {
         // Creamos, por ejemplo, 10 transacciones
-        Transaction::factory(30)->create()->each(function ($transaction) {
+        Transaction::factory(550)->create()->each(function ($transaction) {
             // Etapas únicas del 1 al 3
             $stages = [1, 2];
             foreach ($stages as $stage) {
                 Process::factory()->create([
                     'requirement' => '',
-                    'state' => 3,
+                    'state' => fake()->numberBetween(1, 7),
                     'comment' => '',
                     'completed' => false,
                     'delivery_date' => null,

@@ -34,6 +34,7 @@ class TransactionFactory extends Factory
             'enabled' => fake()->numberBetween(1, 2),
             'option_id' => $optionId,
             'status' => 1,
+            'created_at' => fake()->dateTimeBetween('-12 months', 'now'), //Fechas aleatorias en 6 meses
         ];
     }
 }
