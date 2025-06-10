@@ -106,17 +106,6 @@ class ProfilesRelationManager extends RelationManager
                         $action->getRecordSelect()
                             ->label('Perfil')
                             ->reactive()
-                            ->options(function () {
-                                return \App\Models\Profile::query()
-                                    // Filtra según tu criterio, por ejemplo, sin rol evaluador:
-                                    ->whereDoesntHave('user.roles', function ($q) {
-                                        $q->where('name', 'Evaluador');
-                                    })
-                                    ->get()
-                                    ->mapWithKeys(function ($profile) {
-                                        return [$profile->id => $profile->document_number . ' - ' . $profile->name . ' ' . $profile->last_name,];
-                                    });
-                            })
                             ->afterStateUpdated(function (Set $set) {
                                 // Limpiar los campos al cambiar el perfil
                                 $set('courses_id', null);

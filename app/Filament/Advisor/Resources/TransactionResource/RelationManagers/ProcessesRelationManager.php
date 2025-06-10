@@ -45,6 +45,7 @@ class ProcessesRelationManager extends RelationManager
                     ]) // Agrega validación: campo requerido y solo PDF
                     ->maxSize(10240) // 10MB
                     ->columnSpanFull()
+                    ->required()
                     ->maxFiles(1) ,
             ]);
     }
