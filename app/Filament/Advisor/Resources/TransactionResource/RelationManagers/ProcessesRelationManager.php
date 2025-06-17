@@ -208,10 +208,11 @@ class ProcessesRelationManager extends RelationManager
                     ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
                     ->visible(function ($record) {
-                    $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
-                    $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
+                        $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
+                        $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
+                        $notInFinalState = $record->state != 7;
 
-                    return $hasNoRequirement && $stillInTime;
+                        return $hasNoRequirement && $stillInTime && $notInFinalState;
                 }),
 
 

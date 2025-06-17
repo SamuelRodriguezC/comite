@@ -231,8 +231,8 @@ class ProcessesRelationManager extends RelationManager
                         ->visible(function ($record) {
                             $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
                             $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
-
-                            return $hasNoRequirement && $stillInTime;
+                            $notInFinalState = $record->state != 7;
+                            return $hasNoRequirement && $stillInTime && $notInFinalState;
                         }),
 
                     ActionGroup::make([
