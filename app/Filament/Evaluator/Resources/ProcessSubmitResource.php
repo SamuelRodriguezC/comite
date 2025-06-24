@@ -59,8 +59,7 @@ class ProcessSubmitResource extends Resource
                 }),
             Forms\Components\DateTimePicker::make('delivery_date')
                 ->label('Fecha Límite de Entrega')
-                ->columnSpanFull()
-                ->required(),
+                ->columnSpanFull(),
         ])->columns(2);
     }
 
@@ -68,7 +67,8 @@ class ProcessSubmitResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('id', 'desc')
+            // Mostrar registros en orden descendente por su fecha de creación
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('transaction.id')
                     ->label("Opción")
@@ -82,10 +82,12 @@ class ProcessSubmitResource extends Resource
                 Tables\Columns\TextColumn::make('state')
                     ->label("Estado")
                     ->badge()
+                    // Mostrar el color del badge según el estado
                     ->color(
                         fn ($state) => State::from($state)
                             ->getColor()
                     )
+                     // Mostrar el texto del badge según el estado
                     ->formatStateUsing(
                         fn ($state) => State::from($state)
                             ->getLabel()
@@ -93,10 +95,12 @@ class ProcessSubmitResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('completed')
                     ->label("Finalizado")
+                     // Mostrar el icono según el estado de finalización
                     ->icon(
                         fn ($state) => Completed::from($state)
                             ->getIcon()
                     )
+                     // Mostrar el color del icono según el estado de finalización
                     ->color(
                         fn ($state) => Completed::from($state)
                             ->getColor()
@@ -148,19 +152,24 @@ class ProcessSubmitResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                 SelectFilter::make('requirement')
+                // Filtro por requisito: muestra registros con o sin requisitos
+                SelectFilter::make('requirement')
                     ->label('Requisitos')
                     ->options([
                         'empty' => 'Sin requisitos',
                         'not_empty' => 'Con requisitos',
                     ])
                     ->query(fn (Builder $query, array $data) => match ($data['value'] ?? null) {
+                        // Si está vacío o contiene solo espacios, lo considera "sin requisitos"
                         'empty' => $query->where(fn ($q) =>
                             $q->whereNull('requirement')->orWhereIn('requirement', ['', ' '])
                         ),
+                         // Si tiene algún valor distinto de vacío/espacios, lo considera "con requisitos"
                         'not_empty' => $query->whereNotNull('requirement')->whereNotIn('requirement', ['', ' ']),
+                        // Sin filtro si no se selecciona opción
                         default => $query,
                     }),
+                 // Filtro por estado de habilitación de la transacción
                 SelectFilter::make('enabled')
                     ->label('Habilitado')
                     ->options([
@@ -168,6 +177,7 @@ class ProcessSubmitResource extends Resource
                         '2' => 'Deshabilitado',
                     ])
                     ->query(fn (Builder $query, array $data) =>
+                        // Filtro por estado de habilitación de la transacción
                         isset($data['value'])
                             ? $query->whereHas('transaction', fn ($q) => $q->where('enabled', $data['value']))
                             : $query
@@ -176,6 +186,7 @@ class ProcessSubmitResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
+                    // El botón de edición solo se  muestra si la transacción está habilitada
                     ->visible(fn ($record) => $record->transaction?->enabled !== 2),
             ])
             ->bulkActions([
@@ -239,10 +250,12 @@ class ProcessSubmitResource extends Resource
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
                 TextEntry::make('transaction.profiles.name')
                         ->label('Integrante(s)')
+                        // Usar helper para formatetar los integrantes y mostrarlos en una lista
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
                 TextEntry::make('transaction.courses')
                         ->label('Carrera(s)')
+                        // Usar helper para formatetar las carreras y mostrarlos en una lista
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
             ])
@@ -253,12 +266,18 @@ class ProcessSubmitResource extends Resource
     // Filtra por usuario autenticado y por entregado
     public static function getEloquentQuery(): Builder
     {
+        // Obtener el ID del perfil del usuario autenticado
         $profileId = Auth::user()->profiles->id;
         return parent::getEloquentQuery()
+        // Filtrar solo registros que estén en la etapa con ID 2
             ->whereIn('stage_id', [2])
+
+            // Filtrar registros que estén asociados a transacciones donde:
+            // - El perfil coincida con el del usuario autenticado
+            // - El rol asignado sea el de Evaluador (role_id = 3)
             ->whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
                 $query->where('profile_id', $profileId)
-                    ->where('role_id', 3);
+                    ->where('role_id', 3); // Rol Evaluador
             });
     }
 
@@ -266,10 +285,13 @@ class ProcessSubmitResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getEloquentQuery()
+            // Filtrar registros con estado 3 = Pendiente
             ->where('state', '3')
+            // Solo contar si la transacción asociada está habilitada (enabled = 1)
             ->whereHas('transaction', function ($query) {
                     $query->where('enabled', 1);
             })
+            // Devolver la cantidad como badge de navegación
             ->count();
     }
 
@@ -284,6 +306,7 @@ class ProcessSubmitResource extends Resource
     {
         return [
             'index' => Pages\ListProcessSubmits::route('/'),
+            // Url para crear deshabilitada (Puerta Trasera)
             //'create' => Pages\CreateProcessSubmit::route('/create'),
             'view' => Pages\ViewProcessSubmit::route('/{record}'),
             'edit' => Pages\EditProcessSubmit::route('/{record}/edit'),

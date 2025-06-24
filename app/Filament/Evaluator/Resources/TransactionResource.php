@@ -162,18 +162,18 @@ class TransactionResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('component')
-                ->label('Componente')
-                ->options([
-                    '1' => 'Investigativo',
-                    '2' => 'No Investigativo',
-                ])->attribute('component'),
+                    ->label('Componente')
+                    ->options([
+                        '1' => 'Investigativo',
+                        '2' => 'No Investigativo',
+                    ])->attribute('component'),
 
                 SelectFilter::make('enabled')
-                ->label('Habilitado')
-                ->options([
-                    '1' => 'Habilitado',
-                    '2' => 'Deshabilitado',
-                ])->attribute('enabled'),
+                    ->label('Habilitado')
+                    ->options([
+                        '1' => 'Habilitado',
+                        '2' => 'Deshabilitado',
+                    ])->attribute('enabled'),
 
                 SelectFilter::make('status')
                         ->label('Estado')
@@ -184,7 +184,7 @@ class TransactionResource extends Resource
                     ->label('Carreras')
                     ->options(\App\Models\Course::pluck('course', 'id'))
                     ->query(function (Builder $query, array $data): Builder {
-                        if (isset($data['value'])) {
+                        if (!empty($data['value'])) {
                             // Assuming a many-to-many relationship between transactions and courses
                             $query->whereHas('courses', function (Builder $coursesQuery) use ($data) {
                                 $coursesQuery->where('courses.id', $data['value']);
@@ -196,6 +196,7 @@ class TransactionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
+                    // El botón de edición solo se  muestra si la transacción está habilitada
                     ->visible(fn ($record) => $record->enabled !== 2),
             ])
             ->bulkActions([
@@ -219,10 +220,12 @@ class TransactionResource extends Resource
                         ->label('Opción de grado'),
                     TextEntry::make('profiles.name')
                         ->label('Integrante(s)')
+                        // Usar herlper para formatear la lista de nombres
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
                     TextEntry::make('courses')
                         ->label('Carrera(s)')
+                        // Usar herlper para formatear la lista de carreras
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
                 ])

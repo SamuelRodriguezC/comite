@@ -108,28 +108,7 @@ class ProfilesRelationManager extends RelationManager
             ])
             // No se puede filtrar estudiantes con mi mismo nivel universitario, porque el método getRecordSelect está en la carpeta vendor
             ->headerActions([
-                // -------------------------- FUNCIONALIDAD PARA VINCULAR PERSONAS DESHABILITADA ----------------------------
-                // Tables\Actions\AttachAction::make()
-                // ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
-                // ->form(fn (AttachAction $action): array => [
-                //     $action->getRecordSelect()
-                //         ->reactive(), // Necesario para que al seleccionar cambien las carreras
-                //     Select::make('courses_id')
-                //         ->label('Ingrese la carrera de la persona vinculada')
-                //         ->options(function (Get $get) {
-                //             $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
-                //             if (!$recordId) {
-                //                 return [];
-                //             }
-                //             $profile = \App\Models\Profile::find($recordId);
-                //             if (!$profile) {
-                //                 return [];
-                //             }
-                //             return getCoursesByProfileLevel($profile->level);
-                //         })
-                //         ->searchable()
-                //         ->required(),
-                // ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
+                //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
@@ -169,21 +148,12 @@ class ProfilesRelationManager extends RelationManager
                         $record->id === auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
-             // -------------------------- FUNCIONALIDAD PARA DESIVINCULAR PERSONAS DESHABILITADA ----------------------------
-                // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
-                // Tables\Actions\DetachAction::make()
-                //         ->visible(fn ($record) =>
-                //         $record->id !== auth_profile_id() &&
-                //         $this->getTransaction()->isEditable()
-                //     ),
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
             ])
             ->bulkActions([
-                    Tables\Actions\BulkActionGroup::make([
-
-                    ]),
-                ]);
+                // 
+            ]);
     }
 }

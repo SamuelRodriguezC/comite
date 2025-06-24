@@ -87,9 +87,7 @@ class OptionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 25);
-                    })
+                    ->limit(25)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -164,6 +162,7 @@ class OptionResource extends Resource
     {
         return [
             'index' => Pages\ListOptions::route('/'),
+            // Url para crear deshabilitada (Puerta Trasera)
             //'create' => Pages\CreateOption::route('/create'),
             'view' => Pages\ViewOption::route('/{record}'),
             'edit' => Pages\EditOption::route('/{record}/edit'),

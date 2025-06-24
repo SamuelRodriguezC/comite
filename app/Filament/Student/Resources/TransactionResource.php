@@ -205,12 +205,12 @@ class TransactionResource extends Resource
                         ->label('Estado')
                         ->options(Status::class)
                         ->attribute('status'),
-
+                        
                 SelectFilter::make('courses')
                     ->label('Carreras')
                     ->options(\App\Models\Course::pluck('course', 'id'))
                     ->query(function (Builder $query, array $data): Builder {
-                        if (isset($data['value'])) {
+                        if (!empty($data['value'])) {
                             // Assuming a many-to-many relationship between transactions and courses
                             $query->whereHas('courses', function (Builder $coursesQuery) use ($data) {
                                 $coursesQuery->where('courses.id', $data['value']);

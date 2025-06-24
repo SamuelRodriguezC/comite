@@ -14,10 +14,12 @@ class EditTransaction extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
+            // Opcion para eliminar deshabilitada
             //Actions\DeleteAction::make(),
         ];
     }
-    // prohibe editar registros desahilitados
+
+    // prohibe editar registros deshabilitados
     protected function authorizeAccess(): void
     {
         abort_if($this->record->enabled === 2, 403);

@@ -14,7 +14,8 @@ class ListProfiles extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            // Opción para crear un nuevo perfil deshabilitada
+            // Actions\CreateAction::make(),
         ];
     }
 

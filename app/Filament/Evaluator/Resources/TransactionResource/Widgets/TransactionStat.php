@@ -62,26 +62,30 @@ class TransactionStat extends BaseWidget
 }
 
 
+    // Filtra las transacciones asociadas al perfil con rol Evaluador (id = 3)
     private function evaluadorTransactions(int $profileId)
     {
         return ProfileTransaction::query()
             ->where('profile_id', $profileId)
-            ->whereHas('role', fn($q) => $q->where('id', 3));
+            ->whereHas('role', fn($q) => $q->where('id', 3)); // Rol Evaluador
     }
 
+    // Retorna datos para un gráfico de los últimos 7 días según el tipo especificado
     protected function getChartData(string $type): array
     {
+        // Generar colección de fechas desde hace 6 días hasta hoy
         $days = collect(range(6, 0))->map(fn($i) => now()->subDays($i)->startOfDay());
 
         return $days->map(function ($day) use ($type) {
             $query = Transaction::whereDate('created_at', $day);
 
+            // Filtrar según el tipo solicitado
             return match ($type) {
-                'pending' => $query->where('status', 2)->count(),
-                'certified' => $query->where('status', 3)->count(),
-                'enabled' => $query->where('enabled', 1)->count(),
-                default => $query->count(),
+                'pending' => $query->where('status', 2)->count(), // Transacciones pendientes
+                'certified' => $query->where('status', 3)->count(),  // Transacciones certificadas
+                'enabled' => $query->where('enabled', 1)->count(), // Transacciones habilitadas
+                default => $query->count(), // Total por día
             };
-        })->toArray();
+        })->toArray(); // Devolver los datos como array
     }
 }

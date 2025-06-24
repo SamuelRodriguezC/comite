@@ -14,6 +14,7 @@ class EditProcessSubmit extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
+            // Opción para eliminar deshabilitada
             //Actions\DeleteAction::make(),
         ];
     }
@@ -21,6 +22,7 @@ class EditProcessSubmit extends EditRecord
     protected function authorizeAccess(): void
     {
         if ($this->record->transaction?->enabled === 2) {
+             // si la transacción está deshabilitada, se previene el acceso
             abort(403, 'Acceso denegado. Esta transacción está deshabilitada.');
         }
     }

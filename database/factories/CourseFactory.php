@@ -21,7 +21,7 @@ class CourseFactory extends Factory
     {
         return [
             'course' => fake()->word(),
-            'level' => fake()->numberBetween(-8, 8),
+            'level' => fake()->numberBetween(0, 2),
         ];
     }
 }

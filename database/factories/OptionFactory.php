@@ -21,8 +21,8 @@ class OptionFactory extends Factory
     {
         return [
             'option' => fake()->word(),
-            'level' => fake()->numberBetween(-8, 8),
-            'component' => fake()->numberBetween(-8, 8),
+            'level' => fake()->numberBetween(0, 3),
+            'component' => fake()->numberBetween(1, 2),
             'description' => fake()->text(),
             'requirement' => fake()->word(),
         ];

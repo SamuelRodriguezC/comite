@@ -34,11 +34,15 @@ class ListTransactions extends ListRecords
         $tabs['all'] = Tab::make('All Options')
             ->label('Todos los Estados');
 
-        // Generar tabs dinámicamente para cada estado
+        // Crear tabs dinámicamente según los estados definidos
         foreach ($states as $label => $status) {
             $tabs[$label] = Tab::make($label)
-                ->label($label)
+                ->label($label) // Título del tab
+
+                // Filtrar registros por el estado correspondiente
                 ->modifyQueryUsing(fn($query) => $query->where('status', $status))
+
+                // Mostrar la cantidad de transacciones del evaluador autenticado en ese estado
                 ->badge(function () use ($profileId, $status) {
                     return \App\Models\ProfileTransaction::where('profile_id', $profileId)
                         ->whereHas('role', fn($q) => $q->where('id', 3)) // Rol Evaluador

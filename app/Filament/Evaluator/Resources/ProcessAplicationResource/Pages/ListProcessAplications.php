@@ -12,7 +12,7 @@ class ListProcessAplications extends ListRecords
 {
     protected static string $resource = ProcessAplicationResource::class;
 
-    // Función para filtrar las opciones de grado por nivel universitario
+    // Función para filtrar los procesos por su estado
     public function getTabs(): array
     {
          return [
@@ -56,10 +56,11 @@ class ListProcessAplications extends ListRecords
             ];
     }
 
-    //protected function getHeaderActions(): array
-    //{
-    //    return [
-    //        Actions\CreateAction::make(),
-    //    ];
-    //}
+    protected function getHeaderActions(): array
+    {
+       return [
+        //  Opción para crear deshabilitada
+        //  Actions\CreateAction::make(),
+       ];
+    }
 }

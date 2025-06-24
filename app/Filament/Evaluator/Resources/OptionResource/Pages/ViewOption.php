@@ -10,10 +10,11 @@ class ViewOption extends ViewRecord
 {
     protected static string $resource = OptionResource::class;
 
-    //protected function getHeaderActions(): array
-    //{
-    //    return [
-    //        Actions\EditAction::make(),
-    //    ];
-    //}
+    protected function getHeaderActions(): array
+    {
+       return [
+        // Opción para editar deshabilitada
+        //    Actions\EditAction::make(),
+       ];
+    }
 }

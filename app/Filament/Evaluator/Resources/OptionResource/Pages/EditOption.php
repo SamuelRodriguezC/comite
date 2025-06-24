@@ -14,6 +14,7 @@ class EditOption extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
+            // Opción para Eliminar Deshabilitada
             //Actions\DeleteAction::make(),
         ];
     }

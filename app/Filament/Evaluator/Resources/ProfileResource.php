@@ -23,7 +23,7 @@ class ProfileResource extends Resource
     protected static ?string $model = Profile::class;
     protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $modelLabel = "Perfil";
-    protected static ?string $pluralModelLabel = "Perfiles";
+    protected static ?string $pluralModelLabel = "Perfil";
 
     // Función para consultar solo los registros del usuario autenticado
     public static function getEloquentQuery(): Builder
@@ -66,7 +66,7 @@ class ProfileResource extends Resource
                     ->options(Level::class)
                     ->required(),
                 Forms\Components\Select::make('user_id')
-                    ->label('User_id')
+                    ->label('Usuario')
                     ->disabled()
                     ->relationship('user', 'name')
                     ->required(),
@@ -122,7 +122,7 @@ class ProfileResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }

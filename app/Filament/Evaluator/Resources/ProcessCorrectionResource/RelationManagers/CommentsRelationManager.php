@@ -43,6 +43,7 @@ class CommentsRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('comment')
             ->description('Para que el "Estado" del proceso sea aprobado todos los conceptos de los comentarios deben ser APROBADOS, si al menos uno de los conceptos es NO APROBADO el proceso será improbado.')
+           // Mostrar registros en orden descendente por fecha de creación
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('concept.concept')
@@ -55,11 +56,10 @@ class CommentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('comment')
                     ->label('Comentario')
                     ->markdown()
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->limit(20),
                 Tables\Columns\TextColumn::make('profile.name')
                     ->label('Nombre')
+                     // Función para mostrar el texto "Tú" junto al nombre si el perfil del comentario es el mismo que el del usuario autenticado
                     ->formatStateUsing(function ($state, $record) {
                         $userProfileId = Auth::user()?->profiles?->id;
                         // Mostrar en la columna nombre Tú en caso de que sea el perfil autenticado
@@ -67,14 +67,10 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('profile.last_name')
                     ->label('Apellido')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 10);
-                    }),
+                    ->limit(10),
                 Tables\Columns\TextColumn::make('profile.user.email')
                     ->label('Correo')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->limit(20)
 
             ])
             ->filters([
@@ -82,6 +78,8 @@ class CommentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->label("Nuevo comentario")
+                    ->disableCreateAnother() // <-- Desactiva el botón "Crear y crear otro"
                     ->mutateFormDataUsing(function (array $data): array {
                         // Guardar en el campo profile_id el id del perfil del usuario en sesión al hacer un comentario
                         $data['profile_id'] = Auth::user()->profiles->id;
@@ -108,6 +106,7 @@ class CommentsRelationManager extends RelationManager
                     }),
                 //  Luego de eliminar un comentario, actualiza el estado del proceso
                 Tables\Actions\DeleteAction::make()
+                    ->modalHeading('Eliminar Comentario')
                     ->after(function (\App\Models\Comment $record) {
                         \App\Models\Comment::updateProcessState($record->process);
                     }),
@@ -149,16 +148,7 @@ class CommentsRelationManager extends RelationManager
 
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->after(function () {
-                            foreach ($this->getSelected() as $commentId) {
-                                if ($comment = \App\Models\Comment::find($commentId)) {
-                                    \App\Models\Comment::updateProcessState($comment->process);
-                                }
-                            }
-                        }),
-                ]),
+                //
             ]);
     }
 }

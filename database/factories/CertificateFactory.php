@@ -23,7 +23,7 @@ class CertificateFactory extends Factory
         return [
             'acta' => fake()->word(),
             'comment' => fake()->text(),
-            'resolution' => fake()->numberBetween(-8, 8),
+            'resolution' => fake()->numberBetween(0, 4),
             'transaction_id' => Transaction::factory(),
         ];
     }
