@@ -34,6 +34,7 @@ class CommentsRelationManager extends RelationManager
                 Forms\Components\RichEditor::make('comment')
                     ->label('Tu Comentario')
                     ->required()
+                    // Deshabiitar las siguientes opciones del rich editor
                     ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                     ->maxLength(255)
                     ->columnSpanFull(),

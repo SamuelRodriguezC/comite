@@ -14,10 +14,11 @@ class EditProcessAplication extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
+            // Deshabilitar la opción de eliminación
             //Actions\DeleteAction::make(),
         ];
     }
-    // Evita la visualización del registro si está deshabilitado
+    // Evita la visualización de registro si está deshabilitado
     protected function authorizeAccess(): void
     {
         if ($this->record->transaction?->enabled === 2) {

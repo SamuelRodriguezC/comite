@@ -31,10 +31,12 @@ class ListOptions extends ListRecords
         ];
     }
 
-    //protected function getHeaderActions(): array
-    //{
-    //    return [
-    //        Actions\CreateAction::make(),
-    //    ];
-    //}
+
+    protected function getHeaderActions(): array
+    {
+       return [
+         // Opción para crear deshabilitada
+         // Actions\CreateAction::make(),
+       ];
+    }
 }

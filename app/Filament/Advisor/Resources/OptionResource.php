@@ -131,7 +131,7 @@ class OptionResource extends Resource
                         '<ul class="pl-8 list-disc list-inside">' .
                             collect(is_string($state) ? explode(',', $state) : $state) // Convierte string en array
                             ->map(fn($item) => "<li>$item</li>") // Pone cada elemento en un <li>
-                            ->implode('') .
+                            ->implode('') . #Separarlos por espacios
                         '</ul>'
                     )->html() // Permite HTML en la salida
                     ->columnSpan('full'), // Ocupa todo el ancho

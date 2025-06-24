@@ -125,20 +125,6 @@ class TransactionResource extends Resource
 
                 FormSection::make('Opción de grado')
                     ->schema([
-                        //Forms\Components\TextInput::make('profile_id')
-                        //    ->label('Estudiante vinculado')
-                        //    ->default(fn (?Transaction $record) =>
-                        //        $record?->profile
-                        //        ? "{$record->profile->document_number} - {$record->profile->name} {$record->profile->last_name}"
-                        //        : 'No asignado')
-                        //    ->disabled()
-                        //    ->visibleOn('edit'),
-                        // calcula el level del modelo si esta en edición
-                        //Forms\Components\TextInput::make('level')
-                        //    ->label('Nivel')
-                        //    ->disabled()
-                        //    ->default(fn (?Profile $record) => $record?->profile?->level)
-                        //    ->visibleOn('edit'),
                         Forms\Components\TextInput::make('id')
                             ->label('Número de Opción')
                             ->disabled()

@@ -40,6 +40,7 @@ class CommentsRelationManager extends RelationManager
                 Forms\Components\RichEditor::make('comment')
                     ->label('Tu Comentario')
                     ->required()
+                    // Deshabilitar las siguientes opciones del richeditor
                     ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
                     ->maxLength(255)
                     ->columnSpanFull(),
@@ -80,9 +81,7 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('profile.user.email')
                     ->label('Correo')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->limit(20),
 
             ])
             ->filters([

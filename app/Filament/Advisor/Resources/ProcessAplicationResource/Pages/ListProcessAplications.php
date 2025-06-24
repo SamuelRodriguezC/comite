@@ -59,6 +59,7 @@ class ListProcessAplications extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            // Opción para crear deshabilitada
             // Actions\CreateAction::make(),
         ];
     }

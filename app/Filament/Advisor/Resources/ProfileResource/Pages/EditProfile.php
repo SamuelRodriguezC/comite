@@ -14,6 +14,7 @@ class EditProfile extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
+            // Acción de eliminación deshabilitada
             //Actions\DeleteAction::make(),
         ];
     }

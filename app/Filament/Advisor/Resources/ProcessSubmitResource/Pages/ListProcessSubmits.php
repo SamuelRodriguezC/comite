@@ -55,10 +55,11 @@ class ListProcessSubmits extends ListRecords
             ];
     }
 
-    //protected function getHeaderActions(): array
-    //{
-    //    return [
-    //        Actions\CreateAction::make(),
-    //    ];
-    //}
+    protected function getHeaderActions(): array
+    {
+       return [
+        // Acción de creación deshabilitada
+        //  Actions\CreateAction::make(),
+       ];
+    }
 }

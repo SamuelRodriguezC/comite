@@ -1,12 +1,12 @@
 <?php
 
-// ------------------ HACER VARIOS REGISTROS EN UNA LISTA ------------------
+// ------------------ CONVERTIR VARIOS REGISTROS EN UNA LISTA ------------------
 if (!function_exists('format_list_html')) {
     // Definir la función 'format_list_html' que recibe un parámetro $state
     function format_list_html($state): string
     {
         // Comenzar a construir una lista HTML (ul)
-        return '<ul class="list-disc list-inside pl-8">' .
+        return '<ul class="pl-8 list-disc list-inside">' .
 
             // Usar la colección de Laravel para procesar el estado
             collect(is_string($state) ? explode(',', $state) : $state) // Si el estado es una cadena, lo dividimos por comas, de lo contrario, usamos el estado tal cual

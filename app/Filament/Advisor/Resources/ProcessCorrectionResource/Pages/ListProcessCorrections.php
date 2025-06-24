@@ -56,10 +56,11 @@ class ListProcessCorrections extends ListRecords
             ];
     }
 
-    //protected function getHeaderActions(): array
-    //{
-    //    return [
-    //        Actions\CreateAction::make(),
-    //    ];
-    //}
+    protected function getHeaderActions(): array
+    {
+       return [
+            //Opción de creación deshabilitada
+        //    Actions\CreateAction::make(),
+       ];
+    }
 }

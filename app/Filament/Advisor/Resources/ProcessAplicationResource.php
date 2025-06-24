@@ -155,17 +155,22 @@ class ProcessAplicationResource extends Resource
                     ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
                     ->visible(function ($record) {
+                        // Verificar si la transacción está habilitada
                         $isEnabled = $record->transaction?->enabled === 1;
+                        // Verificar si el campo 'Requirement' está vacío o tiene un espacio en blanco ''
                         $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
+                        // Verificar si la fecha de entrega aún no a vencido o no está definida
                         $stillInTime = !$record->delivery_date || Carbon::now()->lessThan($record->delivery_date);
 
+                        // El botón de edición solo será visible si:
+                        // - La transacción está habilitada
+                        // - No hay requerimientos en el proceso
+                        // - Aún está dentro del tiempo permitido para entregar
                         return $isEnabled && $hasNoRequirement && $stillInTime;
                     }),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     // Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                
             ]);
     }
 
@@ -193,7 +198,14 @@ class ProcessAplicationResource extends Resource
                     ->icon(fn ($state) => Completed::from($state)->getIcon())
                     ->color(fn ($state) => Completed::from($state)->getColor()),
                 TextEntry::make('requirement')
-                    ->formatStateUsing(function ($state) {if (!$state) {return null;}return basename($state);})
+                    ->formatStateUsing(function ($state) {
+                        // Si el estado del requerimiento es nulo, retorna null para no mostrar nada en la infolist
+                        if (!$state)
+                         {return null;}
+
+                        //  Si hay valor, retorna solo el nombre del archivo (quitandole la ruta)
+                         return basename($state);
+                    })
                     ->limit(10)
                     ->placeholder('Sin requisitos aún')
                     ->label("Requisitos"),
@@ -223,10 +235,12 @@ class ProcessAplicationResource extends Resource
                         ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
                 TextEntry::make('transaction.profiles.name')
                         ->label('Integrante(s)')
+                        // Utiliza la función format_list_html que se encuentra en el archivo helpers.php
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
                 TextEntry::make('transaction.courses')
                         ->label('Carrera(s)')
+                        // Utiliza la función format_list_html que se encuentra en el archivo helpers.php
                         ->formatStateUsing(fn($state) => format_list_html($state))
                         ->html(),
             ])
@@ -238,9 +252,12 @@ class ProcessAplicationResource extends Resource
     // Filtra por usuario autenticado y por solicitud
     public static function getEloquentQuery(): Builder
     {
-        $profileId = Auth::user()->profiles->id;
+        $profileId = Auth::user()->profiles->id; //Obtiene el id del perfil del usuario en sesión
+
         return parent::getEloquentQuery()
+            // Filtra los procesos para que solo muestre los que estan en etapa de solicitud
             ->whereIn('stage_id', [1])
+            // Asegura que la transacción muestre los procesos donde está el perfil y su rol es asesor
             ->whereHas('transaction.profiles', function (Builder $query) use ($profileId) {
                 $query->where('profile_id', $profileId)
                     ->where('role_id', 2);
@@ -250,6 +267,7 @@ class ProcessAplicationResource extends Resource
     // Filtra por solicitudes pendientes
     public static function getNavigationBadge(): ?string
     {
+        // Cuenta todos los procesos donde su estado es 3 = Pendiente
         return static::getEloquentQuery()
             ->where('state', '3')
             ->count();
@@ -258,6 +276,7 @@ class ProcessAplicationResource extends Resource
     public static function getRelations(): array
     {
         return [
+            // Gerente de relaciones para mostrar los comentarios relacionados con el proceso
             RelationManagers\CommentsRelationManager::class,
         ];
     }
