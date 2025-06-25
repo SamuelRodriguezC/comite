@@ -66,8 +66,7 @@ class ProcessesRelationManager extends RelationManager
 
                     Forms\Components\DateTimePicker::make('delivery_date')
                         ->label('Fecha Límite de Entrega')
-                        ->columnSpanFull()
-                        ->required(),
+                        ->columnSpanFull(),
             ]);
     }
 

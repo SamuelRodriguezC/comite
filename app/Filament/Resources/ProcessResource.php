@@ -66,8 +66,7 @@ class ProcessResource extends Resource
                     ->required(),
                 Forms\Components\DateTimePicker::make('delivery_date')
                     ->label('Fecha Límite de Entrega')
-                    ->columnSpanFull()
-                    ->required(),
+                    ->columnSpanFull(),
                 Forms\Components\FileUpload::make('requirement')
                     ->label('Requisitos en PDF')
                     ->required()
