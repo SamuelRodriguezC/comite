@@ -99,9 +99,14 @@ class TransactionResource extends Resource
                         ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                             $component->state($state == 3);
                             $component->disabled($state == \App\Enums\Status::CERTIFICADO->value);
+                            $component->disabled($state == \App\Enums\Status::PORCERTIFICAR->value);
 
                             if ($state == \App\Enums\Status::CERTIFICADO->value) {
                                 $component->helperText('El estudiante ya fue Certificado, No puedes editar este campo');
+                            }
+                            else if($state == \App\Enums\Status::PORCERTIFICAR->value){
+                                $component->helperText('Solicitud de certificación enviada exitosamente');
+
                             }
                         })
                         ->dehydrateStateUsing(fn (bool $state) => $state ? 3 : null)
