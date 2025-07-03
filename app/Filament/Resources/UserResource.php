@@ -32,7 +32,7 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     //protected static ?string $label = 'Información de perfil';
     protected static ?string $navigationIcon = 'heroicon-o-identification';
-    protected static ?string $navigationGroup = "Gestión de Roles";
+    protected static ?string $navigationGroup = "Gestión de Usuarios";
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';
     protected static ?int $navigationSort = 8;
@@ -94,6 +94,7 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
