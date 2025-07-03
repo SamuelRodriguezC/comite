@@ -144,6 +144,18 @@ class ProcessesRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Crear Proceso')
+                    ->modalHeading("Crear Proceso")
+                    ->visible(function ($livewire) {
+                        $usedStageIds = $livewire->ownerRecord
+                            ->processes()
+                            ->pluck('stage_id')
+                            ->toArray();
+
+                        $remainingStages = Stage::whereNotIn('id', $usedStageIds)->exists();
+
+                        return $remainingStages; // true si hay etapas disponibles, false si no
+                    })
+                    ->disableCreateAnother()
                     ->using(function ($data, $livewire) {
                         return $livewire->ownerRecord
                             ->processes()
