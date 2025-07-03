@@ -206,6 +206,7 @@ class ProcessesRelationManager extends RelationManager
 
                 Tables\Actions\EditAction::make()
                     ->label('Subir')
+                    ->modalHeading('Subir Requisitos')
                     ->icon('heroicon-o-document-arrow-up')
                     ->visible(function ($record) {
                         $hasNoRequirement = !$record->requirement || trim($record->requirement) === '';
