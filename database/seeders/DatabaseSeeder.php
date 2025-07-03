@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             // php artisan db:seed --class=ProfileTransactionSeeder
             // ProfileTransactionSeeder::class,
         ]);
-        Profile::factory(100)->create();
+        Profile::factory(5000)->create();
     }
 }
 

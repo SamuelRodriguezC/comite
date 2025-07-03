@@ -27,6 +27,12 @@ class CreateTransaction extends CreateRecord
         return $data;
     }
 
+    // Deshabilitar la opción de "crear y crear otro"
+    public static function canCreateAnother(): bool
+    {
+        return false;
+    }
+
     // Hacer luego de Crear
     protected function afterCreate(): void
     {
