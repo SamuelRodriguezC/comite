@@ -79,6 +79,7 @@ class CommentsRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label("Nuevo comentario")
+                    ->modalHeading("Crear Comentario")
                     ->disableCreateAnother() // <-- Desactiva el botón "Crear y crear otro"
                     ->mutateFormDataUsing(function (array $data): array {
                         // Guardar en el campo profile_id el id del perfil del usuario en sesión al hacer un comentario

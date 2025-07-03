@@ -52,8 +52,7 @@ class ProcessesRelationManager extends RelationManager
 
                     Forms\Components\DateTimePicker::make('delivery_date')
                         ->label('Fecha Límite de Entrega')
-                        ->columnSpanFull()
-                        ->required(),
+                        ->columnSpanFull(),
             ]);
     }
 
@@ -129,6 +128,18 @@ class ProcessesRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Crear Proceso')
+                    ->modalHeading('Crear Nuevo Proceso')
+                    ->disableCreateAnother()
+                     ->visible(function ($livewire) {
+                        $usedStageIds = $livewire->ownerRecord
+                            ->processes()
+                            ->pluck('stage_id')
+                            ->toArray();
+
+                        $remainingStages = Stage::whereNotIn('id', $usedStageIds)->exists();
+
+                        return $remainingStages; // true si hay etapas disponibles, false si no
+                    })
                     ->using(
                         function ($data, $livewire) {
                             return $livewire->ownerRecord->processes()->create([

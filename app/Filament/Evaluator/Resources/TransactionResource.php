@@ -98,15 +98,22 @@ class TransactionResource extends Resource
                         ->offColor('danger')
                         ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
                             $component->state($state == 3);
-                            $component->disabled($state == \App\Enums\Status::CERTIFICADO->value);
-                            $component->disabled($state == \App\Enums\Status::PORCERTIFICAR->value);
+
+                            $shouldDisable = in_array($state, [
+                                \App\Enums\Status::CERTIFICADO->value,
+                                \App\Enums\Status::PORCERTIFICAR->value,
+                                \App\Enums\Status::CANCELADO->value,
+                            ]);
+
+                            $component->disabled($shouldDisable);
 
                             if ($state == \App\Enums\Status::CERTIFICADO->value) {
                                 $component->helperText('El estudiante ya fue Certificado, No puedes editar este campo');
-                            }
-                            else if($state == \App\Enums\Status::PORCERTIFICAR->value){
+                            } elseif ($state == \App\Enums\Status::PORCERTIFICAR->value) {
                                 $component->helperText('Solicitud de certificación enviada exitosamente');
-
+                            }
+                            elseif ($state == \App\Enums\Status::CANCELADO->value) {
+                                $component->helperText('La Opción esta cancelada no puedes enviar solicitud de certificación');
                             }
                         })
                         ->dehydrateStateUsing(fn (bool $state) => $state ? 3 : null)
