@@ -13,6 +13,9 @@ class CreatedTransactions extends LineChartWidget
     protected static ?int $sort = 3;
     protected function getData(): array
     {
+        // Establece el idioma a español
+        Carbon::setLocale('es');
+
         $months = collect();
         for ($i = 11; $i >= 0; $i--) {
             $months->push(Carbon::now()->subMonths($i)->format('Y-m'));
@@ -26,7 +29,7 @@ class CreatedTransactions extends LineChartWidget
         });
 
         return [
-            'labels' => $months->map(fn($m) => Carbon::createFromFormat('Y-m', $m)->format('M Y'))->toArray(),
+            'labels' => $months->map(fn($m) => Carbon::createFromFormat('Y-m', $m)->translatedformat('M Y'))->toArray(),
             'datasets' => [
                 [
                     'label' => 'Opciones Creadas',
