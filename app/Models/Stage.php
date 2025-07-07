@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo que representa una etapa dentro del flujo de un proceso académico.
+ *
+ * Las etapas agrupan procesos que deben cumplirse dentro de una transacción.
+ */
 class Stage extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar en masa.
      * @var array
      */
     protected $fillable = [
@@ -20,7 +25,7 @@ class Stage extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Los atributos que deben convertirse a tipos nativos.
      * @var array
      */
     protected $casts = [
@@ -28,7 +33,7 @@ class Stage extends Model
     ];
 
     /**
-     * Establishes the type of relationship it has with other models
+     * Establece el tipo de relación que tiene con otros modelos.
      */
     public function processes(): HasMany
     {

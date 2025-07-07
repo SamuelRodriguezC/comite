@@ -16,6 +16,13 @@ use Filament\Panel\Concerns\HasNotifications;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Modelo que representa a los usuarios del sistema.
+ *
+ * Implementa autenticación, verificación de email, roles, notificaciones y acceso al panel Filament.
+ */
+
+
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -23,7 +30,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     use HasRoles;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar en masa.
      *
      * @var list<string>
      */
@@ -35,9 +42,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Atributos que deben ocultarse al serializar el modelo.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -45,7 +52,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Atributos que deben castearse a tipos nativos.
      *
      * @return array<string, string>
      */
@@ -58,18 +65,31 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     }
 
     /**
-     * Establishes the type of relationship it has with other models
+     * Establece el tipo de relación que tiene con otros modelos.
      */
     public function profiles(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
 
+
+    /**
+     * Determina si el usuario puede acceder al panel de Filament.
+     *
+     * @param  \Filament\Panel  $panel
+     * @return bool
+     */
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
 
+    /**
+     * Envía la notificación para restablecimiento de contraseña.
+     *
+     * @param  string  $token
+     * @return void
+     */
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));

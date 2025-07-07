@@ -11,7 +11,7 @@ class Course extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar en masa.
      * @var array
      */
     protected $fillable = [
@@ -20,7 +20,7 @@ class Course extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Los atributos que deben convertirse a tipos nativos.
      * @var array
      */
     protected $casts = [
@@ -28,6 +28,9 @@ class Course extends Model
         'level' => 'integer',
     ];
 
+    /**
+     * Establece el tipo de relación que tiene con otros modelos.
+     */
     public function profileTransactions(): HasMany
     {
         return $this->hasMany(ProfileTransaction::class, 'courses_id');

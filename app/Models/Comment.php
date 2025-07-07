@@ -13,7 +13,7 @@ class Comment extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar en masa.
      * @var array
      */
     protected $fillable = [
@@ -24,7 +24,7 @@ class Comment extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Los atributos que deben convertirse a tipos nativos.
      * @var array
      */
     protected $casts = [
@@ -35,7 +35,7 @@ class Comment extends Model
     ];
 
     /**
-     * Establishes the type of relationship it has with other models
+     * Establece el tipo de relación que tiene con otros modelos.
      */
     public function process(): BelongsTo
     {
@@ -52,15 +52,11 @@ class Comment extends Model
     }
 
 
-    // Función que actualiza el estado del proceso según los comentarios asociados
+    /**
+     * Actualiza el estado del proceso segun los conceptos de los comentarios
+     */
     public static function updateProcessState(Process $process): void
     {
-        // Solo actualiza el estado si hay al menos 2 comentarios ----------
-        // $commentCount = $process->comments()->count();
-        // if ($commentCount < 2) {
-        //     return;
-        // }
-
         // Verifica si todos los comentarios tienen el concepto aprobado (concept_id = 1)
         $allApproved = $process->comments()->where('concept_id', 1)->count() === $process->comments()->count();
 

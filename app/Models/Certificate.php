@@ -12,7 +12,7 @@ class Certificate extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar en masa.
      * @var array
      */
     protected $fillable = [
@@ -23,7 +23,7 @@ class Certificate extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Los atributos que deben convertirse a tipos nativos.
      * @var array
      */
     protected $casts = [
@@ -33,7 +33,7 @@ class Certificate extends Model
     ];
 
     /**
-     * Establishes the type of relationship it has with other models
+     * Establece el tipo de relación que tiene con otros modelos
      */
     public function transaction(): BelongsTo
     {

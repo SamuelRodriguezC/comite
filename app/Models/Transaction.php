@@ -20,12 +20,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+
+/**
+ * Modelo que representa una transacción de opción de grado.
+ *
+ * Cada transacción puede estar asociada a múltiples perfiles (estudiantes, asesores, evaluadores),
+ * procesos, cursos y una opción de grado específica.
+ */
 class Transaction extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar en masa.
      * @var array
      */
     protected $fillable = [
@@ -37,7 +44,7 @@ class Transaction extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Los atributos que deben convertirse a tipos nativos.
      * @var array
      */
     protected $casts = [
@@ -48,7 +55,9 @@ class Transaction extends Model
         'option_id' => 'integer',
     ];
 
-    // ----------------------- RELACIONES -----------------------
+    /**
+     * Establece el tipo de relación que tiene con otros modelos.
+     */
     public function profileTransactions()
     {
         return $this->hasMany(ProfileTransaction::class);
@@ -82,6 +91,11 @@ class Transaction extends Model
 
     // ----------------------- MÉTODOS ------------------------
 
+    /**
+     * Obtiene los nombres de los cursos únicos asociados a los perfiles de la transacción.
+     *
+     * @return string
+     */
     public function getCoursesAttribute()
     {
         return $this->profiles
@@ -95,13 +109,19 @@ class Transaction extends Model
             ->implode(', ');
     }
 
-    // ---------- VERIFICAR SI LA TRANSACCIÓN ES EDITABLE (ANTES DE 12 HRS) ----------
+    /**
+     * Determina si la transacción puede ser editada (menos de 12 horas desde su creación).
+     */
     public function isEditable(): bool
     {
         return $this->created_at->diffInHours(now()) < 12;
     }
 
-    // ---------- VALIDAR - EL ESTUDIANTE NO PUEDE CREAR TRANSACCIONES SI TIENE AL MENOS UNA HABILITADA  ----------
+
+    /**
+     * Verifica si el estudiante actual puede crear una nueva transacción.
+     * Solo es posible si no tiene ninguna transacción habilitada.
+     */
     public static function canCreate(): bool
     {
         $user = Auth::user();
@@ -123,6 +143,11 @@ class Transaction extends Model
         return !$hasEnabledTransaction;
     }
 
+    // ----------------------- EVENTOS ------------------------
+
+    /**
+     * Evento para enviar notificación cuando cambia el estado de la transacción.
+     */
     protected static function booted()
     {
         static::updated(function (Transaction $transaction) {
