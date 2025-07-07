@@ -9,8 +9,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
 {
+    /**
+     * El nombre del modelo correspondiente de la fábrica.
+     * @var string
+     */
     protected $model = User::class;
 
+    /**
+     * Parametros para crear datos de prueba.
+     */
     public function definition()
     {
         return [
@@ -21,8 +28,11 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
-
-    // ---------- ASIGNAR ROL A CADA USUARIO ----------
+    /**
+     * Asigna un rol a cada usuario creado
+     *
+     * @return void
+     */
     public function configure()
     {
     return $this->afterCreating(function (User $user) {

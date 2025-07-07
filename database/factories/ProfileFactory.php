@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class ProfileFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
+     * El nombre del modelo correspondiente de la fábrica.
      * @var string
      */
     protected $model = Profile::class;
 
     /**
-     * Define the model's default state.
+     * Parametros para crear datos de prueba.
      */
     public function definition(): array
     {
