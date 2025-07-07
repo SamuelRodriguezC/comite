@@ -12,30 +12,31 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Muestra la vista de inicio de sesión.
+     *
+     * @return View
      */
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    //public function store(LoginRequest $request): RedirectResponse
-    //{
-    //    $request->authenticate();
-    //    $request->session()->regenerate();
-    //    return redirect()->intended(route('dashboard', absolute: false));
-    //}
 
+    /**
+     * Maneja la autenticación del usuario.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function store(Request $request): RedirectResponse
     {
+        // Validar campos de login
         $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ]);
 
+        // Validar campos de login
         if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return back()->withErrors([
                 'email' => trans('auth.failed'),
@@ -46,7 +47,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-         // Si el usuario no está verificado, redirigir al dashboard
+        // Verificar si el correo fue confirmado
         if (! $user->email_verified_at) {
             return redirect()->route('login');
         }
@@ -73,7 +74,10 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Cierra la sesión del usuario autenticado.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {

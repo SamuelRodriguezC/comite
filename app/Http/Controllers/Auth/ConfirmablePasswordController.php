@@ -12,7 +12,9 @@ use Illuminate\View\View;
 class ConfirmablePasswordController extends Controller
 {
     /**
-     * Show the confirm password view.
+     * Muestra la vista para confirmar la contraseña del usuario.
+     *
+     * @return View
      */
     public function show(): View
     {
@@ -20,7 +22,13 @@ class ConfirmablePasswordController extends Controller
     }
 
     /**
-     * Confirm the user's password.
+     * Verifica que la contraseña ingresada por el usuario sea correcta.
+     * Si es válida, almacena el tiempo de confirmación en sesión y redirige.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     *
+     * @throws ValidationException Si la contraseña no coincide.
      */
     public function store(Request $request): RedirectResponse
     {

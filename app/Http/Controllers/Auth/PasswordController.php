@@ -11,7 +11,13 @@ use Illuminate\Validation\Rules\Password;
 class PasswordController extends Controller
 {
     /**
-     * Update the user's password.
+     * Actualiza la contraseña del usuario autenticado.
+     *
+     * Valida que la contraseña actual sea correcta y que la nueva contraseña cumpla
+     * con los requisitos definidos por `Password::defaults()`.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function update(Request $request): RedirectResponse
     {

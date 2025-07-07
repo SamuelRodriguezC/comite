@@ -9,8 +9,12 @@ use Illuminate\View\View;
 
 class EmailVerificationPromptController extends Controller
 {
-    /**
-     * Display the email verification prompt.
+  /**
+     * Muestra la vista de verificación de correo si el usuario aún no lo ha verificado.
+     * Redirige al login si ya ha verificado su correo.
+     *
+     * @param Request $request
+     * @return RedirectResponse|View
      */
     public function __invoke(Request $request): RedirectResponse|View
     {

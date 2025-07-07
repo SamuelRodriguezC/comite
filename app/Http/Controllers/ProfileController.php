@@ -9,10 +9,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+/**
+ * Controlador para gestionar el perfil del usuario autenticado.
+ */
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Muestra el formulario para editar el perfil del usuario.
+     *
+     * @param  Request  $request
+     * @return View
      */
     public function edit(Request $request): View
     {
@@ -22,7 +28,12 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Actualiza la información del perfil del usuario.
+     *
+     * Si el correo electrónico fue modificado, se reinicia su verificación.
+     *
+     * @param  ProfileUpdateRequest  $request
+     * @return RedirectResponse
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
@@ -38,7 +49,12 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Elimina la cuenta del usuario autenticado.
+     *
+     * Solicita validación de contraseña antes de proceder.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {

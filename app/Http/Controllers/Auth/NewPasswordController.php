@@ -16,7 +16,10 @@ use Illuminate\View\View;
 class NewPasswordController extends Controller
 {
     /**
-     * Display the password reset view.
+     * Muestra la vista para restablecer la contraseña.
+     *
+     * @param Request $request
+     * @return View
      */
     public function create(Request $request): View
     {
@@ -24,7 +27,10 @@ class NewPasswordController extends Controller
     }
 
     /**
-     * Handle an incoming new password request.
+     * Procesa la solicitud de restablecimiento de contraseña.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */

@@ -10,8 +10,10 @@ use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Display the password reset link request view.
+/**
+     * Muestra la vista para solicitar el enlace de restablecimiento de contraseña.
+     *
+     * @return View
      */
     public function create(): View
     {
@@ -19,7 +21,10 @@ class PasswordResetLinkController extends Controller
     }
 
     /**
-     * Handle an incoming password reset link request.
+     * Envía un enlace de restablecimiento de contraseña al correo indicado.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */

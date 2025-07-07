@@ -15,7 +15,9 @@ use Illuminate\Auth\Events\Registered;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Muestra la vista de registro con los tipos de documentos disponibles.
+     *
+     * @return View
      */
     public function create(): View
     {
@@ -23,8 +25,14 @@ class RegisteredUserController extends Controller
         return view('auth.register', compact('documents'));
     }
 
-    /**
-     * Handle an incoming registration request.
+     /**
+     * Procesa una solicitud de registro entrante.
+     *
+     * Valida los datos, crea un nuevo usuario, asigna el rol de Estudiante,
+     * crea el perfil asociado, y autentica al usuario.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -46,6 +54,7 @@ class RegisteredUserController extends Controller
             ],
 
         ], [
+            // Mensajes personalizados
             'email.required' => 'El campo correo electrónico es obligatorio.',
             'email.string' => 'El campo correo electrónico debe ser una cadena de texto.',
             'email.email' => 'El campo correo electrónico debe ser una dirección de correo electrónico válida.',
@@ -82,11 +91,13 @@ class RegisteredUserController extends Controller
             'level.in' => 'El nivel seleccionado no es válido.',
         ]);
 
+        // Crear el usuario
         $user = User::create([
             'name' => $request->profile_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
         // Asignar Rol al Usuario al Registrarse
         $user->assignRole('Estudiante');
 

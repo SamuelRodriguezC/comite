@@ -9,7 +9,13 @@ use Illuminate\Http\Request;
 class EmailVerificationNotificationController extends Controller
 {
     /**
-     * Send a new email verification notification.
+     * Envía un nuevo enlace de verificación de correo al usuario autenticado.
+     *
+     * Si el correo ya está verificado, redirige al dashboard.
+     * Si no, reenvía el enlace y muestra un mensaje de estado.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
