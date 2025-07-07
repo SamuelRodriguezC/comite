@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo que representa un comentario emitido sobre un proceso.
+ *
+ * Cada comentario pertenece a un proceso específico y está asociado
+ * a un concepto (ej: Aprobado, No aprobado) y a un perfil evaluador.
+ */
 class Comment extends Model
 {
     use HasFactory;

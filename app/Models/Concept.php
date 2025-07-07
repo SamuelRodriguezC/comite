@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo que representa un concepto asociado a comentarios (Aprobado o improbado).
+ *
+ * Los conceptos son categorías o etiquetas que permiten clasificar
+ * los comentarios emitidos durante el proceso de evaluación.
+ */
 class Concept extends Model
 {
     use HasFactory;

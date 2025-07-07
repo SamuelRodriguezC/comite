@@ -12,12 +12,12 @@ class ProfileNotifications extends Notification
     use Queueable;
 
     /**
-     * Create a new notification instance.
+     * Crear una nueva instancia.
      */
     public function __construct()
     {
         //
     }
 
-    
+
 }

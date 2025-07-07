@@ -16,7 +16,7 @@ class TransactionNotifications extends Notification
     use Queueable;
 
     /**
-     * Create a new notification instance.
+     * Crear una nueva instancia de la clase.
      */
     public function __construct()
     {

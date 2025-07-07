@@ -11,14 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-
 /**
  * Modelo que representa un proceso académico dentro de una transacción.
  *
  * Cada proceso está asociado a una etapa, una transacción y puede tener múltiples comentarios.
  * Su estado y completitud afectan directamente el flujo y finalización de la transacción.
  */
-
 class Process extends Model
 {
     use HasFactory;

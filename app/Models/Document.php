@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo que representa los tipos de documento (como cédula, pasaporte, etc.).
+ *
+ * Relacionado con el modelo Profile.
+ */
 class Document extends Model
 {
     use HasFactory;

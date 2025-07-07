@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo Certificate
+ *
+ * Representa el certificado generado al finalizar una transacción (proceso de opción de grado).
+ * Contiene información como el número de acta, comentarios y resolución asociada.
+ */
 class Certificate extends Model
 {
     use HasFactory;

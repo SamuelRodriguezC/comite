@@ -21,8 +21,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  *
  * Implementa autenticación, verificación de email, roles, notificaciones y acceso al panel Filament.
  */
-
-
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

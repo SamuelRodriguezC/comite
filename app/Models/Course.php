@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo que representa un curso académico.
+ *
+ * Cada curso está asociado a un nivel y puede estar vinculado
+ * a múltiples perfiles a través de la tabla pivot `profile_transaction`.
+ */
 class Course extends Model
 {
     use HasFactory;
