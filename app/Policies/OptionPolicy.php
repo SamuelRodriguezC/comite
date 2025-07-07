@@ -11,7 +11,10 @@ class OptionPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any models.
+     * Determina si el usuario puede ver cualquier modelo.
+     *
+     * @param User $user
+     * @return boolean
      */
     public function viewAny(User $user): bool
     {
@@ -19,7 +22,11 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determina si el usuario puede ver un modelo específico.
+     *
+     * @param User $user
+     * @param Option $option
+     * @return boolean
      */
     public function view(User $user, Option $option): bool
     {
@@ -27,7 +34,10 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determina si el usuario puede crear modelos.
+     *
+     * @param User $user
+     * @return boolean
      */
     public function create(User $user): bool
     {
@@ -35,15 +45,24 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determina si el usuario puede actualizar el modelo.
+     *
+     * @param User $user
+     * @param Option $option
+     * @return boolean
      */
     public function update(User $user, Option $option): bool
     {
         return $user->can('update_option');
     }
 
+
     /**
-     * Determine whether the user can delete the model.
+     * Determina si el usuario puede eliminar el modelo.
+     *
+     * @param User $user
+     * @param Option $option
+     * @return boolean
      */
     public function delete(User $user, Option $option): bool
     {
@@ -51,7 +70,10 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can bulk delete.
+     * Determina si el usuario puede borrar en bloque.
+     *
+     * @param User $user
+     * @return boolean
      */
     public function deleteAny(User $user): bool
     {
@@ -59,7 +81,11 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete.
+     * Determina si el usuario puede eliminar permanentemente.
+     *
+     * @param User $user
+     * @param Option $option
+     * @return boolean
      */
     public function forceDelete(User $user, Option $option): bool
     {
@@ -67,7 +93,10 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can permanently bulk delete.
+     * Determina si el usuario puede realizar eliminación masiva permanente.
+     *
+     * @param User $user
+     * @return boolean
      */
     public function forceDeleteAny(User $user): bool
     {
@@ -75,7 +104,11 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can restore.
+     * Determina si el usuario puede restaurar.
+     *
+     * @param User $user
+     * @param Option $option
+     * @return boolean
      */
     public function restore(User $user, Option $option): bool
     {
@@ -83,7 +116,10 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can bulk restore.
+     * Determina si el usuario puede realizar restauraciones masivas.
+     *
+     * @param User $user
+     * @return boolean
      */
     public function restoreAny(User $user): bool
     {
@@ -91,7 +127,11 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can replicate.
+     * Determina si el usuario puede hacer copias.
+     *
+     * @param User $user
+     * @param Option $option
+     * @return boolean
      */
     public function replicate(User $user, Option $option): bool
     {
@@ -99,7 +139,10 @@ class OptionPolicy
     }
 
     /**
-     * Determine whether the user can reorder.
+     * Determina si el usuario puede re-ordenar.
+     *
+     * @param User $user
+     * @return boolean
      */
     public function reorder(User $user): bool
     {

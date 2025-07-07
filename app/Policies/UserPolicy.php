@@ -11,7 +11,7 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any models.
+     * Determina si el usuario puede ver cualquier modelo.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -22,7 +22,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determina si el usuario puede ver un modelo específico.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -33,7 +33,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determina si el usuario puede crear modelos.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -44,7 +44,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determina si el usuario puede actualizar el modelo.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -55,7 +55,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Determina si el usuario puede eliminar el modelo.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -66,7 +66,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can bulk delete.
+     * Determina si el usuario puede borrar en bloque.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -77,7 +77,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete.
+     * Determina si el usuario puede eliminar permanentemente.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -88,7 +88,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can permanently bulk delete.
+     * Determina si el usuario puede realizar eliminación masiva permanente.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -99,7 +99,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can restore.
+     * Determina si el usuario puede restaurar.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -110,7 +110,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can bulk restore.
+     * Determina si el usuario puede realizar restauraciones masivas.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -121,7 +121,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can bulk restore.
+     * Determina si el usuario puede hacer copias.
      *
      * @param  \App\Models\User  $user
      * @return bool
@@ -132,7 +132,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can reorder.
+     * Determina si el usuario puede re-ordenar.
      *
      * @param  \App\Models\User  $user
      * @return bool
