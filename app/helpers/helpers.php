@@ -1,6 +1,11 @@
 <?php
 
-// ------------------ CONVERTIR VARIOS REGISTROS EN UNA LISTA ------------------
+/**
+ * Convierte una cadena separada por comas o un array en una lista HTML.
+ *
+ * @param string|array|null $state Cadena (e.g., "Uno,Dos") o array de elementos.
+ * @return string Lista HTML formateada (<ul><li>Elemento</li>...</ul>)
+ */
 if (!function_exists('format_list_html')) {
     // Definir la función 'format_list_html' que recibe un parámetro $state
     function format_list_html($state): string
@@ -23,10 +28,11 @@ if (!function_exists('format_list_html')) {
 }
 
 
-
-
-
-// ------------------ OBTENER PERFIL DE USUARIO EN SESIÓN ------------------
+/**
+ * Obtiene el ID del perfil del usuario autenticado.
+ *
+ * @return int|null ID del perfil o null si no hay sesión activa.
+ */
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,7 +45,12 @@ if (!function_exists('auth_profile_id')) {
 
 
 
-// ------------------ OBTENER CARRERAS POR NIVEL DE PERFIL ------------------
+/**
+ * Retorna las carreras asociadas a un nivel de perfil dado.
+ *
+ * @param int $level Nivel académico (e.g., 1: Pregrado, 2: Posgrado).
+ * @return array Arreglo [id => nombre_carrera] de las carreras.
+ */
 function getCoursesByProfileLevel($level) {
     return \App\Models\Course::where('level', $level)
         ->pluck('course', 'id')
