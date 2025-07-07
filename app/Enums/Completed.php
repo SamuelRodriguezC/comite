@@ -5,14 +5,25 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasLabel;
 
 /**
- * Establish cases
+ * Enum Completed
+ *
+ * Indica si un proceso dentro de una transacción ha sido completado o no.
+ *
+ * El estado por defecto es 'No'. Este enum se utiliza para representar visualmente
+ * en la interfaz si un proceso ha finalizado, mediante etiquetas, íconos y colores compatibles con Filament.
+ *
+ * @package App\Enums
  */
 enum Completed: int implements HasLabel
 {
     case SI = 1;
     case NO = 0;
+
+
     /**
-     * Generates function to display a label
+     * Devuelve una etiqueta legible para mostrar en la interfaz.
+     *
+     * @return string|null
      */
     public function getLabel(): ?string
     {
@@ -22,6 +33,11 @@ enum Completed: int implements HasLabel
         };
     }
 
+    /**
+     * Devuelve el nombre del ícono Heroicon asociado al estado.
+     *
+     * @return string
+     */
     public function getIcon(): string
     {
         return match ($this) {
@@ -30,6 +46,11 @@ enum Completed: int implements HasLabel
         };
     }
 
+    /**
+     * Devuelve el color asociado al estado, usado en componentes visuales de Filament.
+     *
+     * @return string
+     */
     public function getColor(): string
     {
         return match ($this) {
@@ -38,4 +59,3 @@ enum Completed: int implements HasLabel
         };
     }
 }
-

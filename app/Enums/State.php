@@ -6,19 +6,31 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
 /**
- * Establish cases
+ * Enum State
+ *
+ * Representa los posibles estados de un proceso académico dentro del sistema.
+ * Implementa las interfaces HasLabel y HasColor para su integración con Filament.
+ *
+ * Flujo normal:
+ * Pendiente → Entregado → Aprobado / Improbado
+ *
+ * @package App\Enums
  */
 enum State: int implements HasLabel, HasColor
 {
-    case APROBADO = 1;
-    case IMPROBADO = 2;
-    case PENDIENTE = 3;
-    case APLAZADO = 4;
-    case CANCELADO = 5;
-    case ENTREGADO = 6;
-    case VENCIDO = 7;
+    case APROBADO = 1; //Todos los evaluadores aprobaron el proceso.
+    case IMPROBADO = 2; //Al menos un evaluador reprobó el proceso.
+    case PENDIENTE = 3; // Estado inicial del proceso, sin entrega.
+    case APLAZADO = 4; // Proceso aplazado manualmente por el coordinador.
+    case CANCELADO = 5; // Proceso cancelado manualmente por el coordinador.
+    case ENTREGADO = 6; // El estudiante subió el documento requerido.
+    case VENCIDO = 7; // El proceso superó su fecha límite sin acción.
+
+
     /**
-     * Generates function to display a label
+     * Retorna una etiqueta legible para el estado, usada en la interfaz de usuario.
+     *
+     * @return string|null
      */
     public function getLabel(): ?string
     {
@@ -32,8 +44,13 @@ enum State: int implements HasLabel, HasColor
             self::VENCIDO => 'Vencido',
         };
     }
+
     /**
-     * Generates function to obtain color according to the case
+     * Devuelve el color asociado al estado, usado por los componentes de Filament.
+     *
+     * Colores disponibles: success, danger, warning, info, gray.
+     *
+     * @return string|array|null
      */
     public function getColor(): string|array|null
     {

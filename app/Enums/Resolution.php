@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * Enum Resolution
+ *
+ * Representa el resultado de una resolución académica.
+ * Actualmente no está en uso dentro del sistema.
+ *
+ * @deprecated Este enum no está siendo utilizado en el sistema actual.
+ *
+ * @package App\Enums
+ */
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
