@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecutar migraciones.
      */
     public function up(): void
     {
@@ -33,7 +33,7 @@ return new class extends Migration
             //         ->on('profiles')
             //         ->onDelete('cascade')
             //         ->onUpdate('cascade');
-            
+
             $table->foreignIdFor(Profile::class);
             $table->timestamps();
         });
@@ -41,7 +41,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Revertir las migraciones.
      */
     public function down(): void
     {
