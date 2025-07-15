@@ -106,11 +106,11 @@ class CommentsRelationManager extends RelationManager
                         \App\Models\Comment::updateProcessState($record->process);
                     }),
                 //  Luego de eliminar un comentario, actualiza el estado del proceso
-                Tables\Actions\DeleteAction::make()
-                    ->modalHeading('Eliminar Comentario')
-                    ->after(function (\App\Models\Comment $record) {
-                        \App\Models\Comment::updateProcessState($record->process);
-                    }),
+                // Tables\Actions\DeleteAction::make()
+                //     ->modalHeading('Eliminar Comentario')
+                //     ->after(function (\App\Models\Comment $record) {
+                //         \App\Models\Comment::updateProcessState($record->process);
+                //     }),
                 // Botón para ver detalles de integrante
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
