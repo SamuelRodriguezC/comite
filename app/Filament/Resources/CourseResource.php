@@ -96,9 +96,11 @@ class CourseResource extends Resource
                         ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
                     TextEntry::make('created_at')
                         ->dateTime()
+                        ->placeholder('Sin Definir')
                         ->label('Creado en'),
                     TextEntry::make('update_at')
                         ->dateTime()
+                        ->placeholder('No se ha Actualizado desde la Creación')
                         ->label('Actualizado en'),
                 ]),
         ]);
