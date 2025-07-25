@@ -46,7 +46,7 @@ class OptionResource extends Resource
                     ->options(Level::class)
                     ->required(),
                 Forms\Components\Select::make('component')
-                    ->label('Nivel universitario')
+                    ->label('Componente')
                     ->live()
                     ->preload()
                     ->enum(Component::class)

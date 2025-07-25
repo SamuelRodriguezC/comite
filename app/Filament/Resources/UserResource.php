@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Group;
+use Filament\Infolists\Components\InfoGroup;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -166,22 +167,20 @@ class UserResource extends Resource
             InfoSection::make('Información de Perfil')
                 ->icon('heroicon-o-identification')
                 ->schema([
-                    Group::make([
-                        TextEntry::make('profiles.name')
-                            ->label('Nombre(s)'),
-                        TextEntry::make('profiles.last_name')
-                            ->label('Apellido(s)'),
-                        TextEntry::make('profiles.Document.type')
-                            ->label('Tipo de documento'),
-                        TextEntry::make('profiles.document_number')
-                            ->label('Documento'),
-                        TextEntry::make('profiles.phone_number')
-                            ->label('Teléfono'),
-                        TextEntry::make('profiles.level')
-                            ->label('Nivel universitario')
-                            ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                    ])->columns(2),
-                ])->columnSpan(3),
+                    TextEntry::make('profiles.name')
+                        ->label('Nombre(s)'),
+                    TextEntry::make('profiles.last_name')
+                        ->label('Apellido(s)'),
+                    TextEntry::make('profiles.Document.type')
+                        ->label('Tipo de documento'),
+                    TextEntry::make('profiles.document_number')
+                        ->label('Documento'),
+                    TextEntry::make('profiles.phone_number')
+                        ->label('Teléfono'),
+                    TextEntry::make('profiles.level')
+                        ->label('Nivel universitario')
+                        ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
+                ])->columns(2)->columnSpan(3),
         ])->columns(3);
     }
 
