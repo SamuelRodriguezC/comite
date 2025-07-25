@@ -20,7 +20,7 @@ class ViewProcessAplication extends ViewRecord
                 ->url(
                     fn ($record) => route('file.view', ['file' => basename($record->requirement)]) //Redirigir a la ruta de visualización el archivo sin mostar la ruta completa del archivo (Solo su nombre)
                 )
-                ->hidden(fn($record) => empty($record->requirement)) // Oculta el botón si no hay requerimiento
+                ->hidden(fn ($record) => empty(trim($record->requirement))) // Oculta el botón si no hay requerimiento
                 ->openUrlInNewTab(), // Abre la vista en una nueva pestaña
 
             //Botón para descargar el requerimiento
@@ -30,7 +30,7 @@ class ViewProcessAplication extends ViewRecord
                 ->url(
                     fn ($record) => route('file.download', ['file' => basename($record->requirement)])
                 )
-                ->hidden(fn($record) => empty($record->requirement))
+                ->hidden(fn ($record) => empty(trim($record->requirement)))
                 ->openUrlInNewTab(), // Abre en una nueva pestaña
 
             // Opción para editar deshabilitada

@@ -19,7 +19,7 @@ class ViewProcessCorrection extends ViewRecord
                 ->url(
                     fn ($record) => route('file.view', ['file' => basename($record->requirement)])
                 )
-                ->hidden(fn($record) => empty($record->requirement))
+                ->hidden(fn ($record) => empty(trim($record->requirement)))
                 ->openUrlInNewTab(), // Abre la vista en una nueva pestaña
 
             Actions\Action::make('download')
@@ -28,7 +28,7 @@ class ViewProcessCorrection extends ViewRecord
                 ->url(
                     fn ($record) => route('file.download', ['file' => basename($record->requirement)])
                 )
-                ->hidden(fn($record) => empty($record->requirement))
+                ->hidden(fn ($record) => empty(trim($record->requirement)))
                 ->openUrlInNewTab(), // Abre en una nueva pestaña
 
             // Acción de edición deshabilitada
