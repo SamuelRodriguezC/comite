@@ -54,6 +54,7 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('comment')
                     ->label('Comentario')
+                    ->markdown()
                     ->formatStateUsing(function ($state){
                         return Str::limit($state, 20);
                     }),

@@ -202,12 +202,12 @@ class ProfilesRelationManager extends RelationManager
                     }),
 
                 // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
-                Tables\Actions\EditAction::make()
-                    ->visible(
-                        fn($record) =>
-                        $record->id === auth_profile_id() &&
-                            $this->getTransaction()->isEditable()
-                    ),
+                // Tables\Actions\EditAction::make()
+                //     ->visible(
+                //         fn($record) =>
+                //         $record->id === auth_profile_id() &&
+                //             $this->getTransaction()->isEditable()
+                //     ),
                 // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
                 Tables\Actions\DetachAction::make()
                     ->visible(

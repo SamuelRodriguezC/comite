@@ -63,10 +63,10 @@ class ProfileResource extends Resource
                     ->enum(Level::class)
                     ->options(Level::class)
                     ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->label("Usuario")
-                    ->relationship('user', 'name')
-                    ->required(),
+                // Forms\Components\Select::make('user_id')
+                //     ->label("Usuario")
+                //     ->relationship('user', 'name')
+                //     ->required(),
             ]);
     }
 

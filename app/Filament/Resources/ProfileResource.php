@@ -84,20 +84,25 @@ class ProfileResource extends Resource
                 Tables\Columns\TextColumn::make('document_number')
                     ->label("Número documento")
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->label("Número telefono")
                     // ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label("Nivel universitario")
                     ->formatStateUsing(fn ($state) => Level::from($state)->getLabel())
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document.type')
                     ->label("Tipo de documento")
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label("Nombre de usuario")
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
@@ -111,7 +116,16 @@ class ProfileResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Nivel Universitario
+                Tables\Filters\SelectFilter::make('level')
+                    ->label('Nivel universitario')
+                    ->options(Level::class),
+
+                // Tipo de Documento
+                Tables\Filters\SelectFilter::make('document_id')
+                    ->label('Tipo de documento')
+                    ->relationship('document', 'type'),
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -167,14 +181,11 @@ class ProfileResource extends Resource
                         ->label('Registrado en'),
                     TextEntry::make('User.id')
                         ->label('Id de usuario'),
-                    TextEntry::make('Role.name')
-                        ->label('Rol')
-                        ->formatStateUsing(fn ($state) => $state->getRoleNames()->implode(', ')),
-                    //TextEntry::make('User.roles')
-                    //    ->label('Rol')
-                    //    ->formatStateUsing(fn ($record) => $record->user
-                    //    ? $record->user->getRoleNames()->implode(', ')
-                    //    : 'Sin rol asignado')
+                    TextEntry::make('User.roles')
+                       ->label('Rol')
+                       ->formatStateUsing(fn ($record) => $record->user
+                       ? $record->user->getRoleNames()->implode(', ')
+                       : 'Sin rol asignado')
                 ]),
             //TextEntry::make('user_id')
             //        ->label('ID detalles de usuario'),
