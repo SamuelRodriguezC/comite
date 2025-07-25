@@ -60,12 +60,12 @@ class ConceptResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }
@@ -102,7 +102,7 @@ class ConceptResource extends Resource
         return [
             'index' => Pages\ListConcepts::route('/'),
             'create' => Pages\CreateConcept::route('/create'),
-            'view' => Pages\ViewConcept::route('/{record}'),
+            // 'view' => Pages\ViewConcept::route('/{record}'),
             'edit' => Pages\EditConcept::route('/{record}/edit'),
         ];
     }
