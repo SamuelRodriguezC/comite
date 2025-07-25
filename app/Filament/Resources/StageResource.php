@@ -58,12 +58,11 @@ class StageResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }
@@ -100,7 +99,7 @@ class StageResource extends Resource
         return [
             'index' => Pages\ListStages::route('/'),
             'create' => Pages\CreateStage::route('/create'),
-            'view' => Pages\ViewStage::route('/{record}'),
+            // 'view' => Pages\ViewStage::route('/{record}'),
             'edit' => Pages\EditStage::route('/{record}/edit'),
         ];
     }
