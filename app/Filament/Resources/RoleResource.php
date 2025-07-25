@@ -47,12 +47,14 @@ class RoleResource extends Resource implements HasShieldPermissions
                                     ->label(__('filament-shield::filament-shield.field.name'))
                                     ->unique(ignoreRecord: true)
                                     ->required()
+                                    ->disabledOn('edit')
                                     ->maxLength(255),
 
                                 Forms\Components\TextInput::make('guard_name')
                                     ->label(__('filament-shield::filament-shield.field.guard_name'))
                                     ->default(Utils::getFilamentAuthGuard())
                                     ->nullable()
+                                    ->disabledOn('edit')
                                     ->maxLength(255),
 
                                 Forms\Components\Select::make(config('permission.column_names.team_foreign_key'))
@@ -114,10 +116,10 @@ class RoleResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                // Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 

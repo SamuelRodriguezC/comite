@@ -76,9 +76,11 @@ class UserResource extends Resource
                 TextInput::make('profiles_document_number')
                     ->label('Número de documento')
                     ->numeric()
+                    ->maxLength(10)
                     ->required(),
                 TextInput::make('profiles_phone_number')
                     ->label('Teléfono')
+                    ->maxLength(10)
                     ->numeric()
                     ->required(),
                 Select::make('profiles_level')
