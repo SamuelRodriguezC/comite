@@ -11,6 +11,9 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Livewire Styles -->
+        @livewireStyles
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -32,5 +35,31 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Livewire Scripts -->
+        @livewireScripts
+        <script>
+    // Configura el token CSRF para todas las solicitudes AJAX (incluido Livewire)
+    window.addEventListener('DOMContentLoaded', function () {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        if (window.livewire) {
+            window.livewire.hook('component.initialized', () => {
+                window.livewire.emit('setCsrfToken', token);
+            });
+        }
+
+        // Como respaldo para otras libs o fetch
+        window.axios?.defaults.headers.common['X-CSRF-TOKEN'] = token;
+    });
+
+    // Prevención del error 419 (expiración de sesión)
+    window.addEventListener('livewire:exception', event => {
+        if (event.detail.statusCode === 419) {
+            event.preventDefault();
+            window.location.reload();
+        }
+    });
+</script>
     </body>
 </html>

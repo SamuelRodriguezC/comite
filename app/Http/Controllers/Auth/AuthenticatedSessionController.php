@@ -49,7 +49,8 @@ class AuthenticatedSessionController extends Controller
 
         // Verificar si el correo fue confirmado
         if (! $user->email_verified_at) {
-            return redirect()->route('login');
+            Auth::logout(); // Opcional si no quieres que acceda a nada
+            return redirect()->route('verification.notice');
         }
 
         // Redirección personalizada según el rol

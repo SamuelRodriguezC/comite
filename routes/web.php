@@ -33,7 +33,7 @@ Route::get('/dashboard', function () {
     // En caso de no tener rol asignado
     abort(403, 'No tienes un rol asignado');
     return redirect('/');
-})->middleware(['auth', 'verified'])->name('login');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
