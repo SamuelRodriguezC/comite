@@ -11,7 +11,7 @@ class TransactionProcessSeeder extends Seeder
 {
     public function run(): void
     {
-        Transaction::factory(5000)->create()->each(function ($transaction) {
+        Transaction::factory(5)->create()->each(function ($transaction) {
             // Etapas únicas del 1 al 3
             $stages = [1, 2];
             foreach ($stages as $stage) {
