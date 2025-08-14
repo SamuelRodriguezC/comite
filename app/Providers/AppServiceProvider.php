@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Transaction;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\URL;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +23,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
             // Forzar HTTPS en producción
-        if (app()->environment('production')) {
-            URL::forceScheme('https');
+        // if (app()->environment('production')) {
+        //     URL::forceScheme('https');
+        // }
+        if (session()->pull('just_logged_in', false) && app()->environment('local')) {
+            Filament::serving(function () {
+                Filament::registerRenderHook('scripts.end', fn () => <<<HTML
+                    <script>
+                        if (!sessionStorage.getItem('reloadAfterLogin')) {
+                            sessionStorage.setItem('reloadAfterLogin', 'true');
+                            window.location.reload();
+                        } else {
+                            sessionStorage.removeItem('reloadAfterLogin');
+                        }
+                    </script>
+                HTML);
+            });
         }
 
         FilamentColor::register([
@@ -87,7 +102,7 @@ class AppServiceProvider extends ServiceProvider
                         ->simple()
                         ->panels($limitedIds)
                         ->labels($limitedLabels)
-                        ->visible(true);
+                        ->visible(true); // <--- Y AÑADE ESTA LÍNEA AQUÍ TAMBIÉN
                 }
 
                 return;
@@ -98,7 +113,7 @@ class AppServiceProvider extends ServiceProvider
                 ->simple()
                 ->panels($panelIds)
                 ->labels($visiblePanels)
-                ->visible(true);
+                ->visible(true); // <--- Y AÑADE ESTA LÍNEA AQUÍ TAMBIÉN
 
             $panelSwitch->renderHook('panels::topbar.start');
 

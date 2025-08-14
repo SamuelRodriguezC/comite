@@ -47,6 +47,8 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        session(['just_logged_in' => true]);
+
         // Verificar si el correo fue confirmado
         if (! $user->email_verified_at) {
             Auth::logout(); // Opcional si no quieres que acceda a nada

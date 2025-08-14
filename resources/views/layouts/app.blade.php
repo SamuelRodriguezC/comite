@@ -61,5 +61,19 @@
         }
     });
 </script>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[wire\\:click*="switchPanel"]').forEach(button => {
+        button.addEventListener('click', function () {
+            // Espera a que Filament cambie de panel
+            setTimeout(() => {
+                window.location.reload();
+            }, 200);
+        });
+    });
+});
+</script>
+@endpush
     </body>
 </html>
