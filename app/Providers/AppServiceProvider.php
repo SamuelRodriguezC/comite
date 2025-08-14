@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Transaction;
+use Illuminate\Support\Facades\URL;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
 use App\Observers\TransactionObserver;
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+            // Forzar HTTPS en producción
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
 
         FilamentColor::register([
                 'danger' => Color::Red,
