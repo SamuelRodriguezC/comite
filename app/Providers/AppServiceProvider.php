@@ -23,10 +23,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
             // Forzar HTTPS en producción
-        // if (app()->environment('production')) {
-        //     URL::forceScheme('https');
-        // }
-        if (session()->pull('just_logged_in', false) && app()->environment('local')) {
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
+
+        if (session()->pull('just_logged_in', false)) {
             Filament::serving(function () {
                 Filament::registerRenderHook('scripts.end', fn () => <<<HTML
                     <script>
