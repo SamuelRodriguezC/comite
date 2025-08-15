@@ -13,6 +13,7 @@ use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
+use Monzer\FilamentChatifyIntegration\ChatifyPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use App\Filament\Widgets\CourcesAplicationChartWidget;
@@ -66,6 +67,7 @@ class CoordinatorPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                ChatifyPlugin::make(),
                 PanelRoles::make()
                 ->roleToAssign('Coordinador')
                 ->restrictedRoles(['Coordinador', 'Super administrador']),

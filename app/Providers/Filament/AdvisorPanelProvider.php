@@ -12,6 +12,7 @@ use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
+use Monzer\FilamentChatifyIntegration\ChatifyPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -57,6 +58,7 @@ class AdvisorPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                ChatifyPlugin::make(),
                 PanelRoles::make()
                 ->roleToAssign('Asesor')
                 ->restrictedRoles(['Asesor', 'Evaluador', 'Coordinador', 'Super administrador']),
