@@ -17,7 +17,7 @@ use RyanChandler\FilamentProgressColumn\ProgressColumn;
 
 class TransactionProgress extends BaseWidget
 {
-    protected static ?string $heading = 'Progreso de Transacciones que Asesoras';
+    protected static ?string $heading = 'Progreso de Opciones de Grado que Asesoras';
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'full';
 
