@@ -61,9 +61,8 @@ class ProcessNotification extends Notification
 
         Notification::make()
             ->title('Estado del proceso actualizado')
-            ->body("El proceso de '{$process->stage->stage}' de tu transacción #{$transaction->id} ha cambiado a: {$stateLabel}.")
-            ->icon('heroicon-o-arrow-path-rounded-square')
-            ->success()
+            ->body("El proceso de {$process->stage->stage} de tu Opción #{$transaction->id} ha cambiado a {$stateLabel}.")
+            ->icon(\App\Enums\State::from($process->state)->getIcon())
             ->sendToDatabase($notifiable);
     }
 }

@@ -64,4 +64,18 @@ enum State: int implements HasLabel, HasColor
             self::VENCIDO => 'danger',
         };
     }
+
+
+    public function getIcon(): string|array|null
+    {
+        return match ($this){
+            self::APROBADO => 'heroicon-o-check-badge',
+            self::IMPROBADO => 'heroicon-o-archive-box-x-mark',
+            self::PENDIENTE => 'heroicon-o-ellipsis-horizontal-circle',
+            self::APLAZADO => 'heroicon-o-calendar-days',
+            self::CANCELADO => 'heroicon-o-x-circle',
+            self::ENTREGADO => 'heroicon-o-archive-box',
+            self::VENCIDO => 'heroicon-o-clock',
+        };
+    }
 }

@@ -76,6 +76,7 @@ class Process extends Model
     protected static function booted(): void
     {
         static::updating(function (Process $process) {
+            // Lógica existente
             if (
                 $process->isDirty('state') &&
                 $process->state == 1 &&
@@ -90,13 +91,24 @@ class Process extends Model
             ) {
                 $process->state = 6;
             }
+
+            // --- NUEVA LÓGICA DE VENCIMIENTO BIDIRECCIONAL ---
+            if ($process->delivery_date) {
+                if ($process->delivery_date->isPast() && $process->state != 7) {
+                    // La fecha ya pasó, marcar como vencido
+                    $process->state = 7; // 7 = Vencido
+                } elseif ($process->delivery_date->isFuture() && $process->state == 7) {
+                    // La fecha se movió a futuro y estaba vencido → pasar a Aplazado
+                    $process->state = 4; // 4 = Aplazado
+                }
+            }
         });
 
-        // Al actualizar el proceso (después de guardar), validar si actualizar la transacción
+
+        // Lógica de actualización del proceso
         static::updated(function (Process $process) {
             $transaction = $process->transaction;
 
-            // Notificar al estudiante si el estado cambia
             if ($process->isDirty('state') && $transaction) {
                 $studentProfiles = $transaction->profileTransactions()
                     ->where('role_id', 1)
@@ -112,9 +124,7 @@ class Process extends Model
                 }
             }
 
-            // Solo si la transacción está en progreso
             if ($transaction && $transaction->status == \App\Enums\Status::ENPROGRESO->value) {
-                // Verificar si todos los procesos están completados
                 $allCompleted = $transaction->processes()->where('completed', 0)->count() === 0;
 
                 if ($allCompleted) {
@@ -125,7 +135,4 @@ class Process extends Model
             }
         });
     }
-
-
-
 }
