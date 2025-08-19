@@ -75,6 +75,47 @@ enum Status: int implements HasLabel, HasColor
         };
     }
 
+
+
+    /**
+     * Determina si un estado específico bloquea la edición de campos.
+     *
+     * Se utiliza, por ejemplo, para deshabilitar ciertos componentes del formulario
+     * cuando la Transacción está en alguno de los estados finales (Certificado,
+     * Por Certificar o Cancelado).
+     *
+     * @param int $status Estado actual de la Transacción.
+     * @return bool True si el estado bloquea la edición, False en caso contrario.
+     */
+    public static function isLocked(int $status): bool
+    {
+        return in_array($status, [
+            self::CERTIFICADO->value,
+            self::PORCERTIFICAR->value,
+            self::CANCELADO->value,
+        ], true);
+    }
+
+   /**
+     * Proporciona un mensaje de ayuda o advertencia según el estado actual.
+     *
+     * Estos mensajes se muestran en la interfaz (ej. como helperText o tooltip)
+     * para informar al usuario por qué no puede realizar ciertas acciones
+     * dependiendo del estado de la Transacción.
+     *
+     * @param int|null $status Estado actual de la Transacción.
+     * @return string|null Mensaje explicativo asociado al estado, o null si no aplica.
+     */
+    public static function helperMessage(?int $status): ?string
+    {
+        return match ($status) {
+            self::CERTIFICADO->value   => 'El estudiante ya fue Certificado, no puedes editar este campo',
+            self::PORCERTIFICAR->value => 'Solicitud de certificación enviada exitosamente',
+            self::CANCELADO->value     => 'La Opción está cancelada; no puedes enviar solicitud de certificación',
+            default                    => null,
+        };
+    }
+
 }
 
 

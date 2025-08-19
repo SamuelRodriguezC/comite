@@ -204,25 +204,31 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
-                            Forms\Components\Toggle::make('enabled')
-                                ->label('Habilitado')
+                            //Botón tipo interruptor para hacer solicitud de certificación
+                            Forms\Components\Toggle::make('status')
+                                ->label('Enviar solicitud de certificación')
                                 ->inline(false)
-                                ->disabledOn('edit')
                                 ->onColor('success')
                                 ->offColor('danger')
-                                ->onIcon(Enabled::HABILITADO->getIcon())
-                                ->offIcon(Enabled::DESHABILITADO->getIcon())
-                                ->dehydrateStateUsing(fn (bool $state) => $state ? 1 : 2) // Al guardar: true => 1, false => 2
-                                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
-                                    $component->state($state === 1); // Al cargar: 1 => true, 2 => false
-                                }),
-                            Forms\Components\Select::make('status')
-                                ->label("Estado")
                                 ->live()
-                                ->disabledOn('edit')
-                                ->preload()
-                                ->enum(Status::class)
-                                ->options(Status::class),
+                                // Deshabilitar el botón usando funcion isLocked del enum status
+                                ->disabled(fn (Forms\Get $get, ?\App\Models\Transaction $record)
+                                    => $record && \App\Enums\Status::isLocked($record->status)
+                                )
+                                // Mostrar mensaje de contextualización
+                                ->afterStateHydrated(function (Forms\Components\Toggle $component, $state, ?\App\Models\Transaction $record) {
+                                    if ($record) {
+                                        $component->state($record->status === \App\Enums\Status::PORCERTIFICAR->value);
+                                        if ($msg = \App\Enums\Status::helperMessage($record->status)) {
+                                            $component->helperText($msg);
+                                        }
+                                    }
+                                })
+                                // Si el botón ha sido seleccionado (true) cambiar el estado a PORCERTIFICAR
+                                ->dehydrateStateUsing(fn (bool $state)
+                                    => $state ? \App\Enums\Status::PORCERTIFICAR->value : null
+                                )
+                                ->dehydrated() // Cuando se guarde la transacción guardar también el botón
                         ])->columns(2),
                     ])
                     ->columnSpan(1)

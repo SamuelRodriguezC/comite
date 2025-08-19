@@ -90,34 +90,8 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
-                             //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                    Forms\Components\Toggle::make('status')
-                        ->label('Enviar solicitud de certificación')
-                        ->inline(false)
-                        ->onColor('success')
-                        ->offColor('danger')
-                        ->afterStateHydrated(function (Forms\Components\Toggle $component, $state) {
-                            $component->state($state == 3);
-
-                            $shouldDisable = in_array($state, [
-                                \App\Enums\Status::CERTIFICADO->value,
-                                \App\Enums\Status::PORCERTIFICAR->value,
-                                \App\Enums\Status::CANCELADO->value,
-                            ]);
-
-                            $component->disabled($shouldDisable);
-
-                            if ($state == \App\Enums\Status::CERTIFICADO->value) {
-                                $component->helperText('El estudiante ya fue Certificado, No puedes editar este campo');
-                            } elseif ($state == \App\Enums\Status::PORCERTIFICAR->value) {
-                                $component->helperText('Solicitud de certificación enviada exitosamente');
-                            }
-                            elseif ($state == \App\Enums\Status::CANCELADO->value) {
-                                $component->helperText('La Opción esta cancelada no puedes enviar solicitud de certificación');
-                            }
-                        })
-                        ->dehydrateStateUsing(fn (bool $state) => $state ? 3 : null)
-                        ->dehydrated(fn (bool $state) => $state),
+                    //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
+                    
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
