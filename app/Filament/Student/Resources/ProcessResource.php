@@ -153,7 +153,7 @@ class ProcessResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->label('Completar')
+                    ->label('Subir')
                     ->icon('heroicon-o-document-arrow-up')
                     ->visible(function ($record) {
                         $isEnabled = $record->transaction?->enabled === 1;
