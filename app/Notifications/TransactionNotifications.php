@@ -23,8 +23,12 @@ class TransactionNotifications extends Notification
         //
     }
 
+
     /**
-     * Notifica cuando se le asigna una transacción al usuario
+     * Notifica a un usuario cuando se le asigna una nueva transacción.
+     *
+     * @param User $user El usuario al que se le asigna la transacción.
+     * @param Transaction $transaction La transacción asignada.
      */
     public static function sendTransactionAssigned(User $user, Transaction $transaction): void
     {
@@ -36,8 +40,13 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($user);
     }
 
-    /**
+     /**
      * Notifica al estudiante cuando se le asigna un evaluador o asesor.
+     *
+     * @param User $studentUser El estudiante dueño de la transacción.
+     * @param User $assignedUser El usuario que fue asignado como rol.
+     * @param string $roleName Nombre del rol asignado (ejemplo: "asesor", "evaluador").
+     * @param Transaction $transaction La transacción a la que pertenece.
      */
     public static function sendRoleAssigned(User $studentUser, User $assignedUser, string $roleName, Transaction $transaction): void
     {
@@ -49,9 +58,11 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($studentUser);
     }
 
-
     /**
-     * Notifica cuando cambia el estado de habilitación (enabled).
+     * Notifica a un usuario cuando su transacción ha sido habilitada.
+     *
+     * @param User $user El usuario relacionado con la transacción.
+     * @param Transaction $transaction La transacción habilitada.
      */
     public static function sendTransactionEnabled(User $user, Transaction $transaction): void
     {
@@ -65,7 +76,10 @@ class TransactionNotifications extends Notification
 
 
     /**
-     * Notifica cuando se actualiza alguna información de la transacción.
+     * Notifica a un usuario cuando su transacción ha sido deshabilitada.
+     *
+     * @param User $user El usuario relacionado con la transacción.
+     * @param Transaction $transaction La transacción deshabilitada.
      */
     public static function sendTransactionDisabled(User $user, Transaction $transaction): void
     {
@@ -76,9 +90,11 @@ class TransactionNotifications extends Notification
             ->danger()
             ->sendToDatabase($user);
     }
-
+    
     /**
-     * Notifica a todos los usuarios asociados cuando cambia el estado de la transacción.
+     * Notifica a todos los usuarios asociados cuando cambia el estado de una transacción.
+     *
+     * @param Transaction $transaction La transacción cuyo estado cambió.
      */
     public static function sendStatusChanged(Transaction $transaction): void
     {
