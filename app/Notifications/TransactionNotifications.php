@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Enums\Status;
 use App\Models\Transaction;
 use Illuminate\Bus\Queueable;
+use Spatie\Permission\Models\Role;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -90,7 +91,7 @@ class TransactionNotifications extends Notification
             ->danger()
             ->sendToDatabase($user);
     }
-    
+
     /**
      * Notifica a todos los usuarios asociados cuando cambia el estado de una transacción.
      *
@@ -116,6 +117,27 @@ class TransactionNotifications extends Notification
                     ->{$color}()
                     ->sendToDatabase($user);
             }
+        }
+    }
+
+
+    /**
+     * Notifica a todos los coordinadores cuando un estudiante solicita certificación.
+     *
+     * @param Transaction $transaction
+     */
+    public static function sendCertificationRequested(Transaction $transaction): void
+    {
+        // Obtiene todos los usuarios con rol 'coordinador'
+        $coordinators = Role::findByName('coordinador')->users;
+
+        foreach ($coordinators as $user) {
+            Notification::make()
+                ->title('Solicitud de Certificación')
+                ->body("Se ha realizado una solicitud de certificación para la Opción de Grado #{$transaction->id}.")
+                ->icon('heroicon-o-clipboard-document-check')
+                ->success()
+                ->sendToDatabase($user);
         }
     }
 

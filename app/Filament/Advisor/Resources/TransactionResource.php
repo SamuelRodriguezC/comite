@@ -224,6 +224,15 @@ class TransactionResource extends Resource
                                         }
                                     }
                                 })
+                                // Enviar notificación solicitud a los coordinadores
+                                ->afterStateUpdated(function ($state, callable $set, ?Transaction $record) {
+                                    if ($state) { // Si se activó el toggle
+                                        $record->status = \App\Enums\Status::PORCERTIFICAR->value;
+                                        $record->save();
+                                        // Notificar a coordinadores
+                                        \App\Notifications\TransactionNotifications::sendCertificationRequested($record);
+                                    }
+                                })
                                 // Si el botón ha sido seleccionado (true) cambiar el estado a PORCERTIFICAR
                                 ->dehydrateStateUsing(fn (bool $state)
                                     => $state ? \App\Enums\Status::PORCERTIFICAR->value : null
