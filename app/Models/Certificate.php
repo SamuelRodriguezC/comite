@@ -23,9 +23,8 @@ class Certificate extends Model
      */
     protected $fillable = [
         'acta',
-        'comment',
-        'resolution',
         'transaction_id',
+        'signer_id',
     ];
 
     /**
@@ -36,6 +35,7 @@ class Certificate extends Model
         'id' => 'integer',
         'resolution' => 'integer',
         'transaction_id' => 'integer',
+        'signer_id' => 'integer',
     ];
 
     /**
@@ -44,5 +44,10 @@ class Certificate extends Model
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function signer(): BelongsTo
+    {
+        return $this->belongsTo(Signer::class);
     }
 }

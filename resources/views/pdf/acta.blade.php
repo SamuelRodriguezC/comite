@@ -2,154 +2,147 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Acta de opción de Grado</title>
+    <title>Acta de Certificación</title>
     <style>
         body {
-            font-family: 'DejaVu Sans';
+            font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
+            line-height: 1.4;
             margin: 40px;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h1, h2, h3 {
-            margin: 0;
-        }
-
-        .info {
-            margin-bottom: 25px;
-        }
-
-        .info p {
-            margin: 3px 0;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
-
         th, td {
-            border: 1px solid #000;
-            padding: 6px 4px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f0f0f0;
-        }
-
-        .observaciones {
-            margin-top: 30px;
-        }
-
-        .firmas {
-            margin-top: 60px;
-        }
-
-        .firma-block {
-            display: inline-block;
-            width: 30%;
+            border: 1px solid black;
+            padding: 5px;
             text-align: center;
+        }
+        .no-border {
+            border: none !important;
+        }
+        .header-table td {
+            font-size: 11px;
             vertical-align: top;
         }
-
-        .firma-linea {
-            margin-top: 50px;
-            border-top: 1px solid #000;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
+        .header-logo {
+            width: 90px;
+            text-align: center;
         }
-
-        footer {
-            margin-top: 50px;
+        .header-center {
+            text-align: center;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 2px;
+        }
+        .header-right {
             text-align: center;
             font-size: 10px;
-            color: #777;
+        }
+        .center-text {
+            text-align: center;
+        }
+        h2 {
+            margin: 25px 0 10px 0;
+            text-align: center;
+        }
+        .signature {
+            margin-top: 70px;
+            text-align: start;
+        }
+        .signature img {
+            height: 80px;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .content {
+            margin-top: 20px;
+            text-align: justify;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <table style="width: 100%; margin-bottom: 20px; border:none;">
-            <tr>
-                <td style="width: 100px; border: none;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo.png'))) }}" alt="Logo" width="100">
-                    <!--
-                    <img src="{{ public_path('images/logo.png') }}" alt="Logo Universidad Libre" width="100">
-                    -->
-                </td>
-                <td style="text-align: center; border: none;">
-                    <h1 style="margin: 0; border:none;">UNIVERSIDAD LIBRE</h1>
-                    <h2 style="margin: 0; border:none;">Facultad de Ingeniería</h2>
-                    <h3 style="margin: 0; border:none;">Acta de Finalización de Opción de Grado</h3>
-                </td>
-            </tr>
-        </table>
-    </header>
+    {{-- HEADER --}}
+    <table class="header-table">
+        <tr>
+            <td class="header-logo">
+                <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo.png'))) }}" alt="Logo" width="80">
+            </td>
+            <td class="header-center">
+                FORMATO CERTIFICACIÓN EN FORMACIÓN DE RECURSO HUMANO EN CTel_Dirección Trabajos de Grado_Pregrado
+            </td>
+            <td class="header-right">
+                <strong>ST-INV-02-P-06-F16</strong><br>
+                Versión 1<br>
+                26/06/2024
+            </td>
+        </tr>
+    </table>
 
-    <section class="info">
-        <p><strong>Número de acta:</strong> Acta-{{ $transaction->id }}</p>
-        <p><strong>Fecha de generación:</strong> {{ now()->format('d/m/Y') }}</p>
-        <!--
-        <p><strong>Opción de grado:</strong> { { $transaction->option->option ?? 'No especificada' }}</p>
-        -->
-    </section>
+    {{-- TÍTULO UNIVERSIDAD --}}
+    <h2>UNIVERSIDAD LIBRE</h2>
 
-    <section>
-        <p style="text-align: justify; font-size: 14px; line-height: 1.5;">
-            Se certifica que
-            @if ($estudiantes->count() === 1)
-                el(la) estudiante <strong>{{ $estudiantes[0]->profile->full_name }}</strong>, identificado(a) con el número de documento <strong>{{ $estudiantes[0]->profile->document_number }}</strong>,
-                matriculado(a) en la carrera de <strong>{{ $estudiantes[0]->courses->course ?? 'No asignada' }}</strong>, ha
-            @else
-                los(as) estudiantes
-                @foreach ($estudiantes as $index => $estudiante)
-                    <strong>{{ $estudiante->profile->full_name }}</strong>, identificado(a) con <strong>{{ $estudiante->profile->document->type }}</strong> número <strong>{{ $estudiante->profile->document_number }}</strong>@if ($index < $estudiantes->count() - 2), @elseif ($index == $estudiantes->count() - 2) y @else. @endif
-                @endforeach
-                matriculados(as) en la(s) carrera(s):
-                @php
-                    $carreras = $estudiantes->pluck('courses.course')->unique()->implode(', ');
-                @endphp
-                <strong>{{ $carreras }}</strong>, han
-            @endif
-            finalizado satisfactoriamente la modalidad de opción de grado titulada <strong>{{ $transaction->option->option ?? 'No especificada' }}</strong>,
-            cumpliendo con los requisitos académicos establecidos por la institución.
-        </p>
-    </section>
-
-    <section class="observaciones">
-    <p><strong>Observaciones:</strong></p>
-    <p style="border: 1px solid #000; height: 80px; padding: 10px;">
-        {{ $observacion ?? $transaction->certificate?->observation ?? 'Ninguna.' }}
+    <p class="center-text" style="text-transform: uppercase;">
+        LA DIRECCIÓN DE CENTRO DE INVESTIGACIÓN DE LA FACULTAD DE INGENIERÍA SECCIONAL BOGOTÁ D.C.
     </p>
-    </section>
 
-    <section class="firmas">
-        <div class="firma-block">
-            <div class="firma-linea"></div>
-            <p>Coordinador</p>
-        </div>
-        <!--
-        <div class="firma-block">
-            <div class="firma-linea"></div>
-            <p>Tutor</p>
-        </div>
-        <div class="firma-block">
-            <div class="firma-linea"></div>
-            <p>Estudiante</p>
-        </div>
-        -->
-    </section>
+    <div class="content">
+        <p><strong>Hace constar que:</strong></p>
 
-    <footer>
-        Documento generado automáticamente por el sistema de gestión de opciones de grado.
-    </footer>
+        <p>
+            Los(as) estudiante(s) mencionado(s) a continuación han finalizado satisfactoriamente la modalidad de opción de
+            grado titulada <strong>{{ $grade_option }}</strong>, cumpliendo con los requisitos académicos
+            establecidos por la institución.
+        </p>
+    </div>
+
+    {{-- TABLA ESTUDIANTES --}}
+    <table style="margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Nombre Completo</th>
+                <th>Tipo de Documento</th>
+                <th>Número de Documento</th>
+                <th>Nivel Universitario</th>
+                <th>Programa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($students as $student)
+            <tr>
+                <td>{{ $student['fullname'] ?? 'No Encontrado' }}</td>
+                <td>{{ $student['document_type'] ?? 'Sin Tipo de Documento' }}</td>
+                <td>{{ $student['document_number'] ?? 'No Encontrado' }}</td>
+                <td>{{ $student['level'] ? \App\Enums\Level::from($student['level'])->getLabel() : '' }}</td>
+                <td>{{ $student['course'] ?? 'No Encontrado' }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <p style="margin-top: 30px;">
+        Se firma en <strong>{{ $city }}</strong> a los <strong>{{ \Carbon\Carbon::now()->format('d') }}</strong> días del mes de
+        <strong>{{ \Carbon\Carbon::now()->locale('es')->isoFormat('MMMM') }}</strong> del <strong>{{ \Carbon\Carbon::now()->year }}</strong>.
+    </p>
+
+    {{-- FIRMA --}}
+    <div class="signature">
+        @if(!empty($signatory['signature']) && file_exists(storage_path('app/public/' . $signatory['signature'])))
+            <img
+                src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/public/' . $signatory['signature']))) }}"
+                alt="Firma">
+        @endif
+        <p>
+            {{ $signatory['fullname'] ?? 'Nombre del Director' }}<br>
+            Director(a) Centro de Investigación<br>
+            Facultad de {{ $signatory['faculty'] ?? '' }}<br>
+            {{$signatory['seccional'] ?? '' }}<br>
+            Universidad Libre
+        </p>
+    </div>
+
 </body>
 </html>

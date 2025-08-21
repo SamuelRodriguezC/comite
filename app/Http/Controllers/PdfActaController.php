@@ -3,58 +3,91 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\Role;
+use App\Models\Signer;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\ProfileTransaction;
+use App\Enums\Seccional;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PdfActaController extends Controller
 {
-    //
     public function generar($id)
     {
+        // Eager load de relaciones necesarias
+        $transaction = Transaction::with([
+            'option',
+            'profiles.user',
+            'profiles.document',
+            'certificate',
+        ])->findOrFail($id);
 
-        // Captura la observación enviada por el modal
-        $observacion = session('certificate_observation');
+        // Cachear el ID del rol estudiante (en config o en propiedad estática si se repite mucho)
+        static $studentRoleId;
+        $studentRoleId ??= Role::where('name', 'Estudiante')->value('id');
 
-        // Obtiene la transacción
-        $transaction = Transaction::with('option')->findOrFail($id);
-        // Busca estudiantes vinculados y genera vista
-        $estudiantes = ProfileTransaction::with(['profile', 'courses', 'role'])
-            ->where('transaction_id', $transaction->id)
-            ->whereHas('role', fn($q) => $q->where('name', 'Estudiante'))
-            ->get();
-        $pdf = Pdf::loadView('pdf.acta', compact('transaction', 'estudiantes', 'observacion'));
-        // Forzar incrustación de fuentes
-        $pdf->setOptions([
+        // Obtener IDs de cursos en lote (evita N+1 queries)
+        $courseIds = $transaction->profiles->pluck('pivot.courses_id')->unique()->filter();
+        $courses = Course::whereIn('id', $courseIds)->pluck('course', 'id');
+
+        // Mapear estudiantes con la información ya cargada
+        $students = $transaction->profiles
+            ->where('pivot.role_id', $studentRoleId)
+            ->map(fn ($profile) => [
+                'fullname'        => $profile->full_name,
+                'document_type'   => $profile->document?->type,
+                'document_number' => $profile->document_number,
+                'course'          => $courses[$profile->pivot->courses_id] ?? null,
+                'level'           => $profile->level,
+            ])->values()->all();
+
+        // Firmador desde sesión (una sola consulta)
+        $signer = Signer::find(session('certificate_signer_id'));
+
+        $pdf = Pdf::loadView('pdf.acta', [
+            'transaction'  => $transaction,
+            'students'     => $students,
+            'signatory'    => $signer ? [
+                'fullname'  => $signer->full_name,
+                'faculty'   => $signer->faculty,
+                'seccional' => Seccional::from($signer->seccional)->getLabel(),
+                'signature' => $signer->signature,
+            ] : null,
+            'grade_option' => $transaction->option?->option ?? '',
+            'city'         => 'Bogotá',
+        ])->setOptions([
             'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
-            'defaultFont' => 'DejaVu Sans',
+            'isRemoteEnabled'      => true,
+            'defaultFont'          => 'DejaVu Sans',
         ]);
-        // Guardar en storage/app/public/actas
-        $fileName = 'acta-' . $transaction->id . '-' . Str::random(5) . '.pdf';
-        $filePath = 'actas/' . $fileName;
+
+        // Guardar PDF
+        $fileName = "acta-{$transaction->id}-" . Str::random(5) . ".pdf";
+        $filePath = "actas/{$fileName}";
         Storage::disk('public')->put($filePath, $pdf->output());
-        // Registrar en la base de datos
+
+        // Guardar certificado asociado
         $transaction->certificate()->updateOrCreate(
             ['transaction_id' => $transaction->id],
-            ['acta' => $filePath]
+            [
+                'acta'      => $filePath,
+                'signer_id' => $signer?->id,
+            ]
         );
-        // Actualizar campo certification a 3
-        $transaction->status = 4;
-        $transaction->save();
 
-        // Redirige a una vista del documento
+        // Actualizar estado
+        $transaction->update(['status' => 4]);
+
         return $pdf->stream($fileName);
     }
 
     public function view($file)
     {
         $path = storage_path("app/public/actas/{$file}");
-        if (!file_exists($path)) {
-            abort(404);
-        }
+        abort_unless(file_exists($path), 404);
+
         return response()->file($path, ['Content-Type' => 'application/pdf']);
     }
 }

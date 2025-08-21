@@ -23,6 +23,9 @@ class EditTransaction extends EditRecord
 
         $currentUserId = Auth::user()->id;
 
+        // Cargar relaciones solo si no están cargadas
+        $this->record->loadMissing('profiles.user');
+
         foreach ($this->record->load('profiles.user')->profiles as $profile) {
             //Enviar notificación a todos los perfiles menos al usuario en sesión = Coordinador
             if ($profile->user && $profile->user->id !== $currentUserId) {
@@ -57,28 +60,31 @@ class EditTransaction extends EditRecord
                 ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
 
-        Action::make('Generar PDF')
-            ->color('success')
-            ->label('Certificar')
+        Action::make('certify')
+            ->label('Certificar Estudiantes')
             ->icon('heroicon-o-document-check')
+            ->color('success')
             ->form([
-                \Filament\Forms\Components\Textarea::make('observation')
-                    ->label('Observaciones del Coordinador')
-                    ->required()
-                    ->maxLength(150)
-                    ->rows(4),
+                \Filament\Forms\Components\Select::make('signer_id')
+                    ->label('Seleccionar Director de Investigación')
+                    ->options(
+                        \App\Models\Signer::query()
+                            ->get()
+                            ->pluck('display_name', 'id') // pluck ya devuelve [id => display_name]
+                    )
+                    ->required(),
             ])
             ->action(function (array $data, $record) {
-                // Guardar la observación antes de redirigir
-                session()->flash('certificate_observation', $data['observation']);
+                session()->put('certificate_signer_id', $data['signer_id']);
 
-                return redirect()->route('certificate.pdf', $record->id);
+                return redirect()->route(
+                    'filament.coordinator.resources.transactions.certify-students',
+                    ['record' => $record->id]
+                );
             })
-            ->modalHeading('¿Certificar Estudiante/s?')
-            ->modalDescription('¿Estas seguro de certificar al/los estudiante/s? Esta acción no se puede revertir. Asegúrate que se cumplan todos los requisitos.')
-            ->modalSubmitActionLabel('Sí, certificar')
-            ->hidden(fn($record) => !empty($record->certificate?->acta)),
-
+            ->modalHeading('Seleccionar Firmador')
+            ->modalSubmitActionLabel('Continuar')
+            ->hidden(fn ($record) => !empty($record->certificate?->acta)),
         ];
     }
 }

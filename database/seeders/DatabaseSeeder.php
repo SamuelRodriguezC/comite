@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Process;
 use App\Models\Profile;
 use Illuminate\Database\Seeder;
+use App\Models\Signer;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
@@ -30,7 +31,8 @@ class DatabaseSeeder extends Seeder
             // php artisan db:seed --class=ProfileTransactionSeeder
             // ProfileTransactionSeeder::class,
         ]);
-        Profile::factory(5)->create();
+        Profile::factory(5000)->create();
+
     }
 }
 

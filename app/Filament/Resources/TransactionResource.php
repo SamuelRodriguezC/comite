@@ -427,6 +427,7 @@ class TransactionResource extends Resource
             'create' => Pages\CreateTransaction::route('/create'),
             'view' => Pages\ViewTransaction::route('/{record}'),
             'edit' => Pages\EditTransaction::route('/{record}/edit'),
+            'certify-students' => Pages\CertifyStudents::route('/{record}/certify-students'),
         ];
     }
 }

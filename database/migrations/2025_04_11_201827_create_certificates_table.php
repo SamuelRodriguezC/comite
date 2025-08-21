@@ -22,6 +22,10 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->foreignId('signer_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             // $table->text('observation')->nullable();
             $table->timestamps();
         });
