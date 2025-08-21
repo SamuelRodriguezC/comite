@@ -61,7 +61,7 @@ class EditTransaction extends EditRecord
                 ->openUrlInNewTab(),
 
         Action::make('certify')
-            ->label('Certificar Estudiantes')
+            ->label(fn ($record) => $record->certificate ? 'Generar Nuevo' : 'Certificar Estudiantes')
             ->icon('heroicon-o-document-check')
             ->color('success')
             ->form([
@@ -84,7 +84,6 @@ class EditTransaction extends EditRecord
             })
             ->modalHeading('Seleccionar Firmador')
             ->modalSubmitActionLabel('Continuar')
-            ->hidden(fn ($record) => !empty($record->certificate?->acta)),
         ];
     }
 }

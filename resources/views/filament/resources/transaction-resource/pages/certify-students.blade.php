@@ -6,7 +6,7 @@
         </div>
         <form method="GET" action="{{ route('certificate.pdf', $record->id) }}" target="_blank">
             <x-filament::button type="submit" color="success">
-                Generar Certificación
+                {{ $record->certificate ? 'Generar Nuevo' : 'Generar Certificación' }}
             </x-filament::button>
         </form>
     </div>

@@ -63,6 +63,11 @@ class PdfActaController extends Controller
             'defaultFont'          => 'DejaVu Sans',
         ]);
 
+        // Eliminar acta anterior si existe
+        if ($transaction->certificate?->acta && Storage::disk('public')->exists($transaction->certificate->acta)) {
+            Storage::disk('public')->delete($transaction->certificate->acta);
+        }
+
         // Guardar PDF
         $fileName = "acta-{$transaction->id}-" . Str::random(5) . ".pdf";
         $filePath = "actas/{$fileName}";

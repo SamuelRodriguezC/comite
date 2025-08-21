@@ -34,4 +34,9 @@ class Signer extends Model
     {
         return "{$this->first_name} {$this->last_name}  - Facultad de {$this->faculty}";
     }
+
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
 }
