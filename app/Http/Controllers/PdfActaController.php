@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 class PdfActaController extends Controller
 {
-    public function generar($id)
+    public function generate($id)
     {
         // Eager load de relaciones necesarias
         $transaction = Transaction::with([
@@ -64,14 +64,14 @@ class PdfActaController extends Controller
         ]);
 
         // Eliminar acta anterior si existe
-        if ($transaction->certificate?->acta && Storage::disk('public')->exists($transaction->certificate->acta)) {
-            Storage::disk('public')->delete($transaction->certificate->acta);
+        if ($transaction->certificate?->acta && Storage::disk('private')->exists($transaction->certificate->acta)) {
+            Storage::disk('private')->delete($transaction->certificate->acta);
         }
 
         // Guardar PDF
         $fileName = "acta-{$transaction->id}-" . Str::random(5) . ".pdf";
-        $filePath = "actas/{$fileName}";
-        Storage::disk('public')->put($filePath, $pdf->output());
+        $filePath = "students_certificates/{$fileName}";
+        Storage::disk('private')->put($filePath, $pdf->output());
 
         // Guardar certificado asociado
         $transaction->certificate()->updateOrCreate(
@@ -90,7 +90,7 @@ class PdfActaController extends Controller
 
     public function view($file)
     {
-        $path = storage_path("app/public/actas/{$file}");
+        $path = storage_path("app/private/students_certificates/{$file}");
         abort_unless(file_exists($path), 404);
 
         return response()->file($path, ['Content-Type' => 'application/pdf']);

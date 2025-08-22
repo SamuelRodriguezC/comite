@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -44,7 +46,9 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
-//---------- ruta para ver requerimientos -------------
+
+
+//----------------------------------- RUTA PARA VER REQUERIMIENTOS -----------------------------------
 Route::get('/secure/view/{file}', function ($file) {
     $path = storage_path('app/private/secure/requirements/' . $file);
     // Verifica que el usuario esté autenticado y tenga permisos
@@ -59,7 +63,9 @@ Route::get('/secure/view/{file}', function ($file) {
     return Response::file($path); // Muestra el archivo en el navegador
 })->middleware(['auth'])->name('file.view');
 
-//--------- ruta para descargar requerimientos ---------
+
+
+//----------------------------------- RUTA PARA DESCARGAR REQUERIMIENTOS -----------------------------------
 Route::get('/secure/download/{file}', function ($file) {
     $path = storage_path('app/private/secure/requirements/' . $file);
     if (!Auth::check()) {
@@ -71,49 +77,79 @@ Route::get('/secure/download/{file}', function ($file) {
     return Response::download($path); // Descarga el archivo
 })->middleware(['auth'])->name('file.download');
 
-//---------- ruta para ver actas -------------
-Route::get('/actas/view/{file}', function ($file) {
-    $path = storage_path('app/public/actas/' . $file);
-    // Verifica que el usuario esté autenticado y tenga permisos
-    if (!Auth::check()) {
-        abort(403, 'No autorizado.');
+
+
+//----------------------------------- RUTA PARA GENERAR ACTAS -----------------------------------
+Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generate'])
+    ->middleware(['auth', 'role:Coordinador|Super administrador'])
+    ->name('certificate.pdf');
+
+
+//----------------------------------- RUTA PARA VER CERTIFICADOS DE ESTUDIANTES -----------------------------------
+Route::get('/certificate_students/view/{file}', function ($file) {
+    $transaction = Transaction::whereHas('certificate', function ($q) use ($file) {
+        $q->where('acta', "students_certificates/{$file}");
+    })->firstOrFail();
+
+    if (!$transaction->userHasAccess()) {
+        abort(403, 'No tienes permisos para acceder a esta acta.');
     }
-    // Aquí puedes agregar lógica adicional de permisos con Gate o roles:
-    // if (!Auth::user()->hasRole('Coordinador')) abort(403);
+
+    $path = storage_path("app/private/students_certificates/{$file}");
+
     if (!file_exists($path)) {
-        abort(404, 'No hay archivo');
+        abort(404, 'Archivo no encontrado.');
     }
-    return Response::file($path); // Muestra el archivo en el navegador
+
+    return response()->file($path);
 })->middleware(['auth'])->name('certificate.view');
 
-//--------- ruta para descargar actas ---------
-Route::get('/actas/download/{file}', function ($file) {
-    $path = storage_path('app/public/actas/' . $file);
-    if (!Auth::check()) {
-        abort(403, 'No autorizado.');
+
+
+//----------------------------------- RUTA PARA DESCARGAR CERTIFICADOS DE ESTUDIANTES -----------------------------------
+Route::get('/certificate_students/download/{file}', function ($file) {
+    $transaction = Transaction::whereHas('certificate', function ($q) use ($file) {
+        $q->where('acta', "students_certificates/{$file}");
+    })->firstOrFail();
+
+    if (!$transaction->userHasAccess()) {
+        abort(403, 'No tienes permisos para descargar esta acta.');
     }
+
+    $path = storage_path("app/private/students_certificates/{$file}");
+
     if (!file_exists($path)) {
-        abort(404, 'No hay archivo');
+        abort(404, 'Archivo no encontrado.');
     }
-    return Response::download($path); // Descarga el archivo
+
+    return response()->download($path);
 })->middleware(['auth'])->name('certificate.download');
 
-Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generar'])->name('certificate.pdf');
 
 
-// Ruta para acceder a firmas de directores protegida (solo)
+//----------------------------------- RUTA PARA ACCEDER A LAS FIRMAS -----------------------------------
 Route::get('/signatures/{filename}', function ($filename) {
     $user = Auth::user();
 
     // Solo coordinadores o superadministradores
     if (!$user || !($user->hasRole('Coordinador') || $user->hasRole('Super administrador'))) {
-        abort(403);
+
+        // Guardar el intento de acceso no autorizado en el log
+        Log::warning('Intento de acceso NO AUTORIZADO a firma', [
+            'user_id' => $user?->id,
+            'user_email' => $user?->email,
+            'filename' => $filename,
+            'ip' => request()->ip(),
+            'url' => request()->fullUrl(),
+        ]);
+
+        abort(403, 'Acceso denegado. Este recurso es confidencial. El intento de acceso ha sido considerado GRAVE y ha sido registrado para su monitoreo.');
     }
 
     $path = 'signatures/' . $filename;
 
     if (!Storage::disk('private')->exists($path)) {
-        abort(404);
+        abort(404, 'Archivo no encontrado.');
     }
 
     return response()->file(Storage::disk('private')->path($path));

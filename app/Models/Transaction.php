@@ -143,6 +143,29 @@ class Transaction extends Model
         return !$hasEnabledTransaction;
     }
 
+
+    /**
+     * Verifica si el usuario autenticadot tiene acceso a la transacción.
+     * Los coordinadores y super administradores siempre tienen acceso.
+     */
+    public function userHasAccess(): bool
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return false;
+        }
+
+        // Roles privilegiados
+        if ($user->hasRole('Coordinador') || $user->hasRole('Super administrador')) {
+            return true;
+        }
+
+        // Verifica si el usuario pertenece a la transacción
+        return $this->profiles()->where('user_id', $user->id)->exists();
+    }
+
+
     // ----------------------- EVENTOS ------------------------
 
     /**
