@@ -130,9 +130,9 @@
 
     {{-- FIRMA --}}
     <div class="signature">
-        @if(!empty($signatory['signature']) && file_exists(storage_path('app/public/' . $signatory['signature'])))
+        @if(!empty($signatory['signature']) && file_exists(storage_path('app/private/' . $signatory['signature'])))
             <img
-                src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/public/' . $signatory['signature']))) }}"
+                src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/private/' . $signatory['signature']))) }}"
                 alt="Firma">
         @endif
         <p>

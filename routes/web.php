@@ -101,4 +101,24 @@ Route::get('/actas/download/{file}', function ($file) {
 Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generar'])->name('certificate.pdf');
 
 
+// Ruta para acceder a firmas de directores protegida (solo)
+Route::get('/signatures/{filename}', function ($filename) {
+    $user = Auth::user();
+
+    // Solo coordinadores o superadministradores
+    if (!$user || !($user->hasRole('Coordinador') || $user->hasRole('Super administrador'))) {
+        abort(403);
+    }
+
+    $path = 'signatures/' . $filename;
+
+    if (!Storage::disk('private')->exists($path)) {
+        abort(404);
+    }
+
+    return response()->file(Storage::disk('private')->path($path));
+})->name('signatures.show');
+
+
+
 require __DIR__.'/auth.php';

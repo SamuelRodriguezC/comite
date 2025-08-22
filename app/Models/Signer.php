@@ -39,4 +39,14 @@ class Signer extends Model
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    // Acceso a la URL de la firma
+    public function getSignatureUrlAttribute(): ?string
+    {
+        if (! $this->signature) {
+            return null;
+        }
+
+        return route('signatures.show', basename($this->signature));
+    }
 }

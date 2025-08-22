@@ -50,14 +50,14 @@ class SignerResource extends Resource
 
             Forms\Components\FileUpload::make('signature')
                 ->label('Firma')
+                ->disk('private')
                 ->directory('signatures')
                 ->image()
                 ->imageEditor()
                 ->required()
-                ->downloadable()
-                ->openable()
-                ->previewable(true),
-        ]);
+                ->previewable(true)
+                ->downloadable(true),
+            ]);
     }
     public static function table(Table $table): Table
     {
@@ -82,8 +82,17 @@ class SignerResource extends Resource
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('signature')
                     ->label('Firma')
-                    ->disk('public')
-                    ->height(80),
+                    ->height(70)
+                    ->width(150)
+                    ->getStateUsing(function ($record) {
+                        if (!$record->signature) {
+                            return null;
+                        }
+                        // Solo el nombre del archivo (quitar el '/signeatures')
+                        $filename = basename($record->signature);
+                        // Retornar la URL para mostrar la imagen
+                        return route('signatures.show', $filename);
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()

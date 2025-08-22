@@ -75,7 +75,7 @@
     {{-- FIRMA --}}
     <div class="mt-6" style="text-align: left;">
         @if($this->getViewData()['signer'])
-            <img src="{{ asset('storage/' . $this->getViewData()['signer']->signature) }}"
+            <img src="{{ asset($this->getViewData()['signer']->signature) }}"
                 alt="Firma" width="120" style="margin-bottom: 10px;">
             <p>
                {{ $this->getViewData()['signer']->first_name }} {{ $this->getViewData()['signer']->last_name }}<br>
