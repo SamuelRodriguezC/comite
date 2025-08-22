@@ -146,7 +146,15 @@ class ProcessResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('state')
+                    ->label('Estado')
+                    ->options(\App\Enums\State::class)
+                    ->attribute('state')
+                    ->multiple(),
+                Tables\Filters\TernaryFilter::make('completed')
+                    ->label('Finalizado')
+                    ->trueLabel('Sí')
+                    ->falseLabel('No'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Process;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
@@ -50,16 +51,28 @@ Route::middleware('auth')->group(function () {
 
 //----------------------------------- RUTA PARA VER REQUERIMIENTOS -----------------------------------
 Route::get('/secure/view/{file}', function ($file) {
-    $path = storage_path('app/private/secure/requirements/' . $file);
-    // Verifica que el usuario esté autenticado y tenga permisos
-    if (!Auth::check()) {
-        abort(403, 'No autorizado.');
+
+    // Buscar el proceso que contiene el archivo
+    $process = Process::where('requirement', "secure/requirements/{$file}")
+        ->with('transaction') //Traer la transacción asociada
+        ->firstOrFail(); //Si no existe el registro lanza error
+
+    // Obtener la transacción asociada al proceso
+    $transaction = $process->transaction;
+
+    // Validar si el usuario en sesión tiene acceso a la transacción
+    if (!$transaction->userHasAccess()) {
+        abort(403, 'No tienes permisos para acceder a este archivo.');
     }
-    // Aquí puedes agregar lógica adicional de permisos con Gate o roles:
-    // if (!Auth::user()->hasRole('Coordinador')) abort(403);
+
+    // Contruir ruta completa del archivo
+    $path = storage_path('app/private/secure/requirements/' . $file);
+
+    // Verificar si hay archivo fisico
     if (!file_exists($path)) {
         abort(404, 'No hay archivo');
     }
+
     return Response::file($path); // Muestra el archivo en el navegador
 })->middleware(['auth'])->name('file.view');
 
@@ -67,13 +80,26 @@ Route::get('/secure/view/{file}', function ($file) {
 
 //----------------------------------- RUTA PARA DESCARGAR REQUERIMIENTOS -----------------------------------
 Route::get('/secure/download/{file}', function ($file) {
-    $path = storage_path('app/private/secure/requirements/' . $file);
-    if (!Auth::check()) {
-        abort(403, 'No autorizado.');
+
+    // Buscar el proceso que contiene el archivo
+    $process = Process::where('requirement', "secure/requirements/{$file}")
+        ->with('transaction') //Traer la transacción asociada
+        ->firstOrFail(); //Si no existe el registro lanza error
+
+    // Buscar transacción asociada al proceso
+    $transaction = $process->transaction;
+
+    // Verificar si el usuario en sesión tiene acceso a la transacción
+    if (!$transaction->userHasAccess()) {
+        abort(403, 'No tienes permisos para descargar este requisito.');
     }
+
+    // Construir la ruta completa del archivo
+    $path = storage_path('app/private/secure/requirements/' . $file);
     if (!file_exists($path)) {
         abort(404, 'No hay archivo');
     }
+
     return Response::download($path); // Descarga el archivo
 })->middleware(['auth'])->name('file.download');
 
