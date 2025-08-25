@@ -21,7 +21,7 @@ class PdfActaController extends Controller
             'option',
             'profiles.user',
             'profiles.document',
-            'certificate',
+            'studentsCertificate',
         ])->findOrFail($id);
 
         // Cachear el ID del rol estudiante (en config o en propiedad estática si se repite mucho)
@@ -63,9 +63,13 @@ class PdfActaController extends Controller
             'defaultFont'          => 'DejaVu Sans',
         ]);
 
-        // Eliminar acta anterior si existe
-        if ($transaction->certificate?->acta && Storage::disk('private')->exists($transaction->certificate->acta)) {
-            Storage::disk('private')->delete($transaction->certificate->acta);
+        // Antes de guardar el nuevo PDF, eliminar acta anterior si existe
+        $certificate = $transaction->studentsCertificate()
+            ->where('type', 1) // 👈 Aquí decides: 1 = estudiante, 2 = asesor
+            ->first();
+
+        if ($certificate && $certificate->acta && Storage::disk('private')->exists($certificate->acta)) {
+            Storage::disk('private')->delete($certificate->acta);
         }
 
         // Guardar PDF
@@ -74,8 +78,10 @@ class PdfActaController extends Controller
         Storage::disk('private')->put($filePath, $pdf->output());
 
         // Guardar certificado asociado
-        $transaction->certificate()->updateOrCreate(
-            ['transaction_id' => $transaction->id],
+        $transaction->studentsCertificate()->updateOrCreate(
+            [   'transaction_id' => $transaction->id,
+                'type' => 1, // Tipo Estudiante
+            ],
             [
                 'acta'      => $filePath,
                 'signer_id' => $signer?->id,
