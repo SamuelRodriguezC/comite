@@ -72,17 +72,10 @@ class Transaction extends Model
     {
         return $this->belongsTo(Option::class);
     }
-
-    public function studentsCertificate(): HasOne
+    public function certificate(): HasOne
     {
-        return $this->hasOne(Certificate::class)->where('type', 1); // 1 = estudiante
+        return $this->hasOne(Certificate::class);
     }
-
-    public function advisorCertificates(): HasMany
-    {
-        return $this->hasMany(Certificate::class)->where('type', 2); // 2 = asesor
-    }
-
     public function processes(): HasMany
     {
         return $this->hasMany(Process::class);
@@ -93,6 +86,7 @@ class Transaction extends Model
                     ->using(ProfileTransaction::class)
                     ->withPivot('profile_id', 'role_id');
     }
+
 
 
     // ----------------------- MÉTODOS ------------------------

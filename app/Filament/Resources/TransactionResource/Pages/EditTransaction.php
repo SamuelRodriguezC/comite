@@ -44,26 +44,24 @@ class EditTransaction extends EditRecord
                 ->label('Visualizar acta')
                 ->icon('heroicon-o-eye')
                 ->url(function ($record) {
-                    $filename = basename($record->studentsCertificate?->acta);
+                    $filename = basename($record->certificate?->acta);
                     return $filename ? route('certificate.view', ['file' => $filename]) : null;
                 })
-                ->hidden(fn($record) => empty($record->studentsCertificate?->acta))
+                ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
 
             Actions\Action::make('download')
                 ->label('Descargar acta')
                 ->icon('heroicon-o-folder-arrow-down')
                 ->url(function ($record) {
-                    $filename = basename($record->studentsCertificate?->acta);
+                    $filename = basename($record->certificate?->acta);
                     return $filename ? route('certificate.download', ['file' => $filename]) : null;
                 })
-                ->hidden(fn($record) => empty($record->studentsCertificate?->acta))
+                ->hidden(fn($record) => empty($record->certificate?->acta))
                 ->openUrlInNewTab(),
 
         Action::make('certify')
-            ->label(fn ($record) => $record->studentsCertificate()->exists()
-                ? 'Generar Nuevo'
-                : 'Certificar Estudiantes')
+            ->label(fn ($record) => $record->certificate ? 'Generar Nuevo' : 'Certificar Estudiantes')
             ->icon('heroicon-o-document-check')
             ->color('success')
             ->form([
