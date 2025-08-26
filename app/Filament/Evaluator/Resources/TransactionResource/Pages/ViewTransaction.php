@@ -16,23 +16,22 @@ class ViewTransaction extends ViewRecord
             // Botón para ver el certificado cargado
             Actions\Action::make('view')
                 ->label('Visualizar acta')
-                ->icon('heroicon-o-eye')  // incorpora icono
+                ->icon('heroicon-o-eye')
                 ->url(function ($record) {
-                    $filename = basename($record->certificate?->acta);
-                    return $filename ? route('certificate.view', ['file' => $filename]) : null; //Redirigir a la ruta de visualización el archivo sin mostar la ruta completa del archivo (Solo su nombre)
+                    $filename = basename($record->studentsCertificate?->acta);
+                    return $filename ? route('certificate.view', ['file' => $filename]) : null;
                 })
-                ->hidden(fn($record) => empty($record->certificate?->acta)) // Oculta el botón si no hay requerimiento
-                ->openUrlInNewTab(),// Abre la vista en una nueva pestaña
+                ->hidden(fn($record) => empty($record->studentsCertificate?->acta))
+                ->openUrlInNewTab(),
 
-            //Botón para descargar el requerimiento
             Actions\Action::make('download')
                 ->label('Descargar acta')
                 ->icon('heroicon-o-folder-arrow-down')
                 ->url(function ($record) {
-                    $filename = basename($record->certificate?->acta);
+                    $filename = basename($record->studentsCertificate?->acta);
                     return $filename ? route('certificate.download', ['file' => $filename]) : null;
                 })
-                ->hidden(fn($record) => empty($record->certificate?->acta))
+                ->hidden(fn($record) => empty($record->studentsCertificate?->acta))
                 ->openUrlInNewTab(),
 
             // Opción para editar deshabilitada

@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\CertificateType;
 
 /**
  * Modelo Certificate
@@ -25,6 +26,7 @@ class Certificate extends Model
         'acta',
         'transaction_id',
         'signer_id',
+        'type',
     ];
 
     /**
@@ -36,6 +38,7 @@ class Certificate extends Model
         'resolution' => 'integer',
         'transaction_id' => 'integer',
         'signer_id' => 'integer',
+        'type' => CertificateType::class,
     ];
 
     /**

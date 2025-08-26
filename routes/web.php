@@ -113,12 +113,12 @@ Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generate'])
 
 //----------------------------------- RUTA PARA VER CERTIFICADOS DE ESTUDIANTES -----------------------------------
 Route::get('/certificate_students/view/{file}', function ($file) {
-    $transaction = Transaction::whereHas('certificate', function ($q) use ($file) {
+    $transaction = Transaction::whereHas('studentsCertificate', function ($q) use ($file) {
         $q->where('acta', "students_certificates/{$file}");
     })->firstOrFail();
 
     if (!$transaction->userHasAccess()) {
-        abort(403, 'No tienes permisos para acceder a esta acta.');
+        abort(403);
     }
 
     $path = storage_path("app/private/students_certificates/{$file}");
@@ -134,12 +134,12 @@ Route::get('/certificate_students/view/{file}', function ($file) {
 
 //----------------------------------- RUTA PARA DESCARGAR CERTIFICADOS DE ESTUDIANTES -----------------------------------
 Route::get('/certificate_students/download/{file}', function ($file) {
-    $transaction = Transaction::whereHas('certificate', function ($q) use ($file) {
+    $transaction = Transaction::whereHas('studentsCertificate', function ($q) use ($file) {
         $q->where('acta', "students_certificates/{$file}");
     })->firstOrFail();
 
     if (!$transaction->userHasAccess()) {
-        abort(403, 'No tienes permisos para descargar esta acta.');
+        abort(403);
     }
 
     $path = storage_path("app/private/students_certificates/{$file}");
