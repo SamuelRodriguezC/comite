@@ -215,6 +215,22 @@ class ProfilesRelationManager extends RelationManager
                         $record->id !== auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
+                Tables\Actions\Action::make('asesor_button')
+                    ->label('Acción Asesor')
+                    ->icon('heroicon-o-briefcase') // Puedes cambiar el ícono
+                    ->color('success')
+                    ->visible(fn ($record) =>
+                        $record->user && $record->user->hasRole('Asesor') // Solo si el usuario existe y tiene rol Asesor
+                    )
+                    ->action(function ($record) {
+                        // Aquí defines qué hace el botón
+                        // Por ejemplo, redirigir, abrir modal, notificar, etc.
+                        // Ejemplo sencillo: mostrar notificación
+                        \Filament\Notifications\Notification::make()
+                            ->title("Acción sobre el Asesor {$record->full_name}")
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
