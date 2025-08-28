@@ -428,6 +428,7 @@ class TransactionResource extends Resource
             'view' => Pages\ViewTransaction::route('/{record}'),
             'edit' => Pages\EditTransaction::route('/{record}/edit'),
             'certify-students' => Pages\CertifyStudents::route('/{record}/certify-students'),
+            'certify-advisors' => Pages\CertifyAdvisors::route('/{transaction}/certify-advisors/{profile}/{signer}'),
         ];
     }
 }

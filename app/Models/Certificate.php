@@ -27,6 +27,7 @@ class Certificate extends Model
         'transaction_id',
         'signer_id',
         'type',
+        'profile_id',
     ];
 
     /**
@@ -38,18 +39,21 @@ class Certificate extends Model
         'resolution' => 'integer',
         'transaction_id' => 'integer',
         'signer_id' => 'integer',
+        'profile_id' => 'integer',
         'type' => CertificateType::class,
     ];
 
-    /**
-     * Establece el tipo de relación que tiene con otros modelos
-     */
+    // -------------------- RELACIONES CON OTROS MODELOS  --------------------
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
     }
 
     public function signer(): BelongsTo
+    {
+        return $this->belongsTo(Signer::class);
+    }
+    public function profile(): BelongsTo
     {
         return $this->belongsTo(Signer::class);
     }

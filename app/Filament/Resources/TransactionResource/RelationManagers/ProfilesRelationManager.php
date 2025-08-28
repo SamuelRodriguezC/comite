@@ -30,7 +30,7 @@ class ProfilesRelationManager extends RelationManager
     protected static string $relationship = 'profiles';
     protected static ?string $title = 'Integrante(s) vinculados a la Opción';
 
-    // ---------- OPTENER LA TRANSACCIÓN A LA QUE PERTENECEN LOS PERFILES ----------
+    // -------------------- OBTENER LA TRANSACCIÓN A LA QUE PERTENECEN LOS PERFILES --------------------
     protected function getTransaction(): \App\Models\Transaction
     {
         return $this->ownerRecord; // $this->ownerRecord es el modelo Transaction al que pertenece este RelationManager
@@ -50,18 +50,18 @@ class ProfilesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                    Forms\Components\TextInput::make('document_number')
-                        ->label('Documento')
-                        ->required()
-                        ->maxLength(255)
-                        ->visibleOn('create'),
+                Forms\Components\TextInput::make('document_number')
+                    ->label('Documento')
+                    ->required()
+                    ->maxLength(255)
+                    ->visibleOn('create'),
 
-                    Select::make('courses_id')
-                        ->label('Curso')
-                        ->options(Course::all()->pluck('course', 'id'))
-                        ->searchable()
-                        ->required()
-                        ->columnSpanFull(),
+                Select::make('courses_id')
+                    ->label('Curso')
+                    ->options(Course::all()->pluck('course', 'id'))
+                    ->searchable()
+                    ->required()
+                    ->columnSpanFull(),
         ]);
     }
 
@@ -169,75 +169,136 @@ class ProfilesRelationManager extends RelationManager
                 ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->label('Ver')
-                    ->infolist(function ($record) {
-                        return [
-                            Section::make('Información Personal')
-                                ->schema([
-                                    TextEntry::make('name')
-                                        ->label('Nombre'),
-                                    TextEntry::make('last_name')
-                                        ->label('Apellido'),
-                                    TextEntry::make('User.email')
-                                        ->label('Email'),
-                                    TextEntry::make('phone_number')
-                                        ->label('Número de Teléfono'),
-                                ]) ->columns(2),  // Esto asegura que cada sección ocupe una columna
+                // -------------------- AGRUPAR BOTONES (TRES PUNTOS --------------------
+                Tables\Actions\ActionGroup::make([
 
-                            Section::make('Información Institucional')
-                                ->schema([
-                                    TextEntry::make('level')
-                                        ->label('Nivel Universitario')
-                                        ->formatStateUsing(
-                                            fn ($state) => Level::from($state)
-                                            ->getLabel()
-                                        ),
-                                    TextEntry::make('pivot.courses_id')
-                                        ->label('Carrera')
-                                        ->formatStateUsing(function ($state) {return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';}),
-                                    TextEntry::make('pivot.role_id')
-                                        ->label('Rol en la opción de grado')
-                                        ->formatStateUsing(function ($state) {return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';}),
-                            ])->columns(2),  // Esto asegura que cada sección ocupe una columna
-                        ];
-                    }),
 
-                // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
-                Tables\Actions\EditAction::make()
-                        ->visible(fn ($record) =>
-                        $record->id === auth_profile_id() &&
-                        $this->getTransaction()->isEditable()
+                    // -------------------- BOTÓN PARA VER DATOS DEL PEFIL --------------------
+                    Tables\Actions\ViewAction::make()
+                        ->label('Ver')
+                        ->infolist(function ($record) {
+                            return [
+                                Section::make('Información Personal')
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->label('Nombre'),
+                                        TextEntry::make('last_name')
+                                            ->label('Apellido'),
+                                        TextEntry::make('User.email')
+                                            ->label('Email'),
+                                        TextEntry::make('phone_number')
+                                            ->label('Número de Teléfono'),
+                                    ]) ->columns(2),  // Esto asegura que cada sección ocupe una columna
+
+                                Section::make('Información Institucional')
+                                    ->schema([
+                                        TextEntry::make('level')
+                                            ->label('Nivel Universitario')
+                                            ->formatStateUsing(
+                                                fn ($state) => Level::from($state)
+                                                ->getLabel()
+                                            ),
+                                        TextEntry::make('pivot.courses_id')
+                                            ->label('Carrera')
+                                            ->formatStateUsing(function ($state) {return \App\Models\Course::find($state)?->course ?? 'Curso no encontrado';}),
+                                        TextEntry::make('pivot.role_id')
+                                            ->label('Rol en la opción de grado')
+                                            ->formatStateUsing(function ($state) {return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';}),
+                                ])->columns(2),  // Esto asegura que cada sección ocupe una columna
+                            ];
+                        }),
+
+                    // -------------------- BOTÓN PARA EDITAR PERFIL --------------------
+                    Tables\Actions\EditAction::make()
+                        // Solo la persona en sesión puede cambiar su carrera y editarla antes del tiempo determinado
+                            ->visible(fn ($record) =>
+                            $record->id === auth_profile_id() &&
+                            $this->getTransaction()->isEditable()
                     ),
-                // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
-                Tables\Actions\DetachAction::make()
-                        ->visible(fn ($record) =>
-                        $record->id !== auth_profile_id() &&
-                        $this->getTransaction()->isEditable()
+
+                    // -------------------- BOTÓN PARA DESVINCULAR PERFIL --------------------
+                    Tables\Actions\DetachAction::make()
+                            // La persona en sesión no puede desvincularse ni desvincular a otros antes del tiempo determinado
+                            ->visible(fn ($record) =>
+                            $record->id !== auth_profile_id() &&
+                            $this->getTransaction()->isEditable()
                     ),
-                Tables\Actions\Action::make('asesor_button')
-                    ->label('Acción Asesor')
-                    ->icon('heroicon-o-briefcase') // Puedes cambiar el ícono
-                    ->color('success')
-                    ->visible(fn ($record) =>
-                        $record->user && $record->user->hasRole('Asesor') // Solo si el usuario existe y tiene rol Asesor
-                    )
-                    ->action(function ($record) {
-                        // Aquí defines qué hace el botón
-                        // Por ejemplo, redirigir, abrir modal, notificar, etc.
-                        // Ejemplo sencillo: mostrar notificación
-                        \Filament\Notifications\Notification::make()
-                            ->title("Acción sobre el Asesor {$record->full_name}")
-                            ->success()
-                            ->send();
-                    }),
+
+                    // -------------------- BOTÓN CERTIFICAR ASESOR --------------------
+                    Tables\Actions\Action::make('certify_advisor')
+                        ->label(fn ($record) => $record->hasCertificate($this->ownerRecord) ? 'Nuevo Certificado' : 'Certificar')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->color('success')
+                        ->visible(fn ($record) =>
+                            $record->user && $record->user->hasRole('Asesor') // Solo si el usuario existe y tiene rol Asesor
+                        )
+                        ->form([
+                            \Filament\Forms\Components\Select::make('signer_id')
+                                ->label('Seleccionar Director de Investigación')
+                                ->options(
+                                    \App\Models\Signer::query()
+                                        ->get()
+                                        ->pluck('display_name', 'id') // pluck ya devuelve [id => display_name]
+                                )
+                                ->required(),
+                        ])
+                        ->action(function ($data, $record) {
+                            return redirect()->route(
+                                'filament.coordinator.resources.transactions.certify-advisors',
+                                [
+                                    'transaction' => $this->ownerRecord->id, // ID de la transacción
+                                    'profile' => $record->id,                // ID del perfil
+                                    'signer' => $data['signer_id'],         // ID del firmador
+                                ]
+                            );
+                        })
+                        ->modalHeading('Seleccionar Firmador')
+                        ->modalSubmitActionLabel('Continuar'),
+
+                    // -------------------- BOTÓN PARA VER CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
+                    Tables\Actions\Action::make('view_certificate')
+                        ->label('Ver certificado')
+                        ->icon('heroicon-o-eye')
+                        ->color('primary')
+                        ->hidden(fn($record, $livewire) =>
+                            ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
+                        )
+                        ->url(fn($record, $livewire) =>
+                            route('certificate_advisor.view', [
+                                'file' => basename(
+                                    $record->certificates()
+                                        ->where('transaction_id', $livewire->ownerRecord->id)
+                                        ->where('type', 2)
+                                        ->first()?->acta
+                                ),
+                            ])
+                        , true)
+                        ->openUrlInNewTab(),
+
+                    // -------------------- BOTÓN PARA DESCARGAR CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
+                    Tables\Actions\Action::make('download_certificate')
+                        ->label('Ver certificado')
+                        ->icon('heroicon-o-folder-arrow-down')
+                        ->color('primary')
+                        ->hidden(fn($record, $livewire) =>
+                            ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
+                        )
+                        ->url(fn($record, $livewire) =>
+                            route('certificate_advisor.download', [
+                                'file' => basename(
+                                    $record->certificates()
+                                        ->where('transaction_id', $livewire->ownerRecord->id)
+                                        ->where('type', 2)
+                                        ->first()?->acta
+                            ),]), true)
+
+                ]),
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
             ])
             ->bulkActions([
                     Tables\Actions\BulkActionGroup::make([
-
                     ]),
                 ]);
     }

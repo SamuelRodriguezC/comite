@@ -53,9 +53,7 @@ class Profile extends Model
         'comment_id' => 'integer',
     ];
 
-    /**
-     * Establece el tipo de relación que tiene con otros modelos.
-     */
+    // -------------------- RELACIONES CON OTROS MODELOS  --------------------
     public function transactions(): BelongsToMany
     {
         return $this->belongsToMany(Transaction::class)->withPivot('courses_id', 'role_id');
@@ -73,7 +71,21 @@ class Profile extends Model
     {
         return $this->hasMany(Comment::class);
     }
+    
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(\App\Models\Certificate::class);
+    }
 
+
+
+    // -------------------- MÉTODOS  --------------------
+
+    /**
+     * Obtiene el nombre del curso asociado al perfil en su primera transacción.
+     *
+     * @return string|null Nombre del curso o null si no tiene curso asignado.
+     */
     public function getCursoAttribute()
     {
         // Asumiendo que una transacción tiene un solo perfil en esta relación
@@ -84,10 +96,45 @@ class Profile extends Model
         return \App\Models\Course::find($profile->pivot->courses_id)?->course;
     }
 
-    // Crea función de nombre completo
+    /**
+     * Devuelve el nombre completo del perfil concatenando nombre y apellido.
+     *
+     * @return string
+     */
     public function getFullNameAttribute()
     {
         return "{$this->name} {$this->last_name}";
     }
+
+    /**
+     * Obtiene el curso de un perfil específico dentro de una transacción dada.
+     *
+     * @param  \App\Models\Transaction  $transaction
+     * @return \App\Models\Course|null  El curso asociado en la transacción o null si no tiene.
+    */
+    public function courseInTransaction(Transaction $transaction)
+    {
+        $pivot = $this->transactions()->where('transaction_id', $transaction->id)->first()?->pivot;
+        return $pivot ? Course::find($pivot->courses_id) : null;
+    }
+
+
+    /**
+     * Verifica si el perfil ya tiene un certificado asociado a una transacción.
+    *
+    * @param  \App\Models\Transaction  $transaction
+    * @param  int  $type  Tipo de certificado (por defecto 2 = asesor).
+    * @return bool
+    */
+    public function hasCertificate(Transaction $transaction, int $type = 2): bool
+    {
+        // Busca certificado asociado a esta transacción y tipo, donde el perfil coincide con la transacción
+        return Certificate::where('transaction_id', $transaction->id)
+            ->where('type', $type)
+            ->where('profile_id', $this->id)
+            ->exists();
+    }
+
+
 
 }

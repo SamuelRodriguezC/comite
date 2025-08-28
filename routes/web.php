@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\PdfActaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CertificateAdvisorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -180,6 +181,28 @@ Route::get('/signatures/{filename}', function ($filename) {
 
     return response()->file(Storage::disk('private')->path($path));
 })->name('signatures.show');
+
+//----------------------------------- RUTA PARA GENERAR CERTIFICADOS DE ASESORES -----------------------------------
+Route::post(
+    '/transactions/{transaction}/profiles/{profile}/certify-advisor',
+    [CertificateAdvisorController::class, 'storeAdvisor']
+)->name('certificates.storeAdvisor');
+
+
+//----------------------------------- RUTA PARA VER CERTIFICADOS DE ASESORES -----------------------------------
+Route::get('/certificate_advisors/view/{file}', function ($file) {
+    $path = storage_path("app/private/advisors_certificates/{$file}");
+    abort_unless(file_exists($path), 404);
+    return response()->file($path);
+})->middleware(['auth'])->name('certificate_advisor.view');
+
+
+//----------------------------------- RUTA PARA DESCARGAR CERTIFICADOS DE ASESORES -----------------------------------
+Route::get('/certificate_advisors/download/{file}', function ($file) {
+    $path = storage_path("app/private/advisors_certificates/{$file}");
+    abort_unless(file_exists($path), 404);
+    return response()->download($path);
+})->middleware(['auth'])->name('certificate_advisor.download');
 
 
 

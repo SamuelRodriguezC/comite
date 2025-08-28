@@ -19,34 +19,69 @@ class Signer extends Model
         'signature',
     ];
 
-     /**
-     * Un firmador puede tener muchos certificados
+    /**
+     * Casts automáticos para atributos del modelo.
+     *
+     * Se convierte el campo "seccional" en una Enum \App\Enums\Seccional.
+     *
+     * @var array<string, string>
      */
+    protected $casts = [
+        'seccional' => \App\Enums\Seccional::class,
+    ];
+
+
+
+    // -------------------- RELACIONES CON OTROS MODELOS  --------------------
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
     }
 
+
+    // -------------------- MÉTODOS  --------------------
+
+
     /**
-     * Nombre completo + Facultad (para selects y vistas)
+     * Atributo accesor para mostrar un nombre completo
+     * acompañado de la facultad a la que pertenece.
+     *
+     * Ideal para dropdowns, selects o vistas.
+     *
+     * Ejemplo: "Carlos Pérez - Facultad de Ingeniería"
+     *
+     * @return string
      */
     public function getDisplayNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}  - Facultad de {$this->faculty}";
     }
 
+    /**
+     * Atributo accesor para mostrar el nombre completo
+     * sin información adicional.
+     *
+     * Ejemplo: "Carlos Pérez"
+     *
+     * @return string
+     */
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
     }
 
-    // Acceso a la URL de la firma
+    /**
+     * Atributo accesor que devuelve la URL pública
+     * de la firma del firmador, si existe.
+     *
+     * @return string|null
+     */
     public function getSignatureUrlAttribute(): ?string
     {
         if (! $this->signature) {
             return null;
         }
-
+        // Genera una ruta hacia la firma, usando su nombre de archivo
         return route('signatures.show', basename($this->signature));
     }
 }

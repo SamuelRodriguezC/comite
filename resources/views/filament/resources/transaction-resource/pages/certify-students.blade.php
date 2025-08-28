@@ -81,7 +81,7 @@
                {{ $this->getViewData()['signer']->first_name }} {{ $this->getViewData()['signer']->last_name }}<br>
                 Director(a) Centro de Investigación<br>
                 Facultad de {{ $this->getViewData()['signer']->faculty }}<br>
-                {{ \App\Enums\Seccional::from($this->getViewData()['signer']->seccional)->getLabel() }}<br>
+                {{ $this->getViewData()['signer']->seccional->getLabel() }}<br>
                 Universidad Libre
             </p>
         @else

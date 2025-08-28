@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use App\Models\Role;
-use App\Models\Signer;
 use App\Models\Course;
+use App\Models\Signer;
+use App\Enums\Seccional;
+use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Enums\Seccional;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PdfActaController extends Controller
 {
     public function generate($id)
     {
-        // Eager load de relaciones necesarias
+        // -------------------- CARGAR RELACIONES NECESARIAS --------------------
         $transaction = Transaction::with([
             'option',
             'profiles.user',
@@ -24,15 +25,16 @@ class PdfActaController extends Controller
             'studentsCertificate',
         ])->findOrFail($id);
 
-        // Cachear el ID del rol estudiante (en config o en propiedad estática si se repite mucho)
+        // -------------------- CACHEAR EL ID DE ROL DE ESTUDIANTE --------------------
         static $studentRoleId;
         $studentRoleId ??= Role::where('name', 'Estudiante')->value('id');
 
-        // Obtener IDs de cursos en lote (evita N+1 queries)
+        // -------------------- OBTENER ID DE LOS CURSOS (CARRERAS) --------------------
         $courseIds = $transaction->profiles->pluck('pivot.courses_id')->unique()->filter();
         $courses = Course::whereIn('id', $courseIds)->pluck('course', 'id');
 
-        // Mapear estudiantes con la información ya cargada
+
+        // -------------------- MAPEAR ESTUDIANTES CON LA INFORMACIÓN YA CARGADA --------------------
         $students = $transaction->profiles
             ->where('pivot.role_id', $studentRoleId)
             ->map(fn ($profile) => [
@@ -43,16 +45,17 @@ class PdfActaController extends Controller
                 'level'           => $profile->level,
             ])->values()->all();
 
-        // Firmador desde sesión (una sola consulta)
+        // -------------------- OBTENER EL FIRMADOR DESDE LA SESIÓN --------------------
         $signer = Signer::find(session('certificate_signer_id'));
 
+        // -------------------- GENERAR EL PDF --------------------
         $pdf = Pdf::loadView('pdf.acta', [
             'transaction'  => $transaction,
             'students'     => $students,
             'signatory'    => $signer ? [
                 'fullname'  => $signer->full_name,
                 'faculty'   => $signer->faculty,
-                'seccional' => Seccional::from($signer->seccional)->getLabel(),
+                'seccional' => $signer->seccional->getLabel(),
                 'signature' => $signer->signature,
             ] : null,
             'grade_option' => $transaction->option?->option ?? '',
@@ -63,16 +66,15 @@ class PdfActaController extends Controller
             'defaultFont'          => 'DejaVu Sans',
         ]);
 
-        // Antes de guardar el nuevo PDF, eliminar acta anterior si existe
+        // -------------------- ELIMINAR PDF ANTIGUO SI EXISTE --------------------
         $certificate = $transaction->studentsCertificate()
-            ->where('type', 1) // 👈 Aquí decides: 1 = estudiante, 2 = asesor
+            ->where('type', 1) // 1 = estudiante, 2 = asesor
             ->first();
-
         if ($certificate && $certificate->acta && Storage::disk('private')->exists($certificate->acta)) {
             Storage::disk('private')->delete($certificate->acta);
         }
 
-        // Guardar PDF
+        // -------------------- GUARDAR EL PDF EN STORAGE PRIVADO --------------------
         $fileName = "acta-{$transaction->id}-" . Str::random(5) . ".pdf";
         $filePath = "students_certificates/{$fileName}";
         Storage::disk('private')->put($filePath, $pdf->output());
@@ -81,6 +83,7 @@ class PdfActaController extends Controller
         $transaction->studentsCertificate()->updateOrCreate(
             [   'transaction_id' => $transaction->id,
                 'type' => 1, // Tipo Estudiante
+                // 'profile_id' => Auth::user()->id
             ],
             [
                 'acta'      => $filePath,
@@ -88,7 +91,7 @@ class PdfActaController extends Controller
             ]
         );
 
-        // Actualizar estado
+        // -------------------- ACTUALIZAR ESTADO DE LA TRANSACCIÓN (CERTIFICADO) Y RETORNAR --------------------
         $transaction->update(['status' => 4]);
 
         return $pdf->stream($fileName);
