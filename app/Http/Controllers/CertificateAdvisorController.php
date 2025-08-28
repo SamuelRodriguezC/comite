@@ -7,6 +7,7 @@ use App\Models\Signer;
 use App\Models\Profile;
 use App\Models\Certificate;
 use App\Models\Transaction;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
@@ -84,6 +85,9 @@ class CertificateAdvisorController extends Controller
                 'acta'       => $filePath,
             ]
         );
+
+        // -------------------- ENVIAR NOTIFICACIÓN AL ASESOR --------------------
+        TransactionNotifications::sendAdvisorCertification($profile->user, $transaction);
 
         // -------------------- RETORNAR LA REDIRECCIÓN --------------------
         return redirect()

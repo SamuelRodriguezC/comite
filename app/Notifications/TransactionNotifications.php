@@ -122,7 +122,7 @@ class TransactionNotifications extends Notification
 
 
     /**
-     * Notifica a todos los coordinadores cuando un estudiante solicita certificación.
+     * Notifica a todos los coordinadores cuando se solicita certificación.
      *
      * @param Transaction $transaction
      */
@@ -141,5 +141,21 @@ class TransactionNotifications extends Notification
         }
     }
 
+
+    /**
+     * Notifica a un asesor cuando se le realiza una certificación.
+     *
+     * @param User $user El asesor asignado.
+     * @param Transaction $transaction La transacción certificada.
+     */
+    public static function sendAdvisorCertification(User $user, Transaction $transaction): void
+    {
+        Notification::make()
+            ->title('Certificación Realizada')
+            ->body("Se ha generado su certificación para la Opción de Grado #{$transaction->id}.")
+            ->icon('heroicon-o-clipboard-document-check')
+            ->success()
+            ->sendToDatabase($user);
+    }
 
 }
