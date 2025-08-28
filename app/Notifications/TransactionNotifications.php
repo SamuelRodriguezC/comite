@@ -41,7 +41,7 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($user);
     }
 
-     /**
+    /**
      * Notifica al estudiante cuando se le asigna un evaluador o asesor.
      *
      * @param User $studentUser El estudiante dueño de la transacción.
@@ -156,6 +156,28 @@ class TransactionNotifications extends Notification
             ->icon('heroicon-o-clipboard-document-check')
             ->success()
             ->sendToDatabase($user);
+    }
+
+
+    /**
+     * Notifica a todos los coordinadores cuando se solicita certificación.
+     *
+     * @param Transaction $transaction
+     */
+    public static function sendCertificationStudents($students, Transaction $transaction): void
+    {
+        foreach ($students as $student) {
+            $user = $student->user; // relación con el usuario
+
+            if ($user) {
+                Notification::make()
+                    ->title('Certificación Realizada')
+                    ->body("Se ha generado tu certificación para la Opción de Grado #{$transaction->id}.")
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->success()
+                    ->sendToDatabase($user);
+            }
+        }
     }
 
 }

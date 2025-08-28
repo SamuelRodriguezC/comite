@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\TransactionNotifications;
 
 class PdfActaController extends Controller
 {
@@ -32,6 +33,9 @@ class PdfActaController extends Controller
         // -------------------- OBTENER ID DE LOS CURSOS (CARRERAS) --------------------
         $courseIds = $transaction->profiles->pluck('pivot.courses_id')->unique()->filter();
         $courses = Course::whereIn('id', $courseIds)->pluck('course', 'id');
+
+
+        $studentProfiles = $transaction->profiles->where('pivot.role_id', $studentRoleId);
 
 
         // -------------------- MAPEAR ESTUDIANTES CON LA INFORMACIÓN YA CARGADA --------------------
@@ -93,6 +97,8 @@ class PdfActaController extends Controller
 
         // -------------------- ACTUALIZAR ESTADO DE LA TRANSACCIÓN (CERTIFICADO) Y RETORNAR --------------------
         $transaction->update(['status' => 4]);
+
+        TransactionNotifications::sendCertificationStudents($studentProfiles, $transaction);
 
         return $pdf->stream($fileName);
     }
