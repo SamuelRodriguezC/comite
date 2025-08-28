@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Filament\Infolists\Infolist;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\AttachAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
@@ -102,7 +103,21 @@ class ProfilesRelationManager extends RelationManager
                     // Transformar el ID del curso a su nombre
                     ->formatStateUsing(function ($state) {
                         return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';
-                    }),
+                    })
+                    ->tooltip(fn ($record, $livewire) => $record->hasCertificate($this->ownerRecord)
+                        ? 'Asesor certificado'
+                        : ''
+                    )
+                    ->color(fn ($record, $livewire) =>
+                        $record->user?->hasRole('Asesor') && $record->hasCertificate($livewire->ownerRecord)
+                            ? 'success'
+                            : null
+                    )
+                    ->icon(fn ($record, $livewire) =>
+                        $record->user?->hasRole('Asesor') && $record->hasCertificate($livewire->ownerRecord)
+                            ? 'heroicon-o-check-badge'
+                            : ''
+                    )
             ])
             ->filters([
                 //
@@ -141,38 +156,11 @@ class ProfilesRelationManager extends RelationManager
                         })
                         ->searchable()
                         ->required(),
-                ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
-                // -------------------------- FUNCIONALIDAD PARA VINCULAR PERSONAS DESHABILITADA ----------------------------
-                // Tables\Actions\AttachAction::make()
-                // ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
-                // ->after(function ($record, $data) {
-                //     // Obtener el usuario del perfil vinculado y enviar notificación
-                //     if ($record->user) {
-                //         TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction());
-                //     }
-                // })
-                // ->form(fn (AttachAction $action): array => [
-                //     $action->getRecordSelect()
-                //         ->reactive(), // Necesario para que al seleccionar cambien las carreras
-                //     Select::make('courses_id')
-                //         ->label('Ingrese la carrera de la persona vinculada')
-                //         ->options(function (Get $get) {
-                //             $recordId = $get('recordId'); // 'recordId' es el ID de la persona seleccionada
-                //             if (!$recordId) {
-                //                 return [];
-                //             }
-                //             $profile = \App\Models\Profile::find($recordId);
-                //             if (!$profile) {
-                //                 return [];
-                //             }
-                //             return getCoursesByProfileLevel($profile->level);
-                //         })
-                //         ->searchable()
-                //         ->required(),
-                // ])->visible(fn () => $this->getTransaction()->isEditable()) //Solo puede vincular personas antes del tiempo determinado
+                ])->visible(fn () => $this->getTransaction()->isEditable())
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->infolist(function ($record) {
                         return [
@@ -208,13 +196,52 @@ class ProfilesRelationManager extends RelationManager
                         $record->id === auth_profile_id() &&
                         $this->getTransaction()->isEditable()
                     ),
-             // -------------------------- FUNCIONALIDAD PARA DESIVINCULAR PERSONAS DESHABILITADA ----------------------------
+                // -------------------------- FUNCIONALIDAD PARA DESIVINCULAR PERSONAS  ----------------------------
                 // La persona en sesión no puede desvincularse y puede desvincular a otros antes del tiempo determinado
-                // Tables\Actions\DetachAction::make()
-                //         ->visible(fn ($record) =>
-                //         $record->id !== auth_profile_id() &&
-                //         $this->getTransaction()->isEditable()
-                //     ),
+                Tables\Actions\DetachAction::make()
+                    ->visible(fn ($record) =>
+                    $record->id !== auth_profile_id() &&
+                    $this->getTransaction()->isEditable()
+                ),
+                 // -------------------- BOTÓN PARA VER CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
+                Tables\Actions\Action::make('view_certificate')
+                    ->label('Ver certificado')
+                    ->icon('heroicon-o-eye')
+                    ->color('primary')
+                    ->hidden(fn($record, $livewire) =>
+                        ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
+                    )
+                    ->url(fn($record, $livewire) =>
+                        route('certificate_advisor.view', [
+                            'file' => basename(
+                                $record->certificates()
+                                    ->where('transaction_id', $livewire->ownerRecord->id)
+                                    ->where('type', 2)
+                                    ->first()?->acta
+                            ),
+                        ])
+                    , true)
+                    ->openUrlInNewTab(),
+
+                    // -------------------- BOTÓN PARA DESCARGAR CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
+                    Tables\Actions\Action::make('download_certificate')
+                        ->label('Descargar certificado')
+                        ->icon('heroicon-o-folder-arrow-down')
+                        ->color('primary')
+                        ->hidden(fn($record, $livewire) =>
+                            ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
+                        )
+                        ->url(fn($record, $livewire) =>
+                            route('certificate_advisor.download', [
+                                'file' => basename(
+                                    $record->certificates()
+                                        ->where('transaction_id', $livewire->ownerRecord->id)
+                                        ->where('type', 2)
+                                        ->first()?->acta
+                            ),]))
+
+                    ]),
+
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
@@ -222,7 +249,7 @@ class ProfilesRelationManager extends RelationManager
             ->bulkActions([
                     Tables\Actions\BulkActionGroup::make([
 
-                                        ]),
+                    ]),
                 ]);
     }
 }

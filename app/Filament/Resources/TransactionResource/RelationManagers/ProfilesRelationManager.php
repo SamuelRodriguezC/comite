@@ -95,7 +95,21 @@ class ProfilesRelationManager extends RelationManager
                     // Transformar el ID del curso a su nombre
                     ->formatStateUsing(function ($state) {
                         return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';
-                    }),
+                    })
+                    ->tooltip(fn ($record, $livewire) => $record->hasCertificate($this->ownerRecord)
+                        ? 'Asesor certificado'
+                        : ''
+                    )
+                    ->color(fn ($record, $livewire) =>
+                        $record->user?->hasRole('Asesor') && $record->hasCertificate($livewire->ownerRecord)
+                            ? 'success'
+                            : null
+                    )
+                    ->icon(fn ($record, $livewire) =>
+                        $record->user?->hasRole('Asesor') && $record->hasCertificate($livewire->ownerRecord)
+                            ? 'heroicon-o-check-badge'
+                            : ''
+                    )
             ])
             ->filters([
                 //
@@ -232,6 +246,10 @@ class ProfilesRelationManager extends RelationManager
                         ->visible(fn ($record) =>
                             $record->user && $record->user->hasRole('Asesor') // Solo si el usuario existe y tiene rol Asesor
                         )
+                        ->tooltip(fn ($record) => $record->hasCertificate($this->ownerRecord)
+                            ? 'Este asesor ya tiene un certificado, puede generar uno nuevo.'
+                            : 'Certifique al asesor seleccionado.'
+                        )
                         ->form([
                             \Filament\Forms\Components\Select::make('signer_id')
                                 ->label('Seleccionar Director de Investigación')
@@ -277,7 +295,7 @@ class ProfilesRelationManager extends RelationManager
 
                     // -------------------- BOTÓN PARA DESCARGAR CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
                     Tables\Actions\Action::make('download_certificate')
-                        ->label('Ver certificado')
+                        ->label('Descargar certificado')
                         ->icon('heroicon-o-folder-arrow-down')
                         ->color('primary')
                         ->hidden(fn($record, $livewire) =>
@@ -290,9 +308,9 @@ class ProfilesRelationManager extends RelationManager
                                         ->where('transaction_id', $livewire->ownerRecord->id)
                                         ->where('type', 2)
                                         ->first()?->acta
-                            ),]), true)
+                            ),]))
 
-                ]),
+                    ]),
             ])
             ->emptyStateActions([
                 Tables\Actions\AttachAction::make(),
