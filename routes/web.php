@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\PdfActaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CertificateAdvisorController;
+use App\Models\Certificate;
 
 Route::get('/', function () {
     return view('welcome');
@@ -191,14 +192,50 @@ Route::post(
 
 //----------------------------------- RUTA PARA VER CERTIFICADOS DE ASESORES -----------------------------------
 Route::get('/certificate_advisors/view/{file}', function ($file) {
+    $user = Auth::user();
+
+    // Buscar el certificado por su acta
+    $certificate = Certificate::where('acta', "advisors_certificates/{$file}")
+        ->where('type', 2) // 2 = asesor
+        ->firstOrFail();
+
+    $profile = $certificate->profile; // Perfil dueño del certificado
+
+    // Validar acceso
+    if (
+        !$user->hasRole('Coordinador') &&
+        !$user->hasRole('Super administrador') &&
+        $profile->user_id !== $user->id
+    ) {
+        abort(403, 'No tienes permisos para acceder a este certificado.');
+    }
+
     $path = storage_path("app/private/advisors_certificates/{$file}");
     abort_unless(file_exists($path), 404);
+
     return response()->file($path);
 })->middleware(['auth'])->name('certificate_advisor.view');
 
 
 //----------------------------------- RUTA PARA DESCARGAR CERTIFICADOS DE ASESORES -----------------------------------
 Route::get('/certificate_advisors/download/{file}', function ($file) {
+    $user = Auth::user();
+
+    // Buscar el certificado por su acta
+    $certificate = Certificate::where('acta', "advisors_certificates/{$file}")
+        ->where('type', 2) // 2 = asesor
+        ->firstOrFail();
+
+    $profile = $certificate->profile; // Perfil dueño del certificado
+
+    // Validar acceso
+    if (
+        !$user->hasRole('Coordinador') &&
+        !$user->hasRole('Super administrador') &&
+        $profile->user_id !== $user->id
+    ) {
+        abort(403, 'No tienes permisos para acceder a este certificado.');
+    }
     $path = storage_path("app/private/advisors_certificates/{$file}");
     abort_unless(file_exists($path), 404);
     return response()->download($path);

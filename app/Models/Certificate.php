@@ -55,6 +55,6 @@ class Certificate extends Model
     }
     public function profile(): BelongsTo
     {
-        return $this->belongsTo(Signer::class);
+        return $this->belongsTo(Profile::class);
     }
 }

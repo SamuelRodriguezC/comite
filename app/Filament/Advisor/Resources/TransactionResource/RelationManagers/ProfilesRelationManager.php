@@ -210,6 +210,7 @@ class ProfilesRelationManager extends RelationManager
                     ->color('primary')
                     ->hidden(fn($record, $livewire) =>
                         ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
+                        || $record->user_id !== Auth::id() // Se oculta si no es el dueño del certificado
                     )
                     ->url(fn($record, $livewire) =>
                         route('certificate_advisor.view', [
@@ -230,6 +231,7 @@ class ProfilesRelationManager extends RelationManager
                         ->color('primary')
                         ->hidden(fn($record, $livewire) =>
                             ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
+                            || $record->user_id !== Auth::id() // Se oculta si no es el dueño del certificado
                         )
                         ->url(fn($record, $livewire) =>
                             route('certificate_advisor.download', [
