@@ -78,7 +78,7 @@ class SignerResource extends Resource
                 Tables\Columns\TextColumn::make('seccional')
                     ->label('Seccional')
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => Seccional::from($state)->getLabel())
+                    // ->formatStateUsing()
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('signature')
                     ->label('Firma')
