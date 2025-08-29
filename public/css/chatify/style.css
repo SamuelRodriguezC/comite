@@ -115,7 +115,6 @@ body {
 .listOfContacts {
     height: auto !important;
     max-height: calc(100vh - 200px) !important; /* ajusta 200px para tu header */
-    overflow-y: auto !important;
 }
 
 .messenger-listView {
@@ -219,7 +218,8 @@ body {
 }
 .messenger-tab {
   overflow: auto;
-  height: calc(100vh - var(--listView-header-height) - 2px);
+  height: 67vh !important;
+  max-height: 67vh !important;
   display: none;
   position: relative;
 }
