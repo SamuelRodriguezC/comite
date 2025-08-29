@@ -46,11 +46,11 @@
                           Subir Nueva
                           <input class="upload-avatar chatify-d-none" accept="image/*" name="avatar" type="file" />
                       </label>
-                      {{-- Dark/Light Mode  --}}
+                      {{-- Dark/Light Mode
                       <p class="divider"></p>
                       <p class="app-modal-header">Modo Oscuro <span class="
                         {{ Auth::user()->dark_mode > 0 ? 'fas' : 'far' }} fa-moon dark-mode-switch"
-                         data-mode="{{ Auth::user()->dark_mode > 0 ? 1 : 0 }}"></span></p>
+                         data-mode="{{ Auth::user()->dark_mode > 0 ? 1 : 0 }}"></span></p> --}}
                       {{-- change messenger color  --}}
                       <p class="divider"></p>
                       {{-- <p class="app-modal-header">Change {{ config('chatify.name') }} Color</p> --}}

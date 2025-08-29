@@ -103,8 +103,8 @@ body {
 .messenger {
   display: inline-flex;
   width: 100%;
-  height: calc(100vh - 200px) !important;
-  max-height: calc(100vh - 200px) !important;
+  height: calc(100vh - 100px) !important;
+  max-height: calc(100vh - 100px) !important;
   overflow-y: auto;
   font-family: sans-serif;
 }
@@ -218,8 +218,8 @@ body {
 }
 .messenger-tab {
   overflow: auto;
-  height: 67vh !important;
-  max-height: 67vh !important;
+  height: 77vh !important;
+  max-height: 77vh !important;
   display: none;
   position: relative;
 }
