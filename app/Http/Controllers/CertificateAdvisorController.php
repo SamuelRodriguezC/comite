@@ -58,6 +58,7 @@ class CertificateAdvisorController extends Controller
             'academic_title'=> $data['academic_title'],
             'students'       => $students,
             'date'           => Carbon::now()->locale('es'),
+            'city'           => 'Bogotá D.C.',
             'signatory'     => [
                 'fullname'  => $signer->full_name,
                 'faculty'   => $signer->faculty,
