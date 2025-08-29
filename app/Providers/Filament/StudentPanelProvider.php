@@ -32,9 +32,10 @@ class StudentPanelProvider extends PanelProvider
             ->profile()
             ->databaseNotifications()
             ->unsavedChangesAlerts()
+            ->darkMode(false)
             ->brandName('Comite - Panel Estudiante')
             ->colors([
-                'primary' => Color::Gray,
+                'primary' => Color::Zinc,
             ])
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\\Filament\\Student\\Resources')
             ->discoverPages(in: app_path('Filament/Student/Pages'), for: 'App\\Filament\\Student\\Pages')

@@ -34,16 +34,12 @@ class CoordinatorPanelProvider extends PanelProvider
             ->path('coordinator')
             ->brandName('Comite - Panel Coordinador')
             ->databaseNotifications()
-            // ->login()
-            // ->registration()
-            // ->passwordReset()
-            //->emailVerification()
-            //->databaseNotifications()
+            ->darkMode(false)
             ->profile()
             // ->spa() ----- Muestra una linea de carga en la parte superior
             ->unsavedChangesAlerts()
             ->colors([
-                'primary' => Color::Gray,
+                'primary' => Color::Zinc,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

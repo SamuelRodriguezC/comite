@@ -31,8 +31,9 @@ class AdvisorPanelProvider extends PanelProvider
             ->brandName('Comite - Panel Asesor')
             ->profile()
             ->unsavedChangesAlerts()
+            ->darkMode(false)
             ->colors([
-                'primary' => Color::Gray,
+                'primary' => Color::Zinc,
             ])
             ->databaseNotifications()
             ->profile()
