@@ -23,8 +23,11 @@ enum Resolution: int implements HasLabel, HasColor
     case RECHAZADO = 2;
     case PENDIENTE = 3;
     case APLAZADO = 4;
+
     /**
-     * Generates function to display a label
+     * Devuelve una etiqueta legible para mostrar el texto del componente en la interfaz de usuario.
+     *
+     * @return string|null
      */
     public function getLabel(): ?string
     {
@@ -35,8 +38,12 @@ enum Resolution: int implements HasLabel, HasColor
             self::APLAZADO => 'Aplazado',
         };
     }
+
+
     /**
-     * Generates function to obtain color according to the case
+     * Devuelve el color asociado al la resolución, usado en etiquetas o badges.
+     *
+     * @return string
      */
     public function getColor(): string|array|null
     {

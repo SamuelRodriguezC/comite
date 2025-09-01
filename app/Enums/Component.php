@@ -20,7 +20,7 @@ enum Component: int implements HasLabel
 
 
     /**
-     * Devuelve una etiqueta legible para mostrar en la interfaz de usuario.
+     * Devuelve una etiqueta legible para mostrar el texto del componente en la interfaz de usuario.
      *
      * @return string|null
      */
