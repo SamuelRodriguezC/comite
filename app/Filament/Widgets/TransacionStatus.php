@@ -21,41 +21,48 @@ class TransacionStatus extends BaseWidget
     {
         return 'Contador del estado de las Opciones de Grado';
     }
+protected function getStats(): array
+{
+    // Traer todos los conteos en una sola consulta
+    $counts = Transaction::selectRaw('status, COUNT(*) as total')
+        ->whereIn('status', [1, 2, 3, 4])
+        ->groupBy('status')
+        ->pluck('total', 'status');
 
-    protected function getStats(): array
-    {
-        return [
-            Stat::make('Opciones de Grado', Transaction::where('status', 1)->count())
-                ->description('En Progreso')
-                ->descriptionIcon('heroicon-o-arrow-trending-up', IconPosition::Before)
-                ->color('info')
-                ->url(route('filament.coordinator.resources.transactions.index', [
-                    'activeTab' => 'En+Progreso',
+    return [
+        Stat::make('Opciones de Grado', $counts[1] ?? 0)
+            ->description('En Progreso')
+            ->descriptionIcon('heroicon-o-arrow-trending-up', IconPosition::Before)
+            ->color('info')
+            ->url(route('filament.coordinator.resources.transactions.index', [
+                'activeTab' => 'En+Progreso',
             ])),
-             Stat::make('Opciones de Grado', Transaction::where('status', 2)->count())
-                ->description('Completadas')
-                ->descriptionIcon('heroicon-o-clipboard-document-check', IconPosition::Before)
-                ->color('info')
-                ->url(route('filament.coordinator.resources.transactions.index', [
-                    'activeTab' => 'Completadas',
-            ])),
-            Stat::make('Opciones de Grado', Transaction::where('status', 3)->count())
-                ->description('Por Certificar')
-                ->descriptionIcon('heroicon-o-ellipsis-horizontal-circle', IconPosition::Before)
-                ->color('info')
-                ->url(route('filament.coordinator.resources.transactions.index', [
-                    'activeTab' => 'Por+Certificar',
-            ])),
-            Stat::make('Opciones de Grado', Transaction::where('status', 4)->count())
-                ->description('Certificadas')
-                ->descriptionIcon('heroicon-o-academic-cap', IconPosition::Before)
-                ->color('info')
-                ->url(route('filament.coordinator.resources.transactions.index', [
-                    'activeTab' => 'Certificado',
-            ])),
-        ];
 
-    }
+        Stat::make('Opciones de Grado', $counts[2] ?? 0)
+            ->description('Completadas')
+            ->descriptionIcon('heroicon-o-clipboard-document-check', IconPosition::Before)
+            ->color('success')
+            ->url(route('filament.coordinator.resources.transactions.index', [
+                'activeTab' => 'Completadas',
+            ])),
+
+        Stat::make('Opciones de Grado', $counts[3] ?? 0)
+            ->description('Por Certificar')
+            ->descriptionIcon('heroicon-o-ellipsis-horizontal-circle', IconPosition::Before)
+            ->color('warning')
+            ->url(route('filament.coordinator.resources.transactions.index', [
+                'activeTab' => 'Por+Certificar',
+            ])),
+
+        Stat::make('Opciones de Grado', $counts[4] ?? 0)
+            ->description('Certificadas')
+            ->descriptionIcon('heroicon-o-academic-cap', IconPosition::Before)
+            ->color('success')
+            ->url(route('filament.coordinator.resources.transactions.index', [
+                'activeTab' => 'Certificado',
+            ])),
+    ];
+}
     protected function getColumns(): int
     {
         return 4;
