@@ -20,6 +20,8 @@ class CommentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'Comments';
     protected static ?string $title = 'Comentarios';
+    protected static ?string $modelLabel = "Comentario";
+    protected static ?string $pluralModelLabel = "Comentarios";
 
     public function form(Form $form): Form
     {
@@ -65,10 +67,12 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('profile.last_name')
                     ->label('Apellido')
-                    ->limit(10),
+                    ->limit(20)
+                    ->tooltip(fn($state) => $state),
                 Tables\Columns\TextColumn::make('profile.user.email')
                     ->label('Correo')
-                    ->limit(10),
+                    ->limit(20)
+                    ->tooltip(fn($state) => $state),
 
             ])
             ->filters([
@@ -76,6 +80,8 @@ class CommentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->label('Agregar Comentario')
+                    ->createAnother(false)
                     ->mutateFormDataUsing(function (array $data): array {
                         // Guardar en el campo profile_id el id del perfil del usuario en sesión al hacer un comentario
                         $data['profile_id'] = Auth::user()->profiles->id;
