@@ -65,7 +65,7 @@ class CreateTransaction extends CreateRecord
         // Enviar notificación al usuario del perfil
         $studentProfile = Profile::find($data['profile_id']);
         if ($studentProfile && $studentProfile->user) {
-            TransactionNotifications::sendTransactionAssigned($studentProfile->user, $transaction);
+            TransactionNotifications::sendTransactionAssigned($studentProfile->user, $transaction, $data['role_id']);
         }
 
         Notification::make()

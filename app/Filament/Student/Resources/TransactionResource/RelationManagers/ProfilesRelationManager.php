@@ -113,7 +113,7 @@ class ProfilesRelationManager extends RelationManager
                     ->after(function ($record, $data) {
                         // Obtener el usuario del perfil vinculado y enviar notificación
                         if ($record->user) {
-                            TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction());
+                            TransactionNotifications::sendTransactionAssigned($record->user, $this->getTransaction(), $data['role_id']);
                         }
                     })
                     ->form(fn(AttachAction $action): array => [

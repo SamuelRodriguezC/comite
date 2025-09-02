@@ -210,7 +210,7 @@ class TransactionResource extends Resource
                                 ->inline(false)
                                 ->onColor('success')
                                 ->offColor('danger')
-                                ->live()
+                                // ->live()
                                 // Deshabilitar el botón usando funcion isLocked del enum status
                                 ->disabled(fn (Forms\Get $get, ?\App\Models\Transaction $record)
                                     => $record && \App\Enums\Status::isLocked($record->status)
@@ -222,15 +222,6 @@ class TransactionResource extends Resource
                                         if ($msg = \App\Enums\Status::helperMessage($record->status)) {
                                             $component->helperText($msg);
                                         }
-                                    }
-                                })
-                                // Enviar notificación solicitud a los coordinadores
-                                ->afterStateUpdated(function ($state, callable $set, ?Transaction $record) {
-                                    if ($state) { // Si se activó el toggle
-                                        $record->status = \App\Enums\Status::PORCERTIFICAR->value;
-                                        $record->save();
-                                        // Notificar a coordinadores
-                                        \App\Notifications\TransactionNotifications::sendCertificationRequested($record);
                                     }
                                 })
                                 // Si el botón ha sido seleccionado (true) cambiar el estado a PORCERTIFICAR

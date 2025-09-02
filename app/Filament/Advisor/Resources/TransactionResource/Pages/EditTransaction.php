@@ -2,10 +2,11 @@
 
 namespace App\Filament\Advisor\Resources\TransactionResource\Pages;
 
-use App\Filament\Advisor\Resources\TransactionResource;
+use App\Enums\Status;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use App\Enums\Status;
+use App\Notifications\TransactionNotifications;
+use App\Filament\Advisor\Resources\TransactionResource;
 
 
 class EditTransaction extends EditRecord
@@ -43,7 +44,9 @@ class EditTransaction extends EditRecord
     {
         // Fuerza re-render del componente Livewire (sin recargar página)
         $this->dispatch('$refresh');
-        // Opcional: también puedes volver a llenar el form desde el record.
-        // $this->fillForm();
+        // Enviar notificación SOLO si el estado quedó en PORCERTIFICAR
+        if ($this->record->status === Status::PORCERTIFICAR->value) {
+            TransactionNotifications::sendCertificationRequested($this->record);
+        }
     }
 }
