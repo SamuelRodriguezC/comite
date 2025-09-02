@@ -12,6 +12,20 @@ use App\Http\Controllers\PdfActaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CertificateAdvisorController;
 use App\Models\Certificate;
+use App\Http\Controllers\FormularioController;
+use App\Http\Controllers\EvaluacionFinalController;
+
+Route::get('/evaluacion-final', [EvaluacionFinalController::class, 'index'])->name('evaluacion_final.index');
+Route::post('/evaluacion-final/procesar', [EvaluacionFinalController::class, 'procesar'])->name('evaluacion_final.procesar');
+Route::post('/evaluacion-final/pdf', [EvaluacionFinalController::class, 'generarPdf'])->name('evaluacion_final.pdf');
+
+
+
+Route::get('/formulario/{transaction}', [FormularioController::class, 'index'])
+    ->name('formulario.index');
+Route::get('/formulario', [FormularioController::class, 'index'])->name('formulario.index');
+Route::post('/formulario/procesar', [FormularioController::class, 'procesar'])->name('formulario.procesar');
+Route::post('/formulario/pdf', [FormularioController::class, 'generarPdf'])->name('formulario.pdf');
 
 Route::get('/', function () {
     return view('welcome');

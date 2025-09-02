@@ -182,9 +182,22 @@ class TransactionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    // El botón de edición solo se  muestra si la transacción está habilitada
-                    ->visible(fn ($record) => $record->enabled !== 2),
-            ])
+                ->visible(fn ($record) => $record->enabled !== 2),
+
+                Tables\Actions\ActionGroup::make([
+                Tables\Actions\Action::make('acta_ante_proyecto')
+                ->label('Acta Ante Proyecto')
+                ->icon('heroicon-o-document-text')
+                ->url(fn ($record) => route('formulario.index', ['transaction' => $record->id])),
+
+                Tables\Actions\Action::make('acta_evaluacion_final')
+                ->label('Acta Evaluación Final')
+                ->icon('heroicon-o-document-check')
+                ->url(fn ($record) => route('evaluacion_final.index', ['transaction' => $record->id])),
+             ])
+        ->icon('heroicon-o-ellipsis-vertical') // menú de 3 puntos
+        ->tooltip('Más acciones'),
+])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
 
