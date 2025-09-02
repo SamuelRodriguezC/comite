@@ -123,7 +123,7 @@ class ProfilesRelationManager extends RelationManager
 
                     // Notificación al usuario asignado
                     if ($record->user) {
-                        TransactionNotifications::sendTransactionAssigned($record->user, $transaction);
+                        TransactionNotifications::sendTransactionAssigned($record->user, $transaction, $data['role_id']);
                     }
 
                     // Si es un evaluador o asesor, notificar al estudiante
