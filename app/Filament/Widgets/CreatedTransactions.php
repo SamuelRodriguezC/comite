@@ -13,23 +13,28 @@ class CreatedTransactions extends LineChartWidget
     protected static ?int $sort = 3;
     protected function getData(): array
     {
-        // Establece el idioma a español
         Carbon::setLocale('es');
 
+        // Rango de últimos 12 meses
+        $start = Carbon::now()->subMonths(11)->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+
+        // Consulta optimizada: una sola query con groupBy
+        $transactions = Transaction::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as ym, COUNT(*) as total')
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
+        // Construimos los meses con ceros si no hay datos
         $months = collect();
         for ($i = 11; $i >= 0; $i--) {
             $months->push(Carbon::now()->subMonths($i)->format('Y-m'));
         }
 
-        $counts = $months->map(function ($month) {
-            [$year, $m] = explode('-', $month);
-            return Transaction::whereYear('created_at', $year)
-                ->whereMonth('created_at', $m)
-                ->count();
-        });
+        $counts = $months->map(fn($month) => $transactions[$month] ?? 0);
 
         return [
-            'labels' => $months->map(fn($m) => Carbon::createFromFormat('Y-m', $m)->translatedformat('M Y'))->toArray(),
+            'labels' => $months->map(fn($m) => Carbon::createFromFormat('Y-m', $m)->translatedFormat('M Y'))->toArray(),
             'datasets' => [
                 [
                     'label' => 'Opciones Creadas',

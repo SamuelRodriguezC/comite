@@ -19,19 +19,24 @@ class CommentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'Comments';
     protected static ?string $title = 'Comentarios';
+    protected static ?string $modelLabel = "Comentario";
+    protected static ?string $pluralModelLabel = "Comentarios";
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('comment')
-                    ->label('Comentario')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\Select::make('concept_id')
                     ->label('Concepto')
                     ->required()
                     ->relationship('concept', 'concept'),
+                Forms\Components\RichEditor::make('comment')
+                    ->label('Tu Comentario')
+                    ->required()
+                    // Deshabilitar las siguientes opciones del rich editor
+                    ->disableToolbarButtons(['attachFiles', 'link', 'strike', 'codeBlock', 'h2', 'h3', 'blockquote'])
+                    ->maxLength(255)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -50,9 +55,8 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('comment')
                     ->label('Comentario')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->markdown()
+                    ->limit(20),
                 Tables\Columns\TextColumn::make('profile.name')
                     ->label('Nombre')
                     ->formatStateUsing(function ($state, $record) {
@@ -62,14 +66,12 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('profile.last_name')
                     ->label('Apellido')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 10);
-                    }),
+                    ->limit(10)
+                    ->tooltip(fn($state) => $state),
                 Tables\Columns\TextColumn::make('profile.user.email')
                     ->label('Correo')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->limit(20)
+                    ->tooltip(fn($state) => $state),
 
             ])
             ->filters([
@@ -77,6 +79,8 @@ class CommentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->label('Agregar Comentario')
+                    ->createAnother(false)
                     ->mutateFormDataUsing(function (array $data): array {
                         // Guardar en el campo profile_id el id del perfil del usuario en sesión al hacer un comentario
                         $data['profile_id'] = Auth::user()->profiles->id;

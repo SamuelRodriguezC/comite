@@ -16,60 +16,53 @@ class ProcessState extends PieChartWidget
     protected static ?int $sort = 5;
     protected int | string | array $columnSpan = 1;
 
-    protected function getData(): array
-    {
-        // Obtener transacciones donde el perfil tiene rol evaluador
-       $transactionIds = Transaction::pluck('id');
+protected function getData(): array
+{
+    // Contar procesos agrupados por estado (sin pluck innecesario)
+    $statusCounts = Process::query()
+        ->selectRaw('state, COUNT(*) as count')
+        ->groupBy('state')
+        ->pluck('count', 'state')
+        ->toArray();
 
-        // Contar procesos agrupados por estado
-        $statusCounts = Process::query()
-            ->whereIn('transaction_id', $transactionIds)
-            ->selectRaw('state, COUNT(*) as count')
-            ->groupBy('state')
-            ->pluck('count', 'state')
-            ->toArray();
+    // Usar enum para etiquetas y asegurar que todos los estados estén en el gráfico
+    $labels = [];
+    $data = [];
 
-        // Usar el enum para etiquetas y colores
-        $labels = [];
-        $data = [];
-
-        foreach (State::cases() as $state) {
-            $labels[] = $state->getLabel();
-            $data[] = $statusCounts[$state->value] ?? 0;
-        }
-
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Procesos',
-                    'data' => $data,
-                    'backgroundColor' => [
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(255, 0, 0, 0.6)',
-                        'rgba(255, 159, 64, 0.6)',
-                        'rgba(201, 203, 207, 0.6)',
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 0, 0, 0.6)',
-
-                    ],
-                    'borderColor' => [
-                        'rgb(75, 192, 192)',
-                        'rgba(255, 0, 0, 0.78)',
-                        'rgb(255, 159, 64)',
-                        'rgb(201, 203, 207)',
-                        'rgba(255, 99, 132)',
-                        'rgb(54, 162, 235)',
-                        'rgba(255, 0, 0, 0.78)',
-
-                    ],
-                    'borderWidth' => 1
-                ],
-            ],
-            'labels' => $labels,
-        ];
+    foreach (State::cases() as $state) {
+        $labels[] = $state->getLabel();
+        $data[] = $statusCounts[$state->value] ?? 0;
     }
 
+    return [
+        'datasets' => [
+            [
+                'label' => 'Procesos',
+                'data' => $data,
+                'backgroundColor' => [
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 0, 0, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(201, 203, 207, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                ],
+                'borderColor' => [
+                    'rgb(75, 192, 192)',
+                    'rgba(255, 0, 0, 0.78)',
+                    'rgb(255, 159, 64)',
+                    'rgb(201, 203, 207)',
+                    'rgba(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(153, 102, 255)',
+                ],
+                'borderWidth' => 1,
+            ],
+        ],
+        'labels' => $labels,
+    ];
+}
     public function getColumns(): int | string | array
     {
         return [

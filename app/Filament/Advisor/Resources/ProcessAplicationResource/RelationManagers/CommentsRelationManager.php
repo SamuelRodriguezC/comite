@@ -28,6 +28,8 @@ class CommentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'comments';
     protected static ?string $title = 'Comentarios';
+    protected static ?string $modelLabel = "Comentario";
+    protected static ?string $pluralModelLabel = "Comentarios";
 
     public function form(Form $form): Form
     {
@@ -64,9 +66,7 @@ class CommentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('comment')
                     ->label('Comentario')
                     ->markdown()
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 20);
-                    }),
+                    ->limit(20),
                 Tables\Columns\TextColumn::make('profile.name')
                     ->label('Nombre')
                     ->formatStateUsing(function ($state, $record) {
@@ -76,19 +76,20 @@ class CommentsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('profile.last_name')
                     ->label('Apellido')
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 10);
-                    }),
+                    ->limit(10)
+                    ->tooltip(fn($state) => $state),
                 Tables\Columns\TextColumn::make('profile.user.email')
                     ->label('Correo')
-                    ->limit(20),
-
+                    ->limit(20)
+                    ->tooltip(fn($state) => $state),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->label('Agregar Comentario')
+                    ->createAnother(false)
                     ->mutateFormDataUsing(function (array $data): array {
                         // Guardar en el campo profile_id el id del perfil del usuario en sesión al hacer un comentario
                         $data['profile_id'] = Auth::user()->profiles->id;

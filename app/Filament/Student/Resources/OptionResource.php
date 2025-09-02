@@ -67,9 +67,8 @@ class OptionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('option')
                     ->label("Opción de grado")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 25);
-                    })
+                    ->limit(25)
+                    ->tooltip(fn($state) => $state)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label("Nivel Universitario")
@@ -81,15 +80,13 @@ class OptionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label("Descripción")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 25);
-                    })
+                    ->limit(25)
+                    ->tooltip(fn($state) => $state)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('requirement')
                     ->label("Requisitos")
-                    ->formatStateUsing(function ($state){
-                        return Str::limit($state, 25);
-                    })
+                    ->limit(25)
+                    ->tooltip(fn($state) => $state)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
