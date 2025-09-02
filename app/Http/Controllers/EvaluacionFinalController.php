@@ -21,10 +21,32 @@ class EvaluacionFinalController extends Controller
     }
 
     // Generar PDF
-    public function generarPdf(Request $request)
-    {
-        $datos = $request->all();
-        $pdf = Pdf::loadView('pdf.evaluacion_final', compact('datos'));
-        return $pdf->download('evaluacion_final.pdf');
+public function generarPdf(Request $request)
+{
+    $datos = $request->all();
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.evaluacion_final', compact('datos'));
+
+    // -------------------- ARMAR NOMBRE DEL ARCHIVO --------------------
+    $nombre1 = \Illuminate\Support\Str::slug($datos['nombre1'] ?? 'sin-nombre', '_');
+    $codigo1 = $datos['codigo1'] ?? 'sin-codigo';
+
+    $nombre2 = !empty($datos['nombre2']) ? \Illuminate\Support\Str::slug($datos['nombre2'], '_') : null;
+    $codigo2 = !empty($datos['codigo2']) ? $datos['codigo2'] : null;
+
+    // Si hay dos estudiantes, se agregan ambos
+    if ($nombre2 && $codigo2) {
+        $fileName = "evaluacion_final-{$nombre1}_{$codigo1}-{$nombre2}_{$codigo2}.pdf";
+    } else {
+        $fileName = "evaluacion_final-{$nombre1}_{$codigo1}.pdf";
     }
+
+    $filePath = "evaluaciones_finales/{$fileName}";
+
+    // -------------------- GUARDAR EL PDF EN STORAGE PRIVADO --------------------
+    \Illuminate\Support\Facades\Storage::disk('private')->put($filePath, $pdf->output());
+
+    // -------------------- DESCARGAR EL PDF --------------------
+    return $pdf->download($fileName);
+}
+
 }
