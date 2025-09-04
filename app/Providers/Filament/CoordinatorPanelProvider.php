@@ -72,4 +72,13 @@ class CoordinatorPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);;
     }
+    protected function getNavigation(): array
+    {
+        return [
+            NavigationItem::make('Certificados')
+                ->icon('heroicon-o-document-text')
+                ->url('/coordinator/certificates')
+                ->sort(1),
+        ];
+    }
 }

@@ -57,4 +57,24 @@ class Certificate extends Model
     {
         return $this->belongsTo(Profile::class);
     }
+    protected static function booted()
+{
+    static::creating(function (Certificate $certificate) {
+        if (!$certificate->acta) {
+            $certificate->acta = 'placeholder.pdf';
+        }
+
+        if (!$certificate->transaction_id) {
+            $certificate->transaction_id = 1; // asegúrate que exista
+        }
+
+        if (!$certificate->type) {
+            $certificate->type = 1; // estudiante por defecto
+        }
+
+        if (!$certificate->signer_id) {
+            $certificate->signer_id = 1; // asigna un ID válido de firmante
+        }
+    });
+}
 }

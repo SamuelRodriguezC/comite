@@ -16,32 +16,32 @@
 </head>
 <body>
     <!-- Encabezado -->
-<table style="width:100%; border:1px solid #000; border-collapse:collapse; text-align:center;">
-    <tr>
-        <!-- Logo -->
-        <td style="width:20%; border:1px solid #000; text-align:center;">
-            <img src="{{ public_path('images/logoUniversidad.png') }}" alt="Logo Universidad" style="max-width:90px;">
-        </td>
+    <table style="width:100%; border:1px solid #000; border-collapse:collapse; text-align:center;">
+        <tr>
+            <!-- Logo -->
+            <td style="width:20%; border:1px solid #000; text-align:center;">
+                <img src="{{ public_path('images/logoUniversidad.png') }}" alt="Logo Universidad" style="max-width:90px;">
+            </td>
 
-        <!-- Texto institucional -->
-        <td style="width:40%; border:1px solid #000; text-align:center; vertical-align:middle;">
-            <strong>UNIVERSIDAD LIBRE</strong><br>
-            <span style="font-size:12px;">FAC. INGENIERÍA</span><br>
-            <span style="font-size:12px;">COMITÉ DE OPCIONES DE GRADO</span><br>
-            <span style="font-size:12px;">CON COMPONENTE DE INVESTIGACIÓN</span>
-        </td>
+            <!-- Texto institucional -->
+            <td style="width:40%; border:1px solid #000; text-align:center; vertical-align:middle;">
+                <strong>UNIVERSIDAD LIBRE</strong><br>
+                <span style="font-size:12px;">FAC. INGENIERÍA</span><br>
+                <span style="font-size:12px;">COMITÉ DE OPCIONES DE GRADO</span><br>
+                <span style="font-size:12px;">CON COMPONENTE DE INVESTIGACIÓN</span>
+            </td>
 
-        <!-- Título -->
-        <td style="width:40%; border:1px solid #000; text-align:center; vertical-align:middle;">
-            <span style="font-size:14px; font-weight:bold;">EVALUACIÓN ANTEPROYECTO DE GRADO</span>
-        </td>
-    </tr>
-</table>
+            <!-- Título -->
+            <td style="width:40%; border:1px solid #000; text-align:center; vertical-align:middle;">
+                <span style="font-size:14px; font-weight:bold;">EVALUACIÓN ANTEPROYECTO DE GRADO</span>
+            </td>
+        </tr>
+    </table>
 
-
+    <!-- Datos Generales -->
     <table>
         <tr>
-            <th style="width:30%;"> 1. Título del Anteproyecto</th>
+            <th style="width:30%;">1. Título del Anteproyecto</th>
             <td>{{ $datos['titulo'] ?? '' }}</td>
         </tr>
         <tr>
@@ -49,15 +49,15 @@
             <td>{{ $datos['nombre1'] ?? '' }} - Código: {{ $datos['codigo1'] ?? '' }}</td>
         </tr>
         <tr>
-            <th>2.3 Nombre estudiante 2</th>
+            <th>2.2 Nombre estudiante 2</th>
             <td>{{ $datos['nombre2'] ?? '' }} - Código: {{ $datos['codigo2'] ?? '' }}</td>
         </tr>
         <tr>
-            <th>Nombre de la empresa(s) u organizacion(es) en donde se desarrollara el proyecto: </th>
+            <th>Empresa u organización</th>
             <td>{{ $datos['empresa'] ?? '' }}</td>
         </tr>
         <tr>
-            <th>Dirección de la empresa u organizacion en donde se desarrollara el proyecto: </th>
+            <th>Dirección</th>
             <td>{{ $datos['direccion'] ?? '' }}</td>
         </tr>
         <tr>
@@ -74,48 +74,49 @@
         </tr>
     </table>
 
+    <!-- Categorías de Evaluación -->
     <div class="section">
         <table>
             <thead>
                 <tr>
-                    <th style="width:80%;">4. Categoría de Evaluación sobre el ante proyecto</th>
+                    <th style="width:80%;">Categoría de Evaluación</th>
                     <th style="width:20%;">Respuesta</th>
                 </tr>
             </thead>
             <tbody>
                 @php
                     $criterios = [
-                                "4.1 Articulación institucional: ¿La temática tiene relación con las líneas de investigación y ejes temáticos?",
-                                "4.2 Fundamentación: ¿La temática tiene relación con la formación en básica de ingeniería(ingenieria ambiental, ingenieria de industrial, ingenieria de sistemas, ingenieria mecanica, ¿ingenieria en Ciencia de Datos)?",
-                                "4.3 Cuantificación del problema: ¿En el planteamiento del problema existe una suficiente cuantificación de este?",
-                                "4.4 Descripción del problema: ¿La descripcion del problema identifica causas, consecuencias, actores involucrados, dimensiones de analisis, y deja total claridad sobre su naturaleza?",
-                                "4.5 Pertinencia del anteproyecto: ¿La propuesta es suficiente para cumplir el requisito exigido como trabajo de grado para optar al titulo profesional?",
-                                "4.6 Formulación del problema: ¿El enunciado del problema es comprensible?",
-                                " 4.7 Formulación del problema: ¿Existe coherencia entre la formulacion de la pregunta y la descripcion del problema?",
-                                "4.8 Formulación del problema: ¿Existe una relacion entre causas y efectos manifestada claramente en la pregunta problema?",
-                                "4.9 Justificación: ¿Se describe la utilidad que tendran los resultados del proyecto (tecnico, economico, social, ambientalm donde se justifique)?",
-                                "4.10 Plantamiento de Objetivos: ¿El objetivo general responde a la formulacion del problema?",
-                                "4.11 Plantamiento de Objetivos: ¿Los objetivos especificos son coherentes con el objetivo general?",
-                                "4.12 Definición del alcance: ¿Las tematicas estan correctamente delimitadas?",
-                                "4.13 Definición del alcance: ¿Se han clarificado las caracteristicas de poblaciones y muestras a estudiar?",
-                                "4.14 Definición del alcance: ¿Se han definido los procesos en los que se va a trabajar?",
-                                "4.15 Definición del alcance: ¿Se definio la ubicacion geografica del objeto de estudio?",
-                                "4.16 Definición del alcance: ¿se han establecido el nivel de implementacion de las soluciones a obtener?",
-                                "4.17 Definición del alcance: ¿se ha planificado el tiempo que va a durar el proyecto?",
-                                "4.18 Definición del alcance: ¿se presenta el impacto social, ambiental y economico del proyecto?",
-                                "4.19 Antecedentes: ¿Existen referentes locales, nacionales e internacionales documentados?",
-                                "4.20 Antecedentes: ¿Existen conclusiones analiticas sobre estos antecedentes que puedan ser considerados como guias para el marco teorico?",
-                                "4.21 Marco teórico: ¿Existe una relacion directa entre los temas tratados con los objetivos especificos de manera que se responda a ellos de manera suficiente y coherente?",
-                                "4.22 Marco conceptual: ¿Los contenidos permiten comprender la forma como se entiende cada uno en el contexto del proyecto?",
-                                "4.23 Marco conceptual: ¿Los conceptos incluidos han presentados bajo la propia autoria del estudiante?",
-                                "4.24 Metodología: ¿Se describe de forma completa y precisa las actividades y procedimientos necesarios para dar respuesta a los objetivos propuestos?",
-                                "4.25 Metodología: ¿Se propone el uso de metodologias propias de la ingenieria?",
-                                "4.26 Metodología: ¿El cronograma esta bien planteado de acuerdo con la metodologia planteada?",
-                                "4.27 Metodología: ¿En caso de haber formulado el proyecto con marco logico, ¿se evidencian los criterios de la logica vertical horizontal para el marco logico formulado?",
-                                "4.28 Presupuesto: ¿Se distuguen los recursos requeridos de personal, materiales y equipos y gastos generales?",
-                                "4.29 Presentación: ¿El documento esta escrito de acuerdo con la plantilla sugerida por la facultad de ingenieria?",
-                                "4.30 Presentación: ¿El sistema de referenciacion utilizado con el documento esta acorde con la norma IEEE?",
-                                "4.31 Presentación: ¿La redaccion del documento es adecuada y la ortografia es correcta?",
+                        "Articulación institucional: ¿La temática tiene relación con las líneas de investigación y ejes temáticos?",
+                        "Fundamentación: ¿La temática tiene relación con la formación en básica de ingeniería?",
+                        "Cuantificación del problema: ¿En el planteamiento del problema existe una suficiente cuantificación de este?",
+                        "Descripción del problema: ¿Se identifican causas, consecuencias, actores involucrados?",
+                        "Pertinencia del anteproyecto: ¿La propuesta cumple con los requisitos de grado?",
+                        "Formulación del problema: ¿El enunciado es comprensible?",
+                        "Coherencia entre la pregunta y la descripción del problema",
+                        "Relación entre causas y efectos claramente manifiesta",
+                        "Justificación: ¿Se describe la utilidad de los resultados?",
+                        "Objetivos: ¿El objetivo general responde al problema?",
+                        "Objetivos específicos coherentes con el objetivo general",
+                        "Definición del alcance: ¿Está correctamente delimitado?",
+                        "Clarificación de poblaciones y muestras",
+                        "Definición de procesos de trabajo",
+                        "Ubicación geográfica del objeto de estudio",
+                        "Nivel de implementación de soluciones",
+                        "Planificación del tiempo de duración del proyecto",
+                        "Impacto social, ambiental y económico del proyecto",
+                        "Antecedentes documentados locales, nacionales e internacionales",
+                        "Conclusiones analíticas sobre los antecedentes",
+                        "Marco teórico coherente con los objetivos",
+                        "Marco conceptual comprensible",
+                        "Conceptos bajo la autoría del estudiante",
+                        "Metodología completa y precisa",
+                        "Uso de metodologías propias de la ingeniería",
+                        "Cronograma adecuado según metodología",
+                        "Criterios del marco lógico aplicados",
+                        "Presupuesto: recursos diferenciados",
+                        "Presentación: plantilla de la facultad",
+                        "Presentación: normas IEEE",
+                        "Presentación: redacción y ortografía"
                     ];
                 @endphp
 
@@ -129,10 +130,11 @@
         </table>
     </div>
 
+    <!-- Concepto Final -->
     <div class="section">
         <table>
             <tr>
-                <th style="width:30%;"> 5. Concepto Final del Jurado</th>
+                <th style="width:30%;">Concepto Final del Jurado</th>
                 <td>{{ $datos['concepto'] ?? '' }}</td>
             </tr>
             <tr>
@@ -142,6 +144,14 @@
         </table>
     </div>
 
+    <!-- Información adicional para compatibilidad con controlador -->
+    <div class="section no-border">
+        <p>Transaction ID: {{ $datos['transaction_id'] ?? '' }}</p>
+        <p>Profile ID: {{ $datos['profile_id'] ?? '' }}</p>
+        <p>Type: {{ $datos['type'] ?? '1' }}</p>
+    </div>
+
+    <!-- Footer reglamentario -->
     <div class="footer-text">
         “El jurado tendrá un plazo máximo de quince (15) días hábiles para hacer lectura completa del mismo, 
         y diligenciar el formato de concepto de evaluación definido por el comité del respectivo programa. 

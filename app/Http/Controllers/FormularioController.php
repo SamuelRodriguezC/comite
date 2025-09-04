@@ -3,52 +3,66 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf; // Usaremos DomPDF
+use Illuminate\Support\Str;
+use App\Models\Transaction;
+use App\Models\Certificate;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
 
 class FormularioController extends Controller
 {
-    // Mostrar formulario
-    public function index()
+    public function index($transaction_id)
     {
-        return view('index'); // resources/views/index.blade.php
+        // Traer transaction si existe, o fallar
+        $transaction = Transaction::findOrFail($transaction_id);
+        $profile_id = Auth::user()->profiles->id;
+        
+
+
+        return view('index', compact('transaction_id', 'profile_id', 'transaction'));
     }
 
-    // Procesar formulario y mostrar resultado
-    public function procesar(Request $request)
+    // Generar PDF usando el mismo transaction_id
+       public function generarPdf(Request $request, $transaction_id)
     {
-        $datos = $request->all();
-        return view('resultado', compact('datos'));
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'nombre1' => 'required|string|max:255',
+            'codigo1' => 'required|string|max:50',
+            'concepto' => 'required|string',
+            'firma' => 'nullable|string|max:255',
+        ]);
+
+        $transaction = Transaction::findOrFail($transaction_id);
+        $profile_id = Auth::user()->profiles->id; // Profile del usuario logueado
+
+        // Generar PDF
+        $pdf = Pdf::loadView('pdf.formato', [
+            'datos' => $request->all(),
+            'transaction' => $transaction,
+            'profile_id' => $profile_id
+        ]);
+
+        // Nombre del archivo
+        $nombreArchivo = 'evaluacion_anteproyecto_' . $transaction->id . '.pdf';
+        $ruta = 'certificates/' . $nombreArchivo;
+
+        // Guardar PDF físicamente
+        Storage::disk('public')->put($ruta, $pdf->output());
+
+        // Guardar o actualizar en certificates
+        Certificate::updateOrCreate(
+            ['transaction_id' => $transaction->id],
+            [
+                'acta' => $ruta,
+                'type' => 3,
+                'profile_id' => $profile_id,
+            ]
+        );
+
+        return $pdf->download($nombreArchivo);
     }
-
-    
-// Generar PDF desde los datos
-public function generarPdf(Request $request)
-{
-    $datos = $request->all();
-    $pdf = Pdf::loadView('pdf.formato', compact('datos'));
-
-    // -------------------- ARMAR NOMBRE DEL ARCHIVO --------------------
-    // Normalizamos (quita espacios raros y acentos)
-    $nombre1 = \Illuminate\Support\Str::slug($datos['nombre1'] ?? 'sin-nombre', '_');
-    $codigo1 = $datos['codigo1'] ?? 'sin-codigo';
-
-    $nombre2 = !empty($datos['nombre2']) ? \Illuminate\Support\Str::slug($datos['nombre2'], '_') : null;
-    $codigo2 = !empty($datos['codigo2']) ? $datos['codigo2'] : null;
-
-    // Si hay dos estudiantes, se agregan ambos
-    if ($nombre2 && $codigo2) {
-        $fileName = "anteproyecto-{$nombre1}_{$codigo1}-{$nombre2}_{$codigo2}.pdf";
-    } else {
-        $fileName = "anteproyecto-{$nombre1}_{$codigo1}.pdf";
-    }
-
-    $filePath = "anteproyectos/{$fileName}";
-
-    // -------------------- GUARDAR EL PDF EN STORAGE PRIVADO --------------------
-    \Illuminate\Support\Facades\Storage::disk('private')->put($filePath, $pdf->output());
-
-    // -------------------- DESCARGAR EL PDF --------------------
-    return $pdf->download($fileName);
-}
 
 }

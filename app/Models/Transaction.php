@@ -178,11 +178,27 @@ class Transaction extends Model
      * Evento para enviar notificación cuando cambia el estado de la transacción.
      */
     protected static function booted()
-    {
-        static::updated(function (Transaction $transaction) {
-            if ($transaction->isDirty('status')) {
-                TransactionNotifications::sendStatusChanged($transaction);
-            }
-        });
-    }
+{
+    static::creating(function (Transaction $transaction) {
+        if (!$transaction->component) {
+            $transaction->component = 0;
+        }
+        if (!$transaction->option_id) {
+            $transaction->option_id = 1; // asegúrate que exista
+        }
+        if (!$transaction->status) {
+            $transaction->status = 0;
+        }
+        if (!$transaction->enabled) {
+            $transaction->enabled = 1;
+        }
+    });
+
+    static::updated(function (Transaction $transaction) {
+        if ($transaction->isDirty('status')) {
+            TransactionNotifications::sendStatusChanged($transaction);
+        }
+    });
+}
+
 }

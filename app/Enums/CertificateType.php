@@ -19,4 +19,5 @@ enum CertificateType: int
 {
     case Student = 1;
     case Advisor = 2;
+    case Evaluator = 3;
 }
