@@ -71,11 +71,16 @@ class Profile extends Model
     {
         return $this->hasMany(Comment::class);
     }
-    
+
     public function certificates(): HasMany
     {
         return $this->hasMany(\App\Models\Certificate::class);
     }
+    public function signature()
+    {
+        return $this->hasOne(Signature::class);
+    }
+
 
 
 

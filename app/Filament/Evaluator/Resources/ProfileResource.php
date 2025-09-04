@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Evaluator\Resources\ProfileResource\Pages;
 use App\Filament\Evaluator\Resources\ProfileResource\RelationManagers;
@@ -68,8 +69,23 @@ class ProfileResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->label('Usuario')
                     ->disabled()
-                    ->relationship('user', 'name')
+                    ->relationship('user', 'email')
                     ->required(),
+                 Forms\Components\Fieldset::make()
+                    ->relationship('signature')
+                    ->schema([
+                        // Campo de firma
+                        Forms\Components\FileUpload::make('file_path')
+                            ->label('Firma')
+                            ->disk('private')
+                            ->directory('signatures')
+                            ->image()
+                            ->imageEditor()
+                            ->required()
+                            ->previewable(true)
+                            ->downloadable(true)
+                            ->columnSpan(2),
+                    ]),
             ]);
     }
 
@@ -96,7 +112,7 @@ class ProfileResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label('Nivel universitario')
-                    ->formatStateUsing(fn ($state) => Level::from($state)->getLabel())
+                    ->formatStateUsing(fn($state) => Level::from($state)->getLabel())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('User_id')
@@ -121,54 +137,58 @@ class ProfileResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-        ->schema([
-            Section::make('Información personal')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('name')
-                        ->label('Nombres'),
-                    TextEntry::make('last_name')
-                        ->label('Apellidos'),
-                    TextEntry::make('Document.type')
-                        ->label('Tipo de documento'),
-                    TextEntry::make('document_number')
-                        ->label('Número de documento'),
-                    TextEntry::make('phone_number')
-                        ->label('Número de telefono'),
-                    TextEntry::make('level')
-                        ->label('Nivel universitario')
-                        ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                ]),
-            Section::make('Información de autenticación')
-                ->columnSpan(2)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('User.email')
-                        ->label('Email'),
-                    TextEntry::make('User.created_at')
-                        ->dateTime()
-                        ->label('Registrado en'),
-                    TextEntry::make('User.id')
-                        ->label('Id de usuario'),
-                    //TextEntry::make('User.roles')
-                    //    ->label('Rol')
-                    //    ->formatStateUsing(fn ($record) => $record->user
-                    //    ? $record->user->getRoleNames()->implode(', ')
-                    //    : 'Sin rol asignado')
-                ]),
-            //TextEntry::make('user_id')
-            //        ->label('ID detalles de usuario'),
-        ]);
+            ->schema([
+                Section::make('Información personal')
+                    ->columnSpan(2)
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('name')
+                            ->label('Nombres'),
+                        TextEntry::make('last_name')
+                            ->label('Apellidos'),
+                        TextEntry::make('Document.type')
+                            ->label('Tipo de documento'),
+                        TextEntry::make('document_number')
+                            ->label('Número de documento'),
+                        TextEntry::make('phone_number')
+                            ->label('Número de telefono'),
+                        TextEntry::make('level')
+                            ->label('Nivel universitario')
+                            ->formatStateUsing(fn($state) => Level::from($state)->getLabel()),
+                        ImageEntry::make('signature.file_path')
+                            ->label('Firma')
+                            ->disk('private')
+                            ->placeholder('No hay firma cargada (Puede cargarla en el formulario de edición).')
+                            ->visibility('public')
+                            ->columnSpan(2),
+                    ]),
+                Section::make('Información de autenticación')
+                    ->columnSpan(2)
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('User.email')
+                            ->label('Email'),
+                        TextEntry::make('User.created_at')
+                            ->dateTime()
+                            ->label('Registrado en'),
+                        // TextEntry::make('User.id')
+                        //     ->label('Id de usuario'),
+                        //TextEntry::make('User.roles')
+                        //    ->label('Rol')
+                        //    ->formatStateUsing(fn ($record) => $record->user
+                        //    ? $record->user->getRoleNames()->implode(', ')
+                        //    : 'Sin rol asignado')
+                    ]),
+                //TextEntry::make('user_id')
+                //        ->label('ID detalles de usuario'),
+            ]);
     }
 
     public static function getRelations(): array
@@ -182,7 +202,7 @@ class ProfileResource extends Resource
     {
         return [
             'index' => Pages\ListProfiles::route('/'),
-            'create' => Pages\CreateProfile::route('/create'),
+            // 'create' => Pages\CreateProfile::route('/create'),
             'view' => Pages\ViewProfile::route('/{record}'),
             'edit' => Pages\EditProfile::route('/{record}/edit'),
         ];

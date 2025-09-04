@@ -12,20 +12,9 @@ use App\Http\Controllers\PdfActaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CertificateAdvisorController;
 use App\Models\Certificate;
+use App\Http\Controllers\CertificatePdfController;
 use App\Http\Controllers\FormularioController;
 use App\Http\Controllers\EvaluacionFinalController;
-
-Route::get('/evaluacion-final', [EvaluacionFinalController::class, 'index'])->name('evaluacion_final.index');
-Route::post('/evaluacion-final/procesar', [EvaluacionFinalController::class, 'procesar'])->name('evaluacion_final.procesar');
-Route::post('/evaluacion-final/pdf', [EvaluacionFinalController::class, 'generarPdf'])->name('evaluacion_final.pdf');
-
-
-
-Route::get('/formulario/{transaction}', [FormularioController::class, 'index'])
-    ->name('formulario.index');
-Route::get('/formulario', [FormularioController::class, 'index'])->name('formulario.index');
-Route::post('/formulario/procesar', [FormularioController::class, 'procesar'])->name('formulario.procesar');
-Route::post('/formulario/pdf', [FormularioController::class, 'generarPdf'])->name('formulario.pdf');
 
 Route::get('/', function () {
     return view('welcome');
@@ -172,9 +161,10 @@ Route::get('/certificate_students/download/{file}', function ($file) {
 //----------------------------------- RUTA PARA ACCEDER A LAS FIRMAS -----------------------------------
 Route::get('/signatures/{filename}', function ($filename) {
     $user = Auth::user();
+    $allowedRoleIds = [2, 3, 4, 5]; // Asesor, Evaluador, Coordinador, Super Administrador
 
     // Solo coordinadores o superadministradores
-    if (!$user || !($user->hasRole('Coordinador') || $user->hasRole('Super administrador'))) {
+    if (!$user || !$user->roles()->whereIn('id', $allowedRoleIds)->exists()) {
 
         // Guardar el intento de acceso no autorizado en el log
         Log::warning('Intento de acceso NO AUTORIZADO a firma', [
@@ -254,6 +244,33 @@ Route::get('/certificate_advisors/download/{file}', function ($file) {
     abort_unless(file_exists($path), 404);
     return response()->download($path);
 })->middleware(['auth'])->name('certificate_advisor.download');
+
+
+Route::get('/pdf/view/{filename}', [CertificatePdfController::class, 'view'])
+    ->where('filename', '.*')
+    ->name('pdf.view');
+
+Route::get('/pdf/download/{filename}', [CertificatePdfController::class, 'download'])
+    ->where('filename', '.*') // esto permite que filename tenga puntos, guiones, espacios, etc.
+    ->name('pdf.download');
+
+Route::get('/evaluacion-final', [EvaluacionFinalController::class, 'index'])->name('evaluacion_final.index');
+Route::post('/evaluacion-final/procesar', [EvaluacionFinalController::class, 'procesar'])->name('evaluacion_final.procesar');
+Route::post('/evaluacion-final/pdf', [EvaluacionFinalController::class, 'generarPdf'])->name('evaluacion_final.pdf');
+
+
+
+// Formulario
+// Ruta opcional con transaction_id
+Route::get('/formulario/transaction/{transaction}', [FormularioController::class, 'index'])
+    ->name('formulario.index');
+
+
+// Mostrar el formulario para un transaction_id existente
+Route::get('/formulario/transaction/{transaction_id}', [FormularioController::class, 'index'])->name('formulario.index');
+
+// Generar PDF desde el formulario
+Route::post('/formulario/{transaction_id}/pdf', [FormularioController::class, 'generarPdf'])->name('formulario.pdf');
 
 
 

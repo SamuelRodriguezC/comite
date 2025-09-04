@@ -57,13 +57,13 @@ class TransactionResource extends Resource
                             ->disabled()
                             ->enum(Component::class)
                             ->options(Component::class)
-                            ->afterStateUpdated(fn (Set $set) => $set('option_id',null)),
+                            ->afterStateUpdated(fn(Set $set) => $set('option_id', null)),
                         Forms\Components\Select::make('option_id')
                             ->label("Opción de Grado")
                             ->disabled()
                             ->relationship('option', 'option')
                             ->required()
-                             // Función para filtrar la opción de grado por nivel universitario y componente
+                            // Función para filtrar la opción de grado por nivel universitario y componente
                             ->options(function (callable $get) {
                                 $user = Auth::user();
                                 if (!$user || !$user->profiles) {
@@ -81,7 +81,7 @@ class TransactionResource extends Resource
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-academic-cap'),
-                    FormSection::make('Detalles')
+                FormSection::make('Detalles')
                     ->schema([
                         FormGroup::make([
                             DateTimePicker::make('created_at')
@@ -90,13 +90,13 @@ class TransactionResource extends Resource
                             DateTimePicker::make('updated_at')
                                 ->label('Actualizado en')
                                 ->disabled(),
-                    //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
-                    
+                            //----- BOTONES PARA CAMBIAR CERTIFICACIÓN
+
                         ])->columns(2),
                     ])
                     ->columnSpan(1)
                     ->icon('heroicon-m-eye')
-                    ->visible(fn (string $context) => $context === 'edit'),
+                    ->visible(fn(string $context) => $context === 'edit'),
             ]);
     }
 
@@ -112,13 +112,13 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label("Estado")
                     ->badge()
-                    ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
-                    ->color(fn ($state) => Status::from($state)->getColor())
+                    ->formatStateUsing(fn($state) => Status::from($state)->getLabel())
+                    ->color(fn($state) => Status::from($state)->getColor())
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('component')
                     ->label("Componente")
-                    ->formatStateUsing(fn ($state) => Component::from($state)->getLabel())
+                    ->formatStateUsing(fn($state) => Component::from($state)->getLabel())
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('option.option')
@@ -130,11 +130,11 @@ class TransactionResource extends Resource
                     ->label('Carreras')
                     ->sortable()
                     ->words(4),
-                    // ->searchable(),
+                // ->searchable(),
                 Tables\Columns\IconColumn::make('enabled')
                     ->label('Habilitado')
-                    ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                    ->color(fn ($state) => Enabled::from($state)->getColor()),
+                    ->icon(fn($state) => Enabled::from($state)->getIcon())
+                    ->color(fn($state) => Enabled::from($state)->getColor()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -162,9 +162,9 @@ class TransactionResource extends Resource
                     ])->attribute('enabled'),
 
                 SelectFilter::make('status')
-                        ->label('Estado')
-                        ->options(Status::class)
-                        ->attribute('status'),
+                    ->label('Estado')
+                    ->options(Status::class)
+                    ->attribute('status'),
 
                 SelectFilter::make('courses')
                     ->label('Carreras')
@@ -177,82 +177,104 @@ class TransactionResource extends Resource
                             });
                         }
                         return $query;
-                }),
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                ->visible(fn ($record) => $record->enabled !== 2),
+                    ->visible(fn($record) => $record->enabled !== 2),
 
                 Tables\Actions\ActionGroup::make([
-                Tables\Actions\Action::make('acta_ante_proyecto')
-                ->label('Acta Ante Proyecto')
-                ->icon('heroicon-o-document-text')
-                ->url(fn ($record) => route('formulario.index', ['transaction' => $record->id])),
+                    Tables\Actions\Action::make('acta_ante_proyecto')
+                        ->label('Acta Ante Proyecto')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn ($record) => route('formulario.index', ['transaction_id' => $record->id])),
 
-                Tables\Actions\Action::make('acta_evaluacion_final')
-                ->label('Acta Evaluación Final')
-                ->icon('heroicon-o-document-check')
-                ->url(fn ($record) => route('evaluacion_final.index', ['transaction' => $record->id])),
-             ])
-        ->icon('heroicon-o-ellipsis-vertical') // menú de 3 puntos
-        ->tooltip('Más acciones'),
-])
+                // -------------------- BOTÓN CERTIFICACIÓN DE EVALUACIÓN FINAL --------------------
+                Tables\Actions\Action::make('final_evaluation')
+                    ->label('Acta Evaluación Final')
+                    ->icon('heroicon-o-document-check')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('signer_id')
+                            ->label('Seleccionar Director de Investigación')
+                            ->options(
+                                \App\Models\Signer::query()
+                                    ->get()
+                                    ->pluck('display_name', 'id') // pluck ya devuelve [id => display_name]
+                            )
+                            ->required(),
+                    ])->action(function ($data, $record) {
+                        return redirect()->route(
+                            'filament.evaluator.resources.transactions.final-evaluation',
+                            [
+                                'transaction' => $record->id, // ID de la transacción
+                                'profile' => Auth::user()->id,           // ID del perfil
+                                'signer' => $data['signer_id'],         // ID del firmador
+                            ]
+                        );
+                    })
+                    ->modalHeading('Seleccionar Firmador')
+                    ->modalSubmitActionLabel('Continuar'),
+
+                ])
+                ->icon('heroicon-o-ellipsis-vertical') // menú de 3 puntos
+                ->tooltip('Más acciones'),
+
+
+            ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-        ->schema([
-            InfoSection::make(fn ($record) => 'Opción #' . $record->id)
-                ->icon('heroicon-m-academic-cap')
-                ->schema([
-                    TextEntry::make('component')
-                        ->label('Componente')
-                        ->formatStateUsing(fn ($state) => Component::from($state)->getLabel()),
-                    TextEntry::make('Option.option')
-                        ->label('Opción de grado'),
-                    TextEntry::make('profiles.name')
-                        ->label('Integrante(s)')
-                        // Usar herlper para formatear la lista de nombres
-                        ->formatStateUsing(fn($state) => format_list_html($state))
-                        ->html(),
-                    TextEntry::make('courses')
-                        ->label('Carrera(s)')
-                        // Usar herlper para formatear la lista de carreras
-                        ->formatStateUsing(fn($state) => format_list_html($state))
-                        ->html(),
-                ])
-                ->columns(2)->columnSpan(2),
-            InfoSection::make('Detalles')
-                ->icon('heroicon-m-eye')
-                ->schema([
-                    Group::make([
-                        TextEntry::make('created_at')
-                            ->label('Creado en')
-                            ->dateTime()
-                            ->dateTimeTooltip(),
-                        TextEntry::make('updated_at')
-                            ->label('Actualizado en')
-                            ->dateTime()
-                            ->dateTimeTooltip(),
-                        IconEntry::make('enabled')
-                            ->label('Habilitado')
-                            ->icon(fn ($state) => Enabled::from($state)->getIcon())
-                            ->color(fn ($state) => Enabled::from($state)->getColor()),
-                        TextEntry::make('status')
-                            ->label('Estado')
-                            ->badge()
-                            ->formatStateUsing(fn ($state) => Status::from($state)->getLabel())
-                            ->color(fn ($state) => Status::from($state)->getColor()),
-                    ])->columns(2),
-                ])->columnSpan(1),
-        ])->columns(3);
+            ->schema([
+                InfoSection::make(fn($record) => 'Opción #' . $record->id)
+                    ->icon('heroicon-m-academic-cap')
+                    ->schema([
+                        TextEntry::make('component')
+                            ->label('Componente')
+                            ->formatStateUsing(fn($state) => Component::from($state)->getLabel()),
+                        TextEntry::make('Option.option')
+                            ->label('Opción de grado'),
+                        TextEntry::make('profiles.name')
+                            ->label('Integrante(s)')
+                            // Usar herlper para formatear la lista de nombres
+                            ->formatStateUsing(fn($state) => format_list_html($state))
+                            ->html(),
+                        TextEntry::make('courses')
+                            ->label('Carrera(s)')
+                            // Usar herlper para formatear la lista de carreras
+                            ->formatStateUsing(fn($state) => format_list_html($state))
+                            ->html(),
+                    ])
+                    ->columns(2)->columnSpan(2),
+                InfoSection::make('Detalles')
+                    ->icon('heroicon-m-eye')
+                    ->schema([
+                        Group::make([
+                            TextEntry::make('created_at')
+                                ->label('Creado en')
+                                ->dateTime()
+                                ->dateTimeTooltip(),
+                            TextEntry::make('updated_at')
+                                ->label('Actualizado en')
+                                ->dateTime()
+                                ->dateTimeTooltip(),
+                            IconEntry::make('enabled')
+                                ->label('Habilitado')
+                                ->icon(fn($state) => Enabled::from($state)->getIcon())
+                                ->color(fn($state) => Enabled::from($state)->getColor()),
+                            TextEntry::make('status')
+                                ->label('Estado')
+                                ->badge()
+                                ->formatStateUsing(fn($state) => Status::from($state)->getLabel())
+                                ->color(fn($state) => Status::from($state)->getColor()),
+                        ])->columns(2),
+                    ])->columnSpan(1),
+            ])->columns(3);
     }
 
     // Función para filtrar las transacciones por usuario
@@ -283,6 +305,8 @@ class TransactionResource extends Resource
             'create' => Pages\CreateTransaction::route('/create'),
             'view' => Pages\ViewTransaction::route('/{record}'),
             'edit' => Pages\EditTransaction::route('/{record}/edit'),
+            'final-evaluation' => Pages\FinalEvaluation::route('/{transaction}/final-evaluation/{profile}/{signer}'),
+
         ];
     }
 }
