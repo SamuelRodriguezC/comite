@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Enums;
-
+use Filament\Support\Contracts\HasLabel;
 /**
  * Enum CertificateType
  *
@@ -15,9 +15,40 @@ namespace App\Enums;
  *
  * @package App\Enums
  */
-enum CertificateType: int
+enum CertificateType: int implements HasLabel
 {
-    case Student = 1;
-    case Advisor = 2;
-    case Evaluator = 3;
+    case TERMINACION = 1;
+    case CERTIFICADO_ASESOR = 2;
+    case EVALUACION_FINAL = 3;
+    case EVALUACION_ANTEPROYECTO = 4;
+
+    /**
+     * Devuelve una etiqueta legible para mostrar en la interfaz.
+     *
+     * @return string|null
+     */
+    public function getLabel(): ?string
+    {
+        return match ($this) {
+            self::TERMINACION => 'Terminación',
+            self::CERTIFICADO_ASESOR => 'Director',
+            self::EVALUACION_FINAL => 'Evaluación Final',
+            self::EVALUACION_ANTEPROYECTO => 'Evaluación Ante-Proyecto',
+        };
+    }
+
+    /**
+     * Devuelve el color asociado al estado, usado en componentes visuales de Filament.
+     *
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::TERMINACION => 'success',
+            self::CERTIFICADO_ASESOR => 'info',
+            self::EVALUACION_FINAL => 'warning',
+            self::EVALUACION_ANTEPROYECTO => 'teal',
+        };
+    }
 }

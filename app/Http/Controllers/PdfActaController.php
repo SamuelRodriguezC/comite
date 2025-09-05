@@ -87,7 +87,7 @@ class PdfActaController extends Controller
         $transaction->studentsCertificate()->updateOrCreate(
             [   'transaction_id' => $transaction->id,
                 'type' => 1, // Tipo Estudiante
-                // 'profile_id' => Auth::user()->id
+                'profile_id' => Auth::user()->id
             ],
             [
                 'acta'      => $filePath,
