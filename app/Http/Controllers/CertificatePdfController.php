@@ -6,40 +6,60 @@ use Illuminate\Http\Request;
 
 class CertificatePdfController extends Controller
 {
-    public function download($filename)
+    /**
+     * Obtiene la ruta correcta del archivo, buscando primero en privada y luego en pública.
+     */
+    private function getFilePath($filename)
     {
-        // Decodifica caracteres especiales de la URL
         $filename = urldecode($filename);
 
-        // Elimina la carpeta duplicada si viene en $filename
+        // Elimina prefijos duplicados si vienen en $filename
         $filename = str_replace('evaluaciones_finales/', '', $filename);
+        $filename = str_replace('certificates/', '', $filename);
 
-        // Ruta completa al archivo privado
-        $path = storage_path("app/private/evaluaciones_finales/{$filename}");
+        // Ruta privada
+        $private = storage_path("app/private/evaluaciones_finales/{$filename}");
+        if (file_exists($private)) {
+            return $private;
+        }
 
-        // Si el archivo no existe, devuelve error 404
-        if (!file_exists($path)) {
+        // Ruta pública
+        $public = storage_path("app/public/certificates/{$filename}");
+        if (file_exists($public)) {
+            return $public;
+        }
+
+        return null;
+    }
+
+    /**
+     * Descargar PDF
+     */
+    public function download($filename)
+    {
+        $path = $this->getFilePath($filename);
+
+        if (!$path) {
             abort(404, "Archivo no encontrado");
         }
 
-        // Devuelve el archivo como descarga
         return response()->download($path);
     }
+
+    /**
+     * Ver PDF en navegador
+     */
     public function view($filename)
-{
-    $filename = urldecode($filename);
-    $filename = str_replace('evaluaciones_finales/', '', $filename);
+    {
+        $path = $this->getFilePath($filename);
 
-    $path = storage_path("app/private/evaluaciones_finales/{$filename}");
+        if (!$path) {
+            abort(404, "Archivo no encontrado");
+        }
 
-    if (!file_exists($path)) {
-        abort(404, "Archivo no encontrado");
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"'
+        ]);
     }
-
-    // Devuelve el PDF para que se vea en el navegador
-    return response()->file($path, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="'.$filename.'"'
-    ]);
-}
 }
