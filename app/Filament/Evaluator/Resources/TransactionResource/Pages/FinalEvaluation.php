@@ -12,16 +12,19 @@ use Filament\Resources\Pages\Page;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Wizard;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\Blade;
+// use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
-// use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use App\Filament\Evaluator\Resources\TransactionResource;
@@ -86,9 +89,22 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
 
             // Informe Final
             'final_report' => [
-                ['name' => 'Desarrollo Metodológico', 'weight' => 40],
-                ['name' => 'Resultados Obtenidos', 'weight' => 40],
-                ['name' => 'Presentación del Documento', 'weight' => 20],
+                [
+                    'name' => 'Desarrollo Metodológico',
+                    'weight' => 40,
+                    'parameters' => ['Grado de coherencia entre el problema de investigación y el diseño de la investigación propuesta.', 'Uso de técnicas de recolección de información, instrumentos y procedimientos estadísticos, así como de técnicas cuantitativas pertinentes, de acuerdo con el diseño de la investigación propuesta. ', 'La utilización de las técnicas seleccionadas fue aplicada de forma correcta, rigurosa y pertinente.', 'Existe calidad en los análisis e interpretación de la información.'],
+                ],
+                [
+                    'name' => 'Resultados Obtenidos',
+                    'weight' => 40,
+                    'parameters' => ['Coherencia: Existe coherencia entre los resultados del proyecto, el problema formulado y los objetivos propuestos.', 'Utilidad e impacto: Se obtuvieron resultados que puedan ser aplicados en un contexto práctico, según el objeto de estudio.', 'Novedad investigativa: se evidencia que los resultados del proyecto aportan nuevos elementos metodológicos, de análisis o teóricos frente al problema de investigación propuesto.', ' Originalidad: se evidencia originalidad, creatividad e innovación para proponer la solución al problema de investigación, así como recursividad en la solución propuesta.', 'Cumplimiento de derechos de autor y propiedad intelectual.'],
+
+                ],
+                [
+                    'name' => 'Presentación del Documento',
+                    'weight' => 20,
+                    'parameters' => ['Organización del documento: se hace uso correcto de las normas para la presentación de trabajos escritos.', 'Redacción y ortografía: la redacción del documento es adecuada y la ortografía es correcta.', 'Se hace uso adecuado de citas bibliográfica.'],
+                ],
             ],
 
             // Sustentación del Proyecto
@@ -116,13 +132,15 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                         ->schema([
                             Fieldset::make('Estudiantes de la Opción de Grado')
                                 ->schema([
+                                    Hidden::make('signer_id'),
                                     // --- Estudiantes de la opción (Precargadados) ---
                                     Repeater::make('students')
                                         ->label('Integrantes')
                                         ->schema([
                                             TextInput::make('name')
                                                 ->label('Nombre Completo')
-                                                ->disabled(), // No editable, solo mostrar
+                                                ->disabled()           // se ve deshabilitado
+                                                ->dehydrated(true),     // pero igual se envía en el state, // No editable, solo mostrar
                                             TextInput::make('code')
                                                 ->label('Código Institucional')
                                                 ->numeric()
@@ -141,14 +159,15 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                     // ---- Nombre proyecto ---
                                     TextInput::make('project_name')
                                         ->label('Nombre del Proyecto')
-                                        ->maxlength(50)
+                                        ->maxlength(150)
                                         ->required(),
 
                                     // --- Opción de Grado ---
                                     TextInput::make('grade_option')
                                         ->label('Opción de Grado')
                                         ->live()
-                                        ->disabled(),
+                                        ->disabled()
+                                        ->dehydrated(true),
                                     // --- Asesor ---
                                     Select::make('advisor_id')
                                         ->label('Director del Proyecto')
@@ -157,6 +176,33 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                         ->required(),
 
                                 ])->columnSpan(1)->columns(1),
+                            FieldSet::make('Evaluador')
+                                ->schema([
+                                    // Nombre del evaluador
+                                    TextInput::make('evaluator_name')
+                                        ->label('Nombre del Evaluador: ')
+                                        ->disabled()
+                                        ->dehydrated(true)
+                                        ->columnSpanFull(),
+                                    // Existe o no una firma
+                                    Placeholder::make('signature_status')
+                                        ->label('Firma Evaluador')
+                                        ->columnSpan(2)
+                                        ->content(new HtmlString(Blade::render(
+                                            <<<BLADE
+                                                @if(\$profile->signature)
+                                                    <x-filament::badge color="success">
+                                                        Firma Registrada
+                                                    </x-filament::badge>
+                                                @else
+                                                    <x-filament::badge color="danger" tooltip="Debes registrar tu firma en tu perfil para generar el certificado">
+                                                        No tiene firma registrada
+                                                    </x-filament::badge>
+                                                @endif
+                                            BLADE,
+                                            ['profile' => $this->profile] // <-- pasamos la variable al mismo botón (sin no es asi no se reconoce la variable $profile)
+                                        ))),
+                                ])->columnSpan(1)->columns(3),
 
                             // ---------------------- SECCIÓN JURADOS ----------------------
                             Section::make('Jurados')
@@ -168,9 +214,9 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                             return Profile::whereHas('user.roles', function ($query) {
                                                 $query->whereIn('name', ['Asesor', 'Evaluador', 'Coordinador']);
                                             })
-                                            ->whereHas('signature') // Solo perfiles que tengan firma
-                                            ->get()
-                                            ->pluck('full_name', 'id');
+                                                ->whereHas('signature') // Solo perfiles que tengan firma
+                                                ->get()
+                                                ->pluck('full_name', 'id');
                                         })
                                         ->searchable()
                                         ->required(),
@@ -181,9 +227,9 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                             return Profile::whereHas('user.roles', function ($query) {
                                                 $query->whereIn('name', ['Asesor', 'Evaluador', 'Coordinador']);
                                             })
-                                            ->whereHas('signature')
-                                            ->get()
-                                            ->pluck('full_name', 'id');
+                                                ->whereHas('signature')
+                                                ->get()
+                                                ->pluck('full_name', 'id');
                                         })
                                         ->searchable()
                                         ->required(),
@@ -193,8 +239,19 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
 
 
 
-                        ])->columns(2),
+                        ])->columns(2)
+                        ->afterValidation(function () {
+                            if (! $this->profile->signature) {
+                                // Informar al usuario que no puede continuar si no tiene firma
+                                Notification::make()
+                                    ->title('Firma requerida')
+                                    ->body('Debes registrar tu firma en tu perfil antes de poder continuar.')
+                                    ->danger()
+                                    ->send();
 
+                                throw new Halt(); // Esto detiene el avance
+                            }
+                        }),
 
                     // ---------------------- SECCIÓN INFORME FINAL 40% ----------------------
                     Wizard\Step::make('Informe Final (40%)')
@@ -208,6 +265,7 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                             TextInput::make('name') // Precargado en el mount
                                                 ->label('Criterio')
                                                 ->disabled()
+                                                ->dehydrated(true)
                                                 ->required()
                                                 ->columnSpan(2),
                                             TextInput::make('grade')
@@ -244,8 +302,20 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                             TextInput::make('text')
                                                 ->label('Observaciones')
                                                 ->required()
-                                                ->maxLength(150)
+                                                ->maxLength(400)
                                                 ->columnSpan(3),
+
+                                             // --- Mostrar las categorías ---
+                                            Placeholder::make('evaluation_parameters')
+                                                ->label('Criterios de evaluación')
+                                                ->content(fn($get) => new HtmlString(
+                                                    collect($get('parameters'))
+                                                        ->filter()
+                                                        ->map(fn($c) => "• $c")
+                                                        ->implode('<br>')
+                                                ))
+                                                ->columnSpanFull()
+                                                ->extraAttributes(['class' => 'text-sm text-gray-700 mb-2']),
                                         ])->defaultItems(3)
                                         ->minItems(3)
                                         ->maxItems(3)
@@ -281,7 +351,8 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                 ->schema([
                                     TextInput::make('final_report_grade')
                                         ->label('Nota Final - Informe (40%)')
-                                        ->disabled(),
+                                        ->disabled()
+                                        ->dehydrated(true),
                                 ])
                                 ->columnSpan(1),
 
@@ -296,6 +367,7 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                     TextInput::make('name') // Precargado en el mount
                                         ->label('Criterio')
                                         ->disabled()
+                                        ->dehydrated(true)
                                         ->required()
                                         ->columnSpan(4),
                                     TextInput::make('grade')
@@ -332,7 +404,7 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                     TextInput::make('text')
                                         ->label('Observaciones')
                                         ->required()
-                                        ->maxLength(150)
+                                        ->maxLength(400)
                                         ->columnSpan(3),
                                 ])->defaultItems(4)
                                 ->minItems(4)
@@ -347,7 +419,8 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                                 ->schema([
                                     TextInput::make('projects_support_grade')
                                         ->label('Nota Final - Sustentación (60%)')
-                                        ->disabled(),
+                                        ->disabled()
+                                        ->dehydrated(true)
                                 ])->columnSpan(1),
 
                         ])->columns(3),
@@ -356,62 +429,61 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
                         ->schema([
                             FieldSet::make('Evaluación Final Proyecto De Grado')
                                 ->schema([
-                                    Placeholder::make('final_report_grade')
+                                    Placeholder::make('final_report_grade_placeholder')
                                         ->label('Nota Final - Informe (40%)')
                                         ->content(fn($get) => $get('final_report_grade') ?? 0),
 
-                                    Placeholder::make('projects_support_grade')
+                                    Placeholder::make('projects_support_grade_placeholder')
                                         ->label('Nota Final - Sustentación (60%)')
                                         ->content(fn($get) => $get('projects_support_grade') ?? 0),
 
                                     TextInput::make('final_grade')
                                         ->label('Nota Definitiva')
-                                        ->disabled(),
-
-                                ])->columns(2)->columnSpan(2),
-
-                            FieldSet::make('Evaluador')
-                                ->schema([
-                                    // Nombre del evaluador
-                                    TextInput::make('evaluator_name')
-                                        ->label('Nombre del Evaluador: ')
                                         ->disabled()
-                                        ->columnSpanFull(),
-                                    // Existe o no una firma
-                                    Placeholder::make('signature_status')
-                                        ->label('Firma Evaluador')
-                                        ->columnSpan(2)
-                                        ->content(new HtmlString(Blade::render(
-                                            <<<BLADE
-                                                @if(\$profile->signature)
-                                                    <x-filament::badge color="success">
-                                                        Firma Registrada
-                                                    </x-filament::badge>
-                                                @else
-                                                    <x-filament::badge color="danger" tooltip="Debes registrar tu firma en tu perfil para generar el certificado">
-                                                        No tiene firma registrada
-                                                    </x-filament::badge>
-                                                @endif
-                                            BLADE,
-                                            ['profile' => $this->profile] // <-- pasamos la variable al mismo botón (sin no es asi no se reconoce la variable $profile)
-                                        ))),
-                                ])->columnSpan(1)->columns(3),
-
-                        ])->columns(3)
-
+                                        ->dehydrated(true),
+                                ])->columns(3),
+                        ])
                     // Botón de envío
-                    ])->submitAction(new HtmlString(Blade::render(
-                        <<<BLADE
-                        <x-filament::button
-                            type="submit"
-                            color="success"
-                            :disabled="! \$profile->signature">
-                            Generar Certificado
-                        </x-filament::button>
-                        BLADE,
-                        ['profile' => $this->profile] // <-- pasamos la variable al mismo botón (sin no es asi no se reconoce la variable $profile)
-                    ))),
+                ])->submitAction(
+                    Actions\Action::make('submit')
+                        ->label('Generar Certificado')
+                        ->button()
+                        ->requiresConfirmation()
+                        ->color('success')
+                        ->disabled(fn() => !$this->profile->signature)
+                        ->action('submit')
+                )
             ])
             ->statePath('data');  // Sirve para mostrar los datos en la vista en tiempo real
     }
+
+    public function submit()
+    {
+        $state = $this->form->getState(); // Obtiene todos los datos del formulario
+        // dd($state); // Para ver qué se está enviando
+
+
+        // Usar $state en la request
+        $url = app(\App\Http\Controllers\FinalEvaluationController::class)
+            ->store(
+                new \Illuminate\Http\Request($state),
+                $this->transaction,
+                $this->profile
+            );
+
+
+        // Mostrar mensaje de éxito
+        Notification::make()
+            ->title('Certificado generado correctamente')
+            ->success()
+            ->send();
+
+        // Redirigir automáticamente al PDF
+        // Ejecutar JS para abrir el PDF
+        $this->js("window.open('{$url}', '_blank');");
+
+        // Redirigir a la edición de la transacción luego de enviar el formulario
+        return redirect()->route('filament.evaluator.resources.transactions.index');
+    }
+
 }

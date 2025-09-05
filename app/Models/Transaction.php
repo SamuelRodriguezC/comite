@@ -82,6 +82,10 @@ class Transaction extends Model
     {
         return $this->hasMany(Certificate::class)->where('type', 2); // 2 = asesor
     }
+    public function finalEvaluationCertificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class)->where('type', 3); // 3 = Evaluador
+    }
 
     public function processes(): HasMany
     {
@@ -171,6 +175,23 @@ class Transaction extends Model
         return $this->profiles()->where('user_id', $user->id)->exists();
     }
 
+    public function getFinalEvaluationCertificateForProfile(?int $profileId = null): ?Certificate
+    {
+        $profileId ??= Auth::user()?->profiles?->id;
+
+        if (! $profileId) {
+            return null;
+        }
+
+        return $this->finalEvaluationCertificates()
+            ->where('profile_id', $profileId)
+            ->first();
+    }
+
+    public function hasFinalEvaluationCertificateForProfile(?int $profileId = null): bool
+    {
+        return (bool) $this->getFinalEvaluationCertificateForProfile($profileId);
+    }
 
     // ----------------------- EVENTOS ------------------------
 

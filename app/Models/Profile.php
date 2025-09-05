@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Carbon\Carbon;
-use App\Models\Course;
 use App\Models\Role;
+use App\Models\User;
+use App\Models\Course;
 use App\Models\Document;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Modelo que representa el perfil de un usuario dentro del sistema.
@@ -109,6 +110,16 @@ class Profile extends Model
     public function getFullNameAttribute()
     {
         return "{$this->name} {$this->last_name}";
+    }
+
+    /**
+     * Devuelve el nombre completo del perfil en formato slug.
+     *
+     * @return string
+     */
+    public function getFullNameSlugAttribute()
+    {
+        return Str::slug("{$this->name} {$this->last_name}");
     }
 
     /**

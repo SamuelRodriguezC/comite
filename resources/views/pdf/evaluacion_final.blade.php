@@ -84,7 +84,7 @@
 </table>
 
 
-<table>
+<table><
   <tr class="table-section"><th colspan="2">Datos Generales</th></tr>
   <tr><th style="width:30%;">Título</th><td>{{ $datos['titulo'] ?? '' }}</td></tr>
   <tr><th>Estudiante 1</th><td>{{ $datos['nombre1'] ?? '' }} - Código: {{ $datos['codigo1'] ?? '' }}</td></tr>
@@ -103,9 +103,9 @@
       3.9 – 3.5 Aceptable nivel de calidad <br>
       3.4 – 3.0 Insuficiente nivel de calidad <br>
       Menos de 3.0 Bajo nivel de calidad <br><br>
-      “Cada miembro del jurado deberá generar una nota final sobre el trabajo de grado. 
-      La evaluación final tendrá nota Aprobatoria cuando el resultado final sea de tres puntos seis (3.6) o superior en la escala de 1 a 5. 
-      Si existe diferencia en el concepto final asignado por los miembros del jurado sobre el trabajo de grado (uno aprobatorio y otro reprobando), 
+      “Cada miembro del jurado deberá generar una nota final sobre el trabajo de grado.
+      La evaluación final tendrá nota Aprobatoria cuando el resultado final sea de tres puntos seis (3.6) o superior en la escala de 1 a 5.
+      Si existe diferencia en el concepto final asignado por los miembros del jurado sobre el trabajo de grado (uno aprobatorio y otro reprobando),
       se nombrará un tercer miembro para dirimir la situación, quien calificará de forma independiente y se computará con las notas de los anteriores docentes ya nombrados.”
     </td>
   </tr>
@@ -177,7 +177,7 @@
 <tr><th>Observación Final Proyecto de Grado</th><td>{{ $datos['observacion_final_grado'] ?? '' }}</td></tr>
 </table>
 <!-- Firmas -->
-<div class="card mb-4 shadow-sm">
+<div class="mb-4 shadow-sm card">
     <div class="card-body">
         <table style="width: 100%; text-align: center;">
             <tr>
@@ -202,11 +202,11 @@
 
 
 <div class="footer-text">
-  “El jurado tendrá un plazo máximo de quince (15) días hábiles para hacer lectura completa del mismo, 
-  y diligenciar el formato de concepto de evaluación definido por el comité del respectivo programa. 
-  El estudiante tendrá un mes de plazo para hacer las correcciones y el director enviará de nuevo por correo institucional 
-  al jurado, quien tendrá quince (15) días hábiles para evaluarlo nuevamente y emitir el concepto respectivo. 
-  El estudiante tiene derecho a presentar una (1) corrección al anteproyecto.”  
+  “El jurado tendrá un plazo máximo de quince (15) días hábiles para hacer lectura completa del mismo,
+  y diligenciar el formato de concepto de evaluación definido por el comité del respectivo programa.
+  El estudiante tendrá un mes de plazo para hacer las correcciones y el director enviará de nuevo por correo institucional
+  al jurado, quien tendrá quince (15) días hábiles para evaluarlo nuevamente y emitir el concepto respectivo.
+  El estudiante tiene derecho a presentar una (1) corrección al anteproyecto.”
   <br><br><strong>Reglamento de opciones de grado, 2015.</strong>
 </div>
 

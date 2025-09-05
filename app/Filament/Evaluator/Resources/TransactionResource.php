@@ -192,7 +192,11 @@ class TransactionResource extends Resource
 
                 // -------------------- BOTÓN CERTIFICACIÓN DE EVALUACIÓN FINAL --------------------
                 Tables\Actions\Action::make('final_evaluation')
-                    ->label('Acta Evaluación Final')
+                    ->label(fn($record) =>
+                        $record->hasFinalEvaluationCertificateForProfile()
+                            ? 'Nueva Acta Evaluación Final'
+                            : 'Generar Acta Evaluación Final'
+                    )
                     ->icon('heroicon-o-document-check')
                     ->form([
                         \Filament\Forms\Components\Select::make('signer_id')
@@ -215,12 +219,27 @@ class TransactionResource extends Resource
                     })
                     ->modalHeading('Seleccionar Firmador')
                     ->modalSubmitActionLabel('Continuar'),
-
+                    // -------------------- BOTÓN PARA VER EVALUACIÓN FINAL (SI EXISTE) --------------------
+                    Tables\Actions\Action::make('view_certificate')
+                        ->label('Ver Acta Evaluación')
+                        ->icon('heroicon-o-eye')
+                        ->color('success')
+                        ->hidden(fn($record) =>
+                            ! $record->hasFinalEvaluationCertificateForProfile()
+                        )
+                        ->url(fn($record) =>
+                            route('final_evaluation.show', [
+                                'fileName' => basename(
+                                    $record->getFinalEvaluationCertificateForProfile()?->acta
+                                ),
+                            ]),
+                            true
+                        )
+                        ->openUrlInNewTab(),
                 ])
+                ->visible(fn($record) => $record->enabled !== 2)
                 ->icon('heroicon-o-ellipsis-vertical') // menú de 3 puntos
                 ->tooltip('Más acciones'),
-
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([]),

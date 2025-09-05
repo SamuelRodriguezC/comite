@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Process;
+use App\Models\Certificate;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
@@ -10,11 +11,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\PdfActaController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CertificateAdvisorController;
-use App\Models\Certificate;
-use App\Http\Controllers\CertificatePdfController;
 use App\Http\Controllers\FormularioController;
+use App\Http\Controllers\CertificatePdfController;
 use App\Http\Controllers\EvaluacionFinalController;
+use App\Http\Controllers\FinalEvaluationController;
+use App\Http\Controllers\CertificateAdvisorController;
+use App\Filament\Evaluator\Resources\TransactionResource\Pages\FinalEvaluation;
 
 Route::get('/', function () {
     return view('welcome');
@@ -246,6 +248,11 @@ Route::get('/certificate_advisors/download/{file}', function ($file) {
 })->middleware(['auth'])->name('certificate_advisor.download');
 
 
+Route::get('/final_evaluations/{fileName}', [FinalEvaluationController::class, 'show'])
+    ->where('fileName', '.*')
+    ->middleware(['auth'])
+    ->name('final_evaluation.show');
+
 Route::get('/pdf/view/{filename}', [CertificatePdfController::class, 'view'])
     ->where('filename', '.*')
     ->name('pdf.view');
@@ -254,9 +261,9 @@ Route::get('/pdf/download/{filename}', [CertificatePdfController::class, 'downlo
     ->where('filename', '.*') // esto permite que filename tenga puntos, guiones, espacios, etc.
     ->name('pdf.download');
 
-Route::get('/evaluacion-final', [EvaluacionFinalController::class, 'index'])->name('evaluacion_final.index');
-Route::post('/evaluacion-final/procesar', [EvaluacionFinalController::class, 'procesar'])->name('evaluacion_final.procesar');
-Route::post('/evaluacion-final/pdf', [EvaluacionFinalController::class, 'generarPdf'])->name('evaluacion_final.pdf');
+// Route::get('/evaluacion-final', [EvaluacionFinalController::class, 'index'])->name('evaluacion_final.index');
+// Route::post('/evaluacion-final/procesar', [EvaluacionFinalController::class, 'procesar'])->name('evaluacion_final.procesar');
+// Route::post('/evaluacion-final/pdf', [EvaluacionFinalController::class, 'generarPdf'])->name('evaluacion_final.pdf');
 
 
 
