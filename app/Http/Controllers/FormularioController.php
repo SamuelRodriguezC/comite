@@ -50,17 +50,16 @@ class FormularioController extends Controller
         $ruta = 'certificates/' . $nombreArchivo;
 
         // Guardar PDF físicamente
-        Storage::disk('public')->put($ruta, $pdf->output());
+        Storage::disk('private')->put($ruta, $pdf->output());
 
         // Guardar o actualizar en certificates
-        Certificate::updateOrCreate(
-            ['transaction_id' => $transaction->id],
-            [
-                'acta' => $ruta,
-                'type' => 4,
-                'profile_id' => $profile_id,
-            ]
-        );
+        Certificate::create([
+            'transaction_id' => $transaction->id,
+            'acta' => $ruta,
+            'type' => 4,
+            'profile_id' => $profile_id,
+        ]);
+
 
         return $pdf->download($nombreArchivo);
     }

@@ -7,29 +7,19 @@ use Illuminate\Http\Request;
 class CertificatePdfController extends Controller
 {
     /**
-     * Obtiene la ruta correcta del archivo, buscando primero en privada y luego en pública.
+     * Obtiene la ruta del archivo PDF desde la carpeta privada.
      */
     private function getFilePath($filename)
     {
         $filename = urldecode($filename);
 
-        // Elimina prefijos duplicados si vienen en $filename
-        $filename = str_replace('evaluaciones_finales/', '', $filename);
+        // Evita prefijos duplicados
         $filename = str_replace('certificates/', '', $filename);
 
-        // Ruta privada
-        $private = storage_path("app/private/evaluaciones_finales/{$filename}");
-        if (file_exists($private)) {
-            return $private;
-        }
+        // Ruta fija: privada/certificates
+        $path = storage_path("app/private/certificates/{$filename}");
 
-        // Ruta pública
-        $public = storage_path("app/public/certificates/{$filename}");
-        if (file_exists($public)) {
-            return $public;
-        }
-
-        return null;
+        return file_exists($path) ? $path : null;
     }
 
     /**
