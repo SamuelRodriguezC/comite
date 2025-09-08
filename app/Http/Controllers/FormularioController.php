@@ -46,7 +46,7 @@ class FormularioController extends Controller
         ]);
 
         // Nombre del archivo
-        $nombreArchivo = 'evaluacion_anteproyecto_' . $transaction->id . '.pdf';
+        $nombreArchivo = 'evaluacion_anteproyecto_' . Str::random(5) . '.pdf';
         $ruta = 'certificates/' . $nombreArchivo;
 
         // Guardar PDF físicamente
