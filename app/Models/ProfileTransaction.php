@@ -24,6 +24,13 @@ class ProfileTransaction extends Model
      */
     protected $table = 'profile_transaction';
 
+    /**
+     * Definir si la tabla tiene (created - updated).
+     *
+     * @var string
+     */
+    public $timestamps = false;
+
 
     /**
      * Atributos que se pueden asignar masivamente.

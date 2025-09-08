@@ -371,7 +371,7 @@
         <!-- Evaluador-->
         <tr>
             <td colspan="2" style="text-align:center; vertical-align:top; border: 1px solid black; padding:10px;">
-                Nombre y firma evaluado:<br>
+                Nombre y firma evaluador:<br>
                 {{ $data['evaluator_name'] ?? 'No Seleccionado' }}
                 @if(!empty($data['evaluator_signature']) && file_exists(storage_path('app/private/' .
                 $data['evaluator_signature'])))
