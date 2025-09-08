@@ -43,7 +43,7 @@ class CertificateResource extends Resource
                     ->badge()
                     ->color(fn ($state) => $state?->getColor())
                     ->searchable(),
-                TextColumn::make('profile.name')->label('Perfil')->sortable()->placeholder('Estudiantes'),
+                TextColumn::make('profile.name')->label('Asignado')->sortable()->placeholder('Estudiantes'),
                 TextColumn::make('created_at')->label('Creado')->date()->sortable(),
             ])
             ->actions([
@@ -54,19 +54,18 @@ class CertificateResource extends Resource
                     ->url(fn($record) => route('pdf.download', urlencode($record->acta)))
                     ->openUrlInNewTab(false),
                 // Botón de ver
-                Action::make('ver')
-                    ->label('Ver')
+                Tables\Actions\Action::make('view_certificate')
+                    ->label('Ver certificado')
                     ->icon('heroicon-o-eye')
                     ->color('primary')
-                    ->url(fn($record) => route('pdf.view', urlencode($record->acta)))
-                    ->openUrlInNewTab(true),
+                    ->url(fn ($record) => $record->acta ? asset($record->acta) : null, true)
+                    ->openUrlInNewTab()
+                    ->hidden(fn ($record) => !$record->acta), // Oculta el botón si no hay archivo
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->label('Eliminar varios'),
             ]);
     }
-
-
 
 
     // ---------------- RELACIONES ----------------

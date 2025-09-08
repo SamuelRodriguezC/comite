@@ -119,7 +119,7 @@ Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generate'])
 
 
 //----------------------------------- RUTA PARA VER CERTIFICADOS DE ESTUDIANTES -----------------------------------
-Route::get('/certificate_students/view/{file}', function ($file) {
+Route::get('/students_certificates/{file}', function ($file) {
     $transaction = Transaction::whereHas('studentsCertificate', function ($q) use ($file) {
         $q->where('acta', "students_certificates/{$file}");
     })->firstOrFail();
@@ -197,7 +197,7 @@ Route::post(
 
 
 //----------------------------------- RUTA PARA VER CERTIFICADOS DE ASESORES -----------------------------------
-Route::get('/certificate_advisors/view/{file}', function ($file) {
+Route::get('/advisors_certificates/{file}', function ($file) {
     $user = Auth::user();
 
     // Buscar el certificado por su acta
@@ -253,7 +253,7 @@ Route::get('/final_evaluations/{fileName}', [FinalEvaluationController::class, '
     ->middleware(['auth'])
     ->name('final_evaluation.show');
 
-Route::get('/pdf/view/{filename}', [CertificatePdfController::class, 'view'])
+Route::get('/certificates/{filename}', [CertificatePdfController::class, 'view'])
     ->where('filename', '.*')
     ->name('pdf.view');
 

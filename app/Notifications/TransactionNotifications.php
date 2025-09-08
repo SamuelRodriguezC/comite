@@ -52,33 +52,33 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($user);
 
         // Notificación por correo
-        $user->notify(new class($transaction, $roleName, $profileName) extends BaseNotification {
-            public Transaction $transaction;
-            public string $roleName;
-            public string $profileName;
+        // $user->notify(new class($transaction, $roleName, $profileName) extends BaseNotification {
+        //     public Transaction $transaction;
+        //     public string $roleName;
+        //     public string $profileName;
 
-            public function __construct(Transaction $transaction, string $roleName, string $profileName)
-            {
-                $this->transaction = $transaction;
-                $this->roleName = $roleName;
-                $this->profileName = $profileName;
-            }
+        //     public function __construct(Transaction $transaction, string $roleName, string $profileName)
+        //     {
+        //         $this->transaction = $transaction;
+        //         $this->roleName = $roleName;
+        //         $this->profileName = $profileName;
+        //     }
 
-            public function via($notifiable): array
-            {
-                return ['mail'];
-            }
+        //     public function via($notifiable): array
+        //     {
+        //         return ['mail'];
+        //     }
 
-            public function toMail($notifiable): MailMessage
-            {
-                return (new MailMessage)
-                    ->subject('Nueva Opción de Grado Asignada')
-                    ->greeting("Hola {$this->profileName},")
-                    ->line("Se te ha asignado la Opción de Grado #{$this->transaction->id} como {$this->roleName}.")
-                    ->action('Ver Detalles', url("/login"))
-                    ->line('Por favor revisa los detalles de tu opción en el sistema.');
-            }
-        });
+        //     public function toMail($notifiable): MailMessage
+        //     {
+        //         return (new MailMessage)
+        //             ->subject('Nueva Opción de Grado Asignada')
+        //             ->greeting("Hola {$this->profileName},")
+        //             ->line("Se te ha asignado la Opción de Grado #{$this->transaction->id} como {$this->roleName}.")
+        //             ->action('Ver Detalles', url("/login"))
+        //             ->line('Por favor revisa los detalles de tu opción en el sistema.');
+        //     }
+        // });
     }
 
     // -----------------------------------------------------------------------------------------------------------
@@ -105,35 +105,35 @@ class TransactionNotifications extends Notification
             ->sendToDatabase($studentUser);
 
         // Notificación por correo
-        $studentUser->notify(new class($assignedProfileName, $roleName, $transaction) extends BaseNotification {
-            public string $assignedProfileName;
-            public string $roleName;
-            public Transaction $transaction;
+        // $studentUser->notify(new class($assignedProfileName, $roleName, $transaction) extends BaseNotification {
+        //     public string $assignedProfileName;
+        //     public string $roleName;
+        //     public Transaction $transaction;
 
-            public function __construct(string $assignedProfileName, string $roleName, Transaction $transaction)
-            {
-                $this->assignedProfileName = $assignedProfileName;
-                $this->roleName = $roleName;
-                $this->transaction = $transaction;
-            }
+        //     public function __construct(string $assignedProfileName, string $roleName, Transaction $transaction)
+        //     {
+        //         $this->assignedProfileName = $assignedProfileName;
+        //         $this->roleName = $roleName;
+        //         $this->transaction = $transaction;
+        //     }
 
-            public function via($notifiable): array
-            {
-                return ['mail'];
-            }
+        //     public function via($notifiable): array
+        //     {
+        //         return ['mail'];
+        //     }
 
-            public function toMail($notifiable): MailMessage
-            {
-                $studentProfileName = $notifiable->profiles?->full_name ?? $notifiable->name;
+        //     public function toMail($notifiable): MailMessage
+        //     {
+        //         $studentProfileName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                return (new MailMessage)
-                    ->subject("Nuevo {$this->roleName} asignado")
-                    ->greeting("Hola {$studentProfileName},")
-                    ->line("Se te ha asignado el {$this->roleName} **{$this->assignedProfileName}** para tu opción de grado #{$this->transaction->id}.")
-                    ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                    ->line('Por favor revisa los detalles en el sistema.');
-            }
-        });
+        //         return (new MailMessage)
+        //             ->subject("Nuevo {$this->roleName} asignado")
+        //             ->greeting("Hola {$studentProfileName},")
+        //             ->line("Se te ha asignado el {$this->roleName} **{$this->assignedProfileName}** para tu opción de grado #{$this->transaction->id}.")
+        //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+        //             ->line('Por favor revisa los detalles en el sistema.');
+        //     }
+        // });
     }
 
 
@@ -153,31 +153,31 @@ class TransactionNotifications extends Notification
             ->success()
             ->sendToDatabase($user);
          // Notificación por correo
-        $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
-            public Transaction $transaction;
+        // $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+        //     public Transaction $transaction;
 
-            public function __construct(Transaction $transaction)
-            {
-                $this->transaction = $transaction;
-            }
+        //     public function __construct(Transaction $transaction)
+        //     {
+        //         $this->transaction = $transaction;
+        //     }
 
-            public function via($notifiable): array
-            {
-                return ['mail'];
-            }
+        //     public function via($notifiable): array
+        //     {
+        //         return ['mail'];
+        //     }
 
-            public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-            {
-                $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+        //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+        //     {
+        //         $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                return (new \Illuminate\Notifications\Messages\MailMessage)
-                    ->subject('Tu Opción de Grado ha sido habilitada')
-                    ->greeting("Hola {$greetingName},")
-                    ->line("La Opción de Grado #{$this->transaction->id} ha sido habilitada.")
-                    ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                    ->line('Ya puedes continuar con el proceso en el sistema.');
-            }
-        });
+        //         return (new \Illuminate\Notifications\Messages\MailMessage)
+        //             ->subject('Tu Opción de Grado ha sido habilitada')
+        //             ->greeting("Hola {$greetingName},")
+        //             ->line("La Opción de Grado #{$this->transaction->id} ha sido habilitada.")
+        //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+        //             ->line('Ya puedes continuar con el proceso en el sistema.');
+        //     }
+        // });
 
     }
 
@@ -197,33 +197,33 @@ class TransactionNotifications extends Notification
             ->danger()
             ->sendToDatabase($user);
         // Notificación por correo
-        $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
-            public Transaction $transaction;
+        // $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+        //     public Transaction $transaction;
 
-            public function __construct(Transaction $transaction)
-            {
-                $this->transaction = $transaction;
-            }
+        //     public function __construct(Transaction $transaction)
+        //     {
+        //         $this->transaction = $transaction;
+        //     }
 
-            public function via($notifiable): array
-            {
-                return ['mail'];
-            }
+        //     public function via($notifiable): array
+        //     {
+        //         return ['mail'];
+        //     }
 
-            public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-            {
-                $greetingName = $notifiable->profiles && $notifiable->profiles->full_name
-                    ? $notifiable->profiles->full_name
-                    : $notifiable->name;
+        //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+        //     {
+        //         $greetingName = $notifiable->profiles && $notifiable->profiles->full_name
+        //             ? $notifiable->profiles->full_name
+        //             : $notifiable->name;
 
-                return (new \Illuminate\Notifications\Messages\MailMessage)
-                    ->subject('Tu Opción de Grado ha sido deshabilitada')
-                    ->greeting("Hola {$greetingName},")
-                    ->line("La Opción de Grado #{$this->transaction->id} ha sido deshabilitada.")
-                    ->action('Ver Detalles', url("/login"))
-                    ->line('Por ahora solo podrás ver el conenido de tu opción de grado pero no podrás realizar ninguna acción');
-            }
-        });
+        //         return (new \Illuminate\Notifications\Messages\MailMessage)
+        //             ->subject('Tu Opción de Grado ha sido deshabilitada')
+        //             ->greeting("Hola {$greetingName},")
+        //             ->line("La Opción de Grado #{$this->transaction->id} ha sido deshabilitada.")
+        //             ->action('Ver Detalles', url("/login"))
+        //             ->line('Por ahora solo podrás ver el conenido de tu opción de grado pero no podrás realizar ninguna acción');
+        //     }
+        // });
     }
 
 
@@ -256,33 +256,33 @@ class TransactionNotifications extends Notification
                 ->sendToDatabase($user);
 
             // Notificación por correo
-                $user->notify(new class($transaction, $estado) extends \Illuminate\Notifications\Notification {
-                    public Transaction $transaction;
-                    public string $estado;
+                // $user->notify(new class($transaction, $estado) extends \Illuminate\Notifications\Notification {
+                //     public Transaction $transaction;
+                //     public string $estado;
 
-                    public function __construct(Transaction $transaction, string $estado)
-                    {
-                        $this->transaction = $transaction;
-                        $this->estado = $estado;
-                    }
+                //     public function __construct(Transaction $transaction, string $estado)
+                //     {
+                //         $this->transaction = $transaction;
+                //         $this->estado = $estado;
+                //     }
 
-                    public function via($notifiable): array
-                    {
-                        return ['mail'];
-                    }
+                //     public function via($notifiable): array
+                //     {
+                //         return ['mail'];
+                //     }
 
-                    public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-                    {
-                        $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+                //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+                //     {
+                //         $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                        return (new \Illuminate\Notifications\Messages\MailMessage)
-                            ->subject("Cambio de estado en tu Opción de Grado")
-                            ->greeting("Hola {$greetingName},")
-                            ->line("La Opción de Grado #{$this->transaction->id} ha cambiado su estado a **{$this->estado}**.")
-                            ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                            ->line('Por favor revisa los detalles en el sistema.');
-                    }
-                });
+                //         return (new \Illuminate\Notifications\Messages\MailMessage)
+                //             ->subject("Cambio de estado en tu Opción de Grado")
+                //             ->greeting("Hola {$greetingName},")
+                //             ->line("La Opción de Grado #{$this->transaction->id} ha cambiado su estado a **{$this->estado}**.")
+                //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+                //             ->line('Por favor revisa los detalles en el sistema.');
+                //     }
+                // });
             }
         }
     }
@@ -307,31 +307,31 @@ class TransactionNotifications extends Notification
                 ->success()
                 ->sendToDatabase($user);
              // Notificación por correo
-                $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
-                    public Transaction $transaction;
+                // $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+                //     public Transaction $transaction;
 
-                    public function __construct(Transaction $transaction)
-                    {
-                        $this->transaction = $transaction;
-                    }
+                //     public function __construct(Transaction $transaction)
+                //     {
+                //         $this->transaction = $transaction;
+                //     }
 
-                    public function via($notifiable): array
-                    {
-                        return ['mail'];
-                    }
+                //     public function via($notifiable): array
+                //     {
+                //         return ['mail'];
+                //     }
 
-                    public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-                    {
-                        $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+                //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+                //     {
+                //         $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                        return (new \Illuminate\Notifications\Messages\MailMessage)
-                            ->subject('Nueva solicitud de certificación')
-                            ->greeting("Hola {$greetingName},")
-                            ->line("Se ha solicitado la certificación de la Opción de Grado #{$this->transaction->id}.")
-                            ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                            ->line('Por favor ingresa al sistema para revisar la solicitud.');
-                    }
-                });
+                //         return (new \Illuminate\Notifications\Messages\MailMessage)
+                //             ->subject('Nueva solicitud de certificación')
+                //             ->greeting("Hola {$greetingName},")
+                //             ->line("Se ha solicitado la certificación de la Opción de Grado #{$this->transaction->id}.")
+                //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+                //             ->line('Por favor ingresa al sistema para revisar la solicitud.');
+                //     }
+                // });
         }
     }
 
@@ -352,31 +352,31 @@ class TransactionNotifications extends Notification
             ->success()
             ->sendToDatabase($user);
         // Notificación por correo
-        $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
-            public Transaction $transaction;
+        // $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+        //     public Transaction $transaction;
 
-            public function __construct(Transaction $transaction)
-            {
-                $this->transaction = $transaction;
-            }
+        //     public function __construct(Transaction $transaction)
+        //     {
+        //         $this->transaction = $transaction;
+        //     }
 
-            public function via($notifiable): array
-            {
-                return ['mail'];
-            }
+        //     public function via($notifiable): array
+        //     {
+        //         return ['mail'];
+        //     }
 
-            public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-            {
-                $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+        //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+        //     {
+        //         $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                return (new \Illuminate\Notifications\Messages\MailMessage)
-                    ->subject('Se ha generado su certificación')
-                    ->greeting("Hola {$greetingName},")
-                    ->line("Se ha generado su certificación para la Opción de Grado #{$this->transaction->id}.")
-                    ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                    ->line('Por favor revisa el sistema para ver más detalles.');
-            }
-        });
+        //         return (new \Illuminate\Notifications\Messages\MailMessage)
+        //             ->subject('Se ha generado su certificación')
+        //             ->greeting("Hola {$greetingName},")
+        //             ->line("Se ha generado su certificación para la Opción de Grado #{$this->transaction->id}.")
+        //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+        //             ->line('Por favor revisa el sistema para ver más detalles.');
+        //     }
+        // });
     }
 
 
@@ -402,31 +402,31 @@ class TransactionNotifications extends Notification
                     ->sendToDatabase($user);
 
                 // Notificación por correo
-                $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
-                    public Transaction $transaction;
+                // $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+                //     public Transaction $transaction;
 
-                    public function __construct(Transaction $transaction)
-                    {
-                        $this->transaction = $transaction;
-                    }
+                //     public function __construct(Transaction $transaction)
+                //     {
+                //         $this->transaction = $transaction;
+                //     }
 
-                    public function via($notifiable): array
-                    {
-                        return ['mail'];
-                    }
+                //     public function via($notifiable): array
+                //     {
+                //         return ['mail'];
+                //     }
 
-                    public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-                    {
-                        $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+                //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+                //     {
+                //         $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                        return (new \Illuminate\Notifications\Messages\MailMessage)
-                            ->subject('Certificación generada')
-                            ->greeting("Hola {$greetingName},")
-                            ->line("¡Felicidades! se ha generado tu certificación para la Opción de Grado #{$this->transaction->id}.")
-                            ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                            ->line('Por favor revisa el sistema para ver más detalles.');
-                    }
-                });
+                //         return (new \Illuminate\Notifications\Messages\MailMessage)
+                //             ->subject('Certificación generada')
+                //             ->greeting("Hola {$greetingName},")
+                //             ->line("¡Felicidades! se ha generado tu certificación para la Opción de Grado #{$this->transaction->id}.")
+                //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+                //             ->line('Por favor revisa el sistema para ver más detalles.');
+                //     }
+                // });
             }
         }
     }
@@ -454,31 +454,31 @@ class TransactionNotifications extends Notification
                     ->sendToDatabase($user);
 
                 // Notificación por correo
-                $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
-                    public Transaction $transaction;
+                // $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+                //     public Transaction $transaction;
 
-                    public function __construct(Transaction $transaction)
-                    {
-                        $this->transaction = $transaction;
-                    }
+                //     public function __construct(Transaction $transaction)
+                //     {
+                //         $this->transaction = $transaction;
+                //     }
 
-                    public function via($notifiable): array
-                    {
-                        return ['mail'];
-                    }
+                //     public function via($notifiable): array
+                //     {
+                //         return ['mail'];
+                //     }
 
-                    public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-                    {
-                        $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+                //     public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+                //     {
+                //         $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
 
-                        return (new \Illuminate\Notifications\Messages\MailMessage)
-                            ->subject('Evaluación Final generada')
-                            ->greeting("Hola {$greetingName},")
-                            ->line("¡Felicidades! se ha generado la evaluación final para la Opción de Grado #{$this->transaction->id}.")
-                            ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
-                            ->line('Por favor revisa el sistema para ver más detalles.');
-                    }
-                });
+                //         return (new \Illuminate\Notifications\Messages\MailMessage)
+                //             ->subject('Evaluación Final generada')
+                //             ->greeting("Hola {$greetingName},")
+                //             ->line("¡Felicidades! se ha generado la evaluación final para la Opción de Grado #{$this->transaction->id}.")
+                //             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+                //             ->line('Por favor revisa el sistema para ver más detalles.');
+                //     }
+                // });
             }
         }
     }

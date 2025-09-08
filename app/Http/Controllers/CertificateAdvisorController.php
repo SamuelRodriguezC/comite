@@ -68,7 +68,8 @@ class CertificateAdvisorController extends Controller
         ])->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'defaultFont' => 'DejaVu Sans']);
 
         // -------------------- GUARDAR EL PDF EN STORAGE PRIVADO --------------------
-        $fileName = "advisor-{$transaction->id}-" . Str::random(5) . ".pdf";
+        $fileName = "director-" . Str::slug($profile->full_name, '-') . "-" . Str::random(5) . ".pdf";
+
         $filePath = "advisors_certificates/{$fileName}";
         Storage::disk('private')->put($filePath, $pdf->output());
 
