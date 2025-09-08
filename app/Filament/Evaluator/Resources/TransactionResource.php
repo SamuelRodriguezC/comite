@@ -64,19 +64,19 @@ class TransactionResource extends Resource
                             ->relationship('option', 'option')
                             ->required()
                             // Función para filtrar la opción de grado por nivel universitario y componente
-                            ->options(function (callable $get) {
-                                $user = Auth::user();
-                                if (!$user || !$user->profiles) {
-                                    return ["Aún no tiene perfil"]; // Si el perfil no está disponible, no se muestran opciones
-                                }
-                                $userLevel = $user->profiles->level;
-                                $selectedComponent = $get('component');
-                                if (!$selectedComponent) {
-                                    return ["Aún no ha seleccionado componente"]; // Evita mostrar opciones si el componente aún no se ha seleccionado
-                                }
-                                return Option::where('level', $userLevel)
-                                    ->where('component', $selectedComponent)
-                                    ->pluck('option', 'id');
+                             ->options(function (callable $get) {
+                                // Toma el nivel guardado en el campo oculto level y el componente elegido
+                                $component = $get('component');
+                                // Si no hay nivel o componente, entonces no se puede buscar la opción de grado
+                                $query = \App\Models\Option::query();
+                                    if ($component !== null) {
+                                        $query->where('component', $component);
+                                    }
+                                    else {
+                                        return ["Aún no ha seleccionado el componente"];
+                                    }
+                                // Muestra las opciones de grado de acuerdo a la información anterior
+                                return $query->pluck('option', 'id');
                             }),
                     ])
                     ->columnSpan(1)
