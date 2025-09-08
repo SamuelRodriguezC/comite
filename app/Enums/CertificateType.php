@@ -40,7 +40,7 @@ enum CertificateType: int implements HasLabel
     /**
      * Devuelve el color asociado al estado, usado en componentes visuales de Filament.
      *
-     * @return string
+     * @return string2
      */
     public function getColor(): string
     {

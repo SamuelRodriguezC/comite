@@ -193,6 +193,13 @@ class Transaction extends Model
         return (bool) $this->getFinalEvaluationCertificateForProfile($profileId);
     }
 
+    public function students()
+    {
+        return $this->profiles()->whereHas('user.roles', function ($q) {
+            $q->where('name', 'Estudiante');
+        });
+    }
+
     // ----------------------- EVENTOS ------------------------
 
     /**

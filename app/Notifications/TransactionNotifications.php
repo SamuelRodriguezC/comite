@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Enums\Status;
 use App\Models\Transaction;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Role;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
@@ -422,6 +423,58 @@ class TransactionNotifications extends Notification
                             ->subject('Certificación generada')
                             ->greeting("Hola {$greetingName},")
                             ->line("¡Felicidades! se ha generado tu certificación para la Opción de Grado #{$this->transaction->id}.")
+                            ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
+                            ->line('Por favor revisa el sistema para ver más detalles.');
+                    }
+                });
+            }
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------
+    /**
+     * Notifica a los estudiantes cuando se les genera una evaluación final.
+     *
+     * @param \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Collection $students
+     * @param Transaction $transaction
+     * @param \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Collection $students
+     */
+    public static function sendFinalEvaluationStudents(Collection $students, Transaction $transaction): void
+    {
+        foreach ($students as $student) {
+            $user = $student->user; // relación con el usuario
+
+            if ($user) {
+                // Notificación en Filament
+                Notification::make()
+                    ->title('Evaluación Final Realizada')
+                    ->body("Se ha generado una evaluación final para la Opción de Grado #{$transaction->id}.")
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->success()
+                    ->sendToDatabase($user);
+
+                // Notificación por correo
+                $user->notify(new class($transaction) extends \Illuminate\Notifications\Notification {
+                    public Transaction $transaction;
+
+                    public function __construct(Transaction $transaction)
+                    {
+                        $this->transaction = $transaction;
+                    }
+
+                    public function via($notifiable): array
+                    {
+                        return ['mail'];
+                    }
+
+                    public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+                    {
+                        $greetingName = $notifiable->profiles?->full_name ?? $notifiable->name;
+
+                        return (new \Illuminate\Notifications\Messages\MailMessage)
+                            ->subject('Evaluación Final generada')
+                            ->greeting("Hola {$greetingName},")
+                            ->line("¡Felicidades! se ha generado la evaluación final para la Opción de Grado #{$this->transaction->id}.")
                             ->action('Ver Detalles', url("/transactions/{$this->transaction->id}"))
                             ->line('Por favor revisa el sistema para ver más detalles.');
                     }

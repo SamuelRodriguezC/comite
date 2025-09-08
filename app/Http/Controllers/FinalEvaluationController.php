@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profile;
 use App\Models\Certificate;
 use App\Models\Transaction;
+use App\Notifications\TransactionNotifications;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -120,6 +121,9 @@ class FinalEvaluationController extends Controller
         );
         // Generar URL al certificado
         $url = route('final_evaluation.show', ['fileName' => basename($certificate->acta)]);
+
+        $students = $transaction->students;
+        TransactionNotifications::sendFinalEvaluationStudents($students, $transaction);
 
         return $url; // Muy importante para redirigir después
     }
