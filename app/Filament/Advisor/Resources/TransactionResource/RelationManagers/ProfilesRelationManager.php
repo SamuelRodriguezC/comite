@@ -126,6 +126,7 @@ class ProfilesRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                 ->modalHeading('Ingrese el número del documento de identidad de la persona que quiere vincular')
+                ->modalDescription('Solo podrá vincular integrantes dentro de las 12 horas siguientes a la creación de la Opción.')
                 ->form(fn (AttachAction $action): array => [
                     $action->getRecordSelect()
                         ->reactive(), // Necesario para que al seleccionar cambien las carreras
