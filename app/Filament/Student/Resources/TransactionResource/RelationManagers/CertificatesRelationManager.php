@@ -57,7 +57,7 @@ class CertificatesRelationManager extends RelationManager
                 ->color('primary')
                 ->url(fn ($record) => $record->acta ? asset($record->acta) : null, true)
                 ->openUrlInNewTab()
-                ->hidden(fn ($record) => !$record->acta), // Oculta el botón si no hay archivo
+                ->hidden(fn ($record) => !$record->acta || $record->type->value == 2), // Oculta el botón si no hay archivo
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
             ])

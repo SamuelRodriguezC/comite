@@ -103,7 +103,7 @@ class ProfilesRelationManager extends RelationManager
                         return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';
                     })
                     ->tooltip(fn ($record, $livewire) => $record->hasCertificate($this->ownerRecord)
-                        ? 'Certificado Generado'
+                        ? 'Certificado/Evaluación Generado'
                         : ''
                     )
                     ->color(fn ($record, $livewire) =>

@@ -240,11 +240,11 @@ class ProfilesRelationManager extends RelationManager
 
                     // -------------------- BOTÓN CERTIFICAR ASESOR --------------------
                     Tables\Actions\Action::make('certify_advisor')
-                        ->label(fn ($record) => $record->hasCertificate($this->ownerRecord) ? 'Nuevo Certificado' : 'Certificar')
+                        ->label(fn ($record) => $record->hasCertificateOfType($this->ownerRecord, 2) ? 'Nuevo Certificado' : 'Certificar')
                         ->icon('heroicon-o-clipboard-document-check')
                         ->color('success')
                         ->visible(fn ($record) =>
-                            $record->user && $record->user->hasRole('Asesor') // Solo si el usuario existe y tiene rol Asesor
+                            $record->pivot?->role_id === \App\Models\Role::where('name', 'Asesor')->value('id')
                         )
                         ->tooltip(fn ($record) => $record->hasCertificate($this->ownerRecord)
                             ? 'Este asesor ya tiene un certificado, puede generar uno nuevo.'
@@ -272,44 +272,6 @@ class ProfilesRelationManager extends RelationManager
                         })
                         ->modalHeading('Seleccionar Firmador')
                         ->modalSubmitActionLabel('Continuar'),
-
-                    // -------------------- BOTÓN PARA VER CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
-                    Tables\Actions\Action::make('view_certificate')
-                        ->label('Ver certificado')
-                        ->icon('heroicon-o-eye')
-                        ->color('primary')
-                        ->hidden(fn($record, $livewire) =>
-                            ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
-                        )
-                        ->url(fn($record, $livewire) =>
-                            route('certificate_advisor.view', [
-                                'file' => basename(
-                                    $record->certificates()
-                                        ->where('transaction_id', $livewire->ownerRecord->id)
-                                        ->where('type', 2)
-                                        ->first()?->acta
-                                ),
-                            ])
-                        , true)
-                        ->openUrlInNewTab(),
-
-                    // -------------------- BOTÓN PARA DESCARGAR CERTIFICADO ASESOR (SOLO SI ESTÁ GENERADO) --------------------
-                    Tables\Actions\Action::make('download_certificate')
-                        ->label('Descargar certificado')
-                        ->icon('heroicon-o-folder-arrow-down')
-                        ->color('primary')
-                        ->hidden(fn($record, $livewire) =>
-                            ! $record->hasCertificate($livewire->ownerRecord) // ownerRecord = transaction
-                        )
-                        ->url(fn($record, $livewire) =>
-                            route('certificate_advisor.download', [
-                                'file' => basename(
-                                    $record->certificates()
-                                        ->where('transaction_id', $livewire->ownerRecord->id)
-                                        ->where('type', 2)
-                                        ->first()?->acta
-                            ),]))
-
                     ]),
             ])
             ->emptyStateActions([

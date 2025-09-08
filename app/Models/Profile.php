@@ -150,6 +150,14 @@ class Profile extends Model
             ->exists();
     }
 
+    public function hasCertificateOfType(Transaction $transaction, int $type): bool
+{
+    return Certificate::where('transaction_id', $transaction->id)
+        ->where('profile_id', $this->id)
+        ->where('type', $type)
+        ->exists();
+}
+
 
 
 }
