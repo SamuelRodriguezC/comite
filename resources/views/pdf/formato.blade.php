@@ -144,20 +144,13 @@
         </table>
     </div>
 
-    <!-- Información adicional para compatibilidad con controlador -->
-    <div class="section no-border">
-        <p>Transaction ID: {{ $datos['transaction_id'] ?? '' }}</p>
-        <p>Profile ID: {{ $datos['profile_id'] ?? '' }}</p>
-        <p>Type: {{ $datos['type'] ?? '1' }}</p>
-    </div>
-
     <!-- Footer reglamentario -->
     <div class="footer-text">
-        “El jurado tendrá un plazo máximo de quince (15) días hábiles para hacer lectura completa del mismo, 
-        y diligenciar el formato de concepto de evaluación definido por el comité del respectivo programa. 
-        El estudiante tendrá un mes de plazo para hacer las correcciones y el director enviará de nuevo por correo institucional 
-        al jurado, quien tendrá quince (15) días hábiles para evaluarlo nuevamente y emitir el concepto respectivo. 
-        El estudiante tiene derecho a presentar una (1) corrección al anteproyecto.”.  
+        “El jurado tendrá un plazo máximo de quince (15) días hábiles para hacer lectura completa del mismo,
+        y diligenciar el formato de concepto de evaluación definido por el comité del respectivo programa.
+        El estudiante tendrá un mes de plazo para hacer las correcciones y el director enviará de nuevo por correo institucional
+        al jurado, quien tendrá quince (15) días hábiles para evaluarlo nuevamente y emitir el concepto respectivo.
+        El estudiante tiene derecho a presentar una (1) corrección al anteproyecto.”.
         <br><br>
         <strong>Reglamento de opciones de grado, 2015.</strong>
     </div>

@@ -24,7 +24,7 @@ class ProfileResource extends Resource
     protected static ?string $model = Profile::class;
     protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $modelLabel = "Perfil";
-    protected static ?string $pluralModelLabel = "Perfiles";
+    protected static ?string $pluralModelLabel = "Perfil";
 
     // Función para consultar solo los registros del usuario autenticado
     public static function getEloquentQuery(): Builder
