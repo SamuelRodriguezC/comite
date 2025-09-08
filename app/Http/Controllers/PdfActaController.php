@@ -79,7 +79,7 @@ class PdfActaController extends Controller
         }
 
         // -------------------- GUARDAR EL PDF EN STORAGE PRIVADO --------------------
-        $fileName = "acta-{$transaction->id}-" . Str::random(5) . ".pdf";
+        $fileName = "terminacion-estudiantes-{$transaction->id}-" . Str::random(5) . ".pdf";
         $filePath = "students_certificates/{$fileName}";
         Storage::disk('private')->put($filePath, $pdf->output());
 

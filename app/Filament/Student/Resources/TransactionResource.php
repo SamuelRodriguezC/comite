@@ -205,7 +205,7 @@ class TransactionResource extends Resource
                         ->label('Estado')
                         ->options(Status::class)
                         ->attribute('status'),
-                        
+
                 SelectFilter::make('courses')
                     ->label('Carreras')
                     ->options(\App\Models\Course::pluck('course', 'id'))
@@ -298,6 +298,7 @@ class TransactionResource extends Resource
         return [
             RelationManagers\ProcessesRelationManager::class,
             RelationManagers\ProfilesRelationManager::class,
+            RelationManagers\CertificatesRelationManager::class,
         ];
     }
 

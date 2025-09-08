@@ -142,11 +142,10 @@ class Profile extends Model
     * @param  int  $type  Tipo de certificado (por defecto 2 = asesor).
     * @return bool
     */
-    public function hasCertificate(Transaction $transaction, int $type = 2): bool
+    public function hasCertificate(Transaction $transaction): bool
     {
         // Busca certificado asociado a esta transacción y tipo, donde el perfil coincide con la transacción
         return Certificate::where('transaction_id', $transaction->id)
-            ->where('type', $type)
             ->where('profile_id', $this->id)
             ->exists();
     }

@@ -103,16 +103,16 @@ class ProfilesRelationManager extends RelationManager
                         return \App\Models\Role::find($state)?->name ?? 'Rol no encontrado';
                     })
                     ->tooltip(fn ($record, $livewire) => $record->hasCertificate($this->ownerRecord)
-                        ? 'Asesor certificado'
+                        ? 'Certificado Generado'
                         : ''
                     )
                     ->color(fn ($record, $livewire) =>
-                        $record->user?->hasRole('Asesor') && $record->hasCertificate($livewire->ownerRecord)
+                        $record->user?->hasRole(['Asesor', 'Evaluador']) && $record->hasCertificate($livewire->ownerRecord)
                             ? 'success'
                             : null
                     )
                     ->icon(fn ($record, $livewire) =>
-                        $record->user?->hasRole('Asesor') && $record->hasCertificate($livewire->ownerRecord)
+                        $record->user?->hasRole(['Asesor', 'Evaluador']) && $record->hasCertificate($livewire->ownerRecord)
                             ? 'heroicon-o-check-badge'
                             : ''
                     )

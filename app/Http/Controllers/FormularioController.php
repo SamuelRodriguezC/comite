@@ -18,7 +18,7 @@ class FormularioController extends Controller
         // Traer transaction si existe, o fallar
         $transaction = Transaction::findOrFail($transaction_id);
         $profile_id = Auth::user()->profiles->id;
-        
+
 
 
         return view('index', compact('transaction_id', 'profile_id', 'transaction'));
@@ -53,12 +53,16 @@ class FormularioController extends Controller
         Storage::disk('private')->put($ruta, $pdf->output());
 
         // Guardar o actualizar en certificates
-        Certificate::create([
+        Certificate::updateOrCreate([
             'transaction_id' => $transaction->id,
-            'acta' => $ruta,
             'type' => 4,
+            'signer_id' => 1,
             'profile_id' => $profile_id,
-        ]);
+        ],
+        [
+            'acta' => $ruta,
+        ]
+    );
 
 
         return $pdf->download($nombreArchivo);

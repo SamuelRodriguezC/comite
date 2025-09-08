@@ -417,6 +417,7 @@ class TransactionResource extends Resource
         return [
             RelationManagers\ProcessesRelationManager::class,
             RelationManagers\ProfilesRelationManager::class,
+            RelationManagers\CertificatesRelationManager::class,
         ];
     }
 
