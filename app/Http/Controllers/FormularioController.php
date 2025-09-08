@@ -57,7 +57,7 @@ class FormularioController extends Controller
             ['transaction_id' => $transaction->id],
             [
                 'acta' => $ruta,
-                'type' => 3,
+                'type' => 4,
                 'profile_id' => $profile_id,
             ]
         );
