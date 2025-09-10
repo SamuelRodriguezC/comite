@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Evaluación Anteproyecto de Grado</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
@@ -12,6 +12,10 @@
         th, td { padding: 6px; vertical-align: top; }
         .no-border { border: none !important; }
         .footer-text { margin-top: 20px; font-size: 11px; text-align: justify; }
+        body {
+         font-family: 'DejaVuSans', sans-serif;
+         font-size: 12px;
+        }
     </style>
 </head>
 <body>

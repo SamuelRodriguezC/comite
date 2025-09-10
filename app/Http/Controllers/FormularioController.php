@@ -43,7 +43,8 @@ class FormularioController extends Controller
             'datos' => $request->all(),
             'transaction' => $transaction,
             'profile_id' => $profile_id
-        ]);
+        ])->setPaper('a4', 'portrait');
+        
 
         // Nombre del archivo
         $nombreArchivo = 'evaluacion_anteproyecto_' . Str::random(5) . '.pdf';
@@ -53,16 +54,14 @@ class FormularioController extends Controller
         Storage::disk('private')->put($ruta, $pdf->output());
 
         // Guardar o actualizar en certificates
-        Certificate::updateOrCreate([
-            'transaction_id' => $transaction->id,
-            'type' => 4,
-            'signer_id' => 1,
-            'profile_id' => $profile_id,
-        ],
-        [
-            'acta' => $ruta,
-        ]
-    );
+        Certificate::create([
+    'transaction_id' => $transaction->id,
+    'type' => 4,
+    'signer_id' => 1,
+    'profile_id' => $profile_id,
+    'acta' => $ruta,
+]);
+
 
 
         return $pdf->download($nombreArchivo);
