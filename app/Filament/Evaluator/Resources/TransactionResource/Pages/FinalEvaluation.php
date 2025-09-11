@@ -111,7 +111,7 @@ class FinalEvaluation extends Page  implements Forms\Contracts\HasForms
             'projects_support' => [
                 ['name' => 'La exposición es clara y demuestra dominio del tema', 'weight' => 20],
                 ['name' => 'Se presentan los resultados del proyecto de forma clara y precisa', 'weight' => 35],
-                ['name' => 'Las respuestas a las inquietudespropuestas son acertadas y aclaradora', 'weight' => 35],
+                ['name' => 'Las respuestas a las inquietudes propuestas son acertadas y aclaradoras', 'weight' => 35],
                 ['name' => 'Los medios empleados son adecuados', 'weight' => 10],
             ],
             'students' => $studentProfiles->map(fn($p) => [
