@@ -10,10 +10,11 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Infolists\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Select;
+use Filament\Infolists\Components\ImageEntry;
 use App\Filament\Resources\ProfileResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ProfileResource\RelationManagers;
@@ -68,6 +69,21 @@ class ProfileResource extends Resource
                     ->relationship('user', 'name')
                     ->disabled()
                     ->required(),
+                Forms\Components\Fieldset::make()
+                    ->relationship('signature')
+                    ->schema([
+                        // Campo de firma
+                        Forms\Components\FileUpload::make('file_path')
+                            ->label('Firma')
+                            ->disk('private')
+                            ->directory('signatures')
+                            ->image()
+                            ->imageEditor()
+                            ->required()
+                            ->previewable(true)
+                            ->downloadable(true)
+                            ->columnSpan(2),
+                    ]),
             ]);
     }
 
@@ -104,6 +120,11 @@ class ProfileResource extends Resource
                     ->label("Nombre de usuario")
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('signature.file_path')
+                    ->label('Firma')
+                    ->disk('private')
+                    ->placeholder('Sin Firma')
+                    ->visibility('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Creado en")
                     ->dateTime()
@@ -166,8 +187,12 @@ class ProfileResource extends Resource
                     TextEntry::make('level')
                         ->label('Nivel universitario')
                         ->formatStateUsing(fn ($state) => Level::from($state)->getLabel()),
-                    //TextEntry::make('UniversityCourse.course')
-                    //    ->label('Carrera universitaria'),
+                        ImageEntry::make('signature.file_path')
+                            ->label('Firma')
+                            ->disk('private')
+                            ->placeholder('No hay firma cargada (Puede cargarla en el formulario de edición).')
+                            ->visibility('public')
+                            ->columnSpan(2),
                     TextEntry::make('institutional_code')
                         ->label('Código institucional'),
                 ]),
