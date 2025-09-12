@@ -127,6 +127,7 @@ class CommentsRelationManager extends RelationManager
 
                             Section::make([
                                 TextEntry::make('comment')
+                                    ->markdown()
                                     ->label('Comentario'),
                                 TextEntry::make('concept.concept')
                                     ->label('Concepto')
