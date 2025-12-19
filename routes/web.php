@@ -17,7 +17,8 @@ use App\Http\Controllers\EvaluacionFinalController;
 use App\Http\Controllers\FinalEvaluationController;
 use App\Http\Controllers\CertificateAdvisorController;
 use App\Filament\Evaluator\Resources\TransactionResource\Pages\FinalEvaluation;
-
+use App\Http\Controllers\RubricPdfController;
+use App\Http\Controllers\RubricController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -116,6 +117,8 @@ Route::get('/secure/download/{file}', function ($file) {
 Route::get('/certificate/pdf/{id}', [PdfActaController::class, 'generate'])
     ->middleware(['auth', 'role:Coordinador|Super administrador'])
     ->name('certificate.pdf');
+Route::get('/rubrics/{rubric}', [RubricController::class, 'show'])->name('rubrics.show');
+Route::get('/rubrics/{rubric}/pdf', [RubricPdfController::class, 'download'])->name('rubrics.pdf');
 
 
 //----------------------------------- RUTA PARA VER CERTIFICADOS DE ESTUDIANTES -----------------------------------
